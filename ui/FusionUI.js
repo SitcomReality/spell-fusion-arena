@@ -225,6 +225,18 @@ export class FusionUI {
     this.currentSpell = SpellFusion.fuse(...this.selectedElements);
     const color = this.currentSpell.color;
 
+    // Build properties list markup
+    const props = this.currentSpell.properties || {};
+    const propEntries = Object.entries(props);
+    const propertiesHtml = propEntries.length === 0
+      ? '<div style="font-size:12px;color:#aaa;">No special properties</div>'
+      : '<div style="display:flex;flex-direction:column;gap:6px;">' + propEntries.map(([k, v]) =>
+          `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+             <span style="color:#ddd;text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
+             <span style="color:#fff;font-weight:600">${(Math.round(v * 100) / 100)}</span>
+           </div>`
+        ).join('') + '</div>';
+
     preview.innerHTML = `
       <div class="spell-result">
         <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
@@ -244,6 +256,12 @@ export class FusionUI {
               <span class="stat-value">${this.currentSpell.traits.projectileType}</span>
             </div>
           </div>
+         <div style="margin-top:10px;">
+           <div style="font-size:12px;color:#777;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px;">Projectile Properties</div>
+           <div style="background:#0d0d0d;border:1px solid #222;padding:8px;border-radius:4px;">
+             ${propertiesHtml}
+           </div>
+         </div>
         </div>
       </div>
     `;
