@@ -1,0 +1,134 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+#game-canvas {
+  border: 2px solid #333;
+  background: #0a0a0a;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#hud {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border: 1px solid #333;
+  min-width: 150px;
+}
+
+.hud-item {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+#fusion-ui {
+  width: 300px;
+  background: #111;
+  border: 2px solid #333;
+  padding: 20px;
+}
+
+.fusion-panel h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.element-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.element-btn {
+  padding: 15px;
+  border: 2px solid #333;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: transform 0.1s;
+}
+
+.element-btn:hover {
+  transform: scale(1.05);
+  border-color: #666;
+}
+
+.element-btn:active {
+  transform: scale(0.95);
+}
+
+.fusion-result {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-bottom: 15px;
+  min-height: 120px;
+}
+
+.fusion-result h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.fusion-result p {
+  font-size: 12px;
+  margin: 5px 0;
+  color: #aaa;
+}
+
+.spell-preview {
+  width: 100%;
+  height: 40px;
+  margin: 10px 0;
+  border: 1px solid #333;
+}
+
+#equip-btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+#equip-btn:hover:not(:disabled) {
+  background: #ddd;
+}
+
+#equip-btn:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
