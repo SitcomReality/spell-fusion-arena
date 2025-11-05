@@ -8,8 +8,9 @@ export class FusionUI {
     this.onSpellEquipped = onSpellEquipped;
     this.selectedElements = [];
     this.currentSpell = null;
-    this.equippedSpells = [null, null, null, null, null]; // 5 slots
-    this.maxFusionSlots = 2; // Will be upgradeable later
+    this.equippedSpells = [null, null, null, null, null];
+    this.maxFusionSlots = 2;
+    this.selectedElementForDetails = null;
 
     this.render();
   }
@@ -20,6 +21,7 @@ export class FusionUI {
         <div class="fusion-section">
           <h2>Elements</h2>
           <div class="elements-library" id="elements-library"></div>
+          <div class="element-details-panel" id="element-details-panel"></div>
         </div>
         
         <div class="fusion-section">
@@ -40,7 +42,7 @@ export class FusionUI {
 
     this.renderElementsLibrary();
     this.renderFusionSlots();
-    this.renderSpellSlots(); // render into external container
+    this.renderSpellSlots();
     this.attachListeners();
   }
 
@@ -67,9 +69,57 @@ export class FusionUI {
         </div>
       `;
       
-      card.addEventListener('click', () => this.selectElement(key, element));
+      card.addEventListener('click', () => {
+        this.selectElementForDetails(key, element, card);
+        this.selectElement(key, element);
+      });
       library.appendChild(card);
     }
+  }
+
+  selectElementForDetails(key, element, cardElement) {
+    // Remove previous selection highlight
+    document.querySelectorAll('.element-card.selected').forEach(c => c.classList.remove('selected'));
+    cardElement.classList.add('selected');
+    
+    this.selectedElementForDetails = element;
+    this.renderDetailsPanel(element);
+  }
+
+  renderDetailsPanel(element) {
+    const panel = document.getElementById('element-details-panel');
+    panel.classList.add('active');
+    
+    const color = element.color;
+    const traits = element.traits;
+    
+    panel.innerHTML = `
+      <div class="element-details-header">
+        <div class="element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
+        <div>
+          <div class="element-details-name">${element.name}</div>
+          <div class="element-details-desc">${element.description}</div>
+        </div>
+      </div>
+      <div class="element-details-stats">
+        <div class="details-stat">
+          <span class="details-stat-label">Damage</span>
+          <span class="details-stat-value">${traits.damage}</span>
+        </div>
+        <div class="details-stat">
+          <span class="details-stat-label">Speed</span>
+          <span class="details-stat-value">${Math.round(traits.speed)}</span>
+        </div>
+        <div class="details-stat">
+          <span class="details-stat-label">Type</span>
+          <span class="details-stat-value" style="font-size: 11px;">${traits.projectileType}</span>
+        </div>
+        <div class="details-stat">
+          <span class="details-stat-label">Destruction</span>
+          <span class="details-stat-value" style="font-size: 11px;">${traits.destructionType}</span>
+        </div>
+      </div>
+    `;
   }
 
   renderFusionSlots() {
