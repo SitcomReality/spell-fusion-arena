@@ -1,6 +1,7 @@
 import { CONFIG, COLORS } from './config.js';
 import { GameState } from './game/GameState.js';
 import { Renderer } from './rendering/Renderer.js';
+import { EffectsRenderer } from './rendering/EffectsRenderer.js';
 import { FusionUI } from './ui/FusionUI.js';
 import { HUD } from './ui/HUD.js';
 import { RewardUI } from './ui/RewardUI.js';
@@ -11,7 +12,12 @@ class Game {
     this.canvas.width = CONFIG.canvas.width;
     this.canvas.height = CONFIG.canvas.height;
     
+    this.fxCanvas = document.getElementById('fx-canvas');
+    this.fxCanvas.width = CONFIG.canvas.width;
+    this.fxCanvas.height = CONFIG.canvas.height;
+    
     this.renderer = new Renderer(this.canvas);
+    this.fxRenderer = new EffectsRenderer(this.fxCanvas);
     this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height);
     this.hud = new HUD();
     
@@ -61,9 +67,9 @@ class Game {
   }
   
   render() {
+    // Render base game layer
     this.renderer.clear(COLORS.background);
     
-    // Render entities
     for (const enemy of this.gameState.enemies) {
       this.renderer.renderEnemy(enemy);
     }
@@ -72,8 +78,20 @@ class Game {
       this.renderer.renderProjectile(projectile);
     }
     
-    this.renderer.renderParticles(this.gameState.particles);
     this.renderer.renderPlayer(this.gameState.player);
+    
+    // Render FX layer
+    this.fxRenderer.clear();
+    
+    // Render projectile auras
+    for (const projectile of this.gameState.projectiles) {
+      this.fxRenderer.renderProjectileAura(projectile);
+    }
+    
+    // Render all particles
+    for (const particle of this.gameState.particles) {
+      this.fxRenderer.renderParticle(particle);
+    }
   }
 }
 

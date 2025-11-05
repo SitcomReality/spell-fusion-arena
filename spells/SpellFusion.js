@@ -1,34 +1,68 @@
 export class SpellFusion {
-  static fuse(element1, element2) {
-    const blendedColor = this.blendColors(element1.color, element2.color);
-    const fusedTraits = this.fuseTraits(element1.traits, element2.traits);
+  static fuse(...elements) {
+    const blendedColor = this.blendColors(...elements.map(e => e.color));
+    const fusedTraits = this.fuseTraits(...elements.map(e => e.traits));
+    const fusedVisuals = this.fuseVisualEffects(...elements.map(e => e.visualEffects));
     
     return {
-      name: `${element1.name}-${element2.name}`,
+      name: elements.map(e => e.name).join('-'),
       color: blendedColor,
       traits: fusedTraits,
-      elements: [element1, element2]
+      visualEffects: fusedVisuals,
+      elements: elements
     };
   }
   
-  static blendColors(color1, color2) {
+  static blendColors(...colors) {
     return {
-      r: Math.floor((color1.r + color2.r) / 2),
-      g: Math.floor((color1.g + color2.g) / 2),
-      b: Math.floor((color1.b + color2.b) / 2)
+      r: Math.floor(colors.reduce((sum, c) => sum + c.r, 0) / colors.length),
+      g: Math.floor(colors.reduce((sum, c) => sum + c.g, 0) / colors.length),
+      b: Math.floor(colors.reduce((sum, c) => sum + c.b, 0) / colors.length)
     };
   }
   
-  static fuseTraits(traits1, traits2) {
+  static fuseTraits(...traits) {
+    const avgSpeed = traits.reduce((sum, t) => sum + t.speed, 0) / traits.length;
+    const avgDamage = traits.reduce((sum, t) => sum + t.damage, 0) / traits.length;
+    
+    // Pick random projectile type from the elements
+    const projectileType = traits[Math.floor(Math.random() * traits.length)].projectileType;
+    
     return {
-      speed: (traits1.speed + traits2.speed) / 2,
-      damage: (traits1.damage + traits2.damage) / 2,
-      projectileType: Math.random() > 0.5 ? traits1.projectileType : traits2.projectileType,
-      particleShape: traits1.particleShape,
-      secondaryShape: traits2.particleShape,
-      destructionType: traits1.destructionType,
-      secondaryDestruction: traits2.destructionType
+      speed: avgSpeed,
+      damage: avgDamage,
+      projectileType: projectileType,
+      particleShape: traits[0].particleShape,
+      secondaryShape: traits[1]?.particleShape,
+      destructionType: traits[0].destructionType,
+      secondaryDestruction: traits[1]?.destructionType
     };
+  }
+
+  static fuseVisualEffects(...visuals) {
+    // Combine visual effects from all elements
+    const fused = {
+      trail: visuals.some(v => v.trail),
+      trailType: visuals.find(v => v.trail)?.trailType || 'trail',
+      trailDensity: Math.floor(visuals.reduce((sum, v) => sum + (v.trailDensity || 0), 0) / visuals.length),
+      trailSize: Math.floor(visuals.reduce((sum, v) => sum + (v.trailSize || 0), 0) / visuals.length),
+      aura: visuals.some(v => v.aura),
+      auraSize: Math.floor(visuals.reduce((sum, v) => sum + (v.auraSize || 0), 0) / visuals.length),
+      auraIntensity: visuals.reduce((sum, v) => sum + (v.auraIntensity || 0), 0) / visuals.length,
+      impactParticles: Math.floor(visuals.reduce((sum, v) => sum + (v.impactParticles || 0), 0) / visuals.length),
+      impactType: visuals[0]?.impactType || 'spark',
+      
+      // Special effects - combine from all elements
+      beam: visuals.some(v => v.beam),
+      swirl: visuals.some(v => v.swirl),
+      vortex: visuals.some(v => v.vortex),
+      wispy: visuals.some(v => v.wispy),
+      shimmer: visuals.some(v => v.shimmer),
+      chaotic: visuals.some(v => v.chaotic),
+      pullParticles: visuals.some(v => v.pullParticles)
+    };
+    
+    return fused;
   }
 }
 

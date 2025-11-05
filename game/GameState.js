@@ -44,9 +44,12 @@ export class GameState {
       enemy.update(dt, this.centerX, this.centerY);
     }
 
-    // Update projectiles
+    // Update projectiles and collect trail particles
     for (const projectile of this.projectiles) {
-      projectile.update(dt, this.enemies, this.width, this.height);
+      const trailParticles = projectile.update(dt, this.enemies, this.width, this.height);
+      if (trailParticles) {
+        this.particles.push(...trailParticles);
+      }
     }
 
     // Check collisions
@@ -124,7 +127,9 @@ export class GameState {
         if (dist < projectile.radius + enemy.type.width / 2) {
           const hit = enemy.takeDamage(projectile);
           if (hit) {
-            this.createParticles(projectile.x, projectile.y, projectile.spell.color);
+            // Create impact particles
+            const impactParticles = projectile.createImpactParticles();
+            this.particles.push(...impactParticles);
             
             // Check for pierce
             if (!projectile.spell.traits.pierce) {
@@ -151,16 +156,42 @@ export class GameState {
         vy: Math.sin(angle) * speed,
         color,
         life: 0.5,
-        maxLife: 0.5
+        maxLife: 0.5,
+        size: 2,
+        type: 'spark'
       });
     }
   }
 
   updateParticles(dt) {
     for (const particle of this.particles) {
+      // Handle attracted particles (void effect)
+      if (particle.attracted && particle.targetX !== undefined) {
+        const dx = particle.targetX - particle.x;
+        const dy = particle.targetY - particle.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 1) {
+          particle.vx += (dx / dist) * 200 * dt;
+          particle.vy += (dy / dist) * 200 * dt;
+        }
+      }
+      
+      // Handle swirl particles
+      if (particle.swirlAngle !== undefined) {
+        particle.swirlAngle += particle.swirlSpeed * dt;
+        particle.x += Math.cos(particle.swirlAngle) * particle.swirlRadius * dt * 10;
+        particle.y += Math.sin(particle.swirlAngle) * particle.swirlRadius * dt * 10;
+      }
+      
       particle.x += particle.vx * dt;
       particle.y += particle.vy * dt;
       particle.life -= dt;
+      
+      // Apply drag for smoke particles
+      if (particle.type === 'smoke') {
+        particle.vx *= 0.95;
+        particle.vy *= 0.95;
+      }
     }
     this.particles = this.particles.filter(p => p.life > 0);
   }

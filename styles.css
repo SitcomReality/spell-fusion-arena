@@ -33,13 +33,32 @@ body {
   flex-shrink: 0;
 }
 
+/* Canvas wrapper for layering */
+#canvas-wrapper {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  flex-shrink: 0;
+}
+
 /* Ensure canvas sizing remains */
-#game-canvas {
+#game-canvas,
+#fx-canvas {
   border: 2px solid #333;
   background: #0a0a0a;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+}
+
+#fx-canvas {
+  pointer-events: none;
+  background: transparent;
+  border: none;
 }
 
 /* New equipped spells container placed below canvas */

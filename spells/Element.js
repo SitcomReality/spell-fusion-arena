@@ -1,9 +1,10 @@
 export class Element {
-  constructor(name, color, traits, description, locked = true) {
+  constructor(name, color, traits, description, visualEffects, locked = true) {
     this.name = name;
     this.color = color;
     this.traits = traits;
     this.description = description;
+    this.visualEffects = visualEffects;
     this.locked = locked;
   }
 }
@@ -19,7 +20,17 @@ export const ELEMENTS = {
     dotType: 'burn',
     dotDuration: 2,
     dotDamage: 5
-  }, 'Burns enemies over time', false),
+  }, 'Burns enemies over time', {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 3,
+    trailSize: 4,
+    aura: true,
+    auraSize: 15,
+    auraIntensity: 0.4,
+    impactParticles: 20,
+    impactType: 'spark'
+  }, false),
   
   frost: new Element('Frost', { r: 100, g: 200, b: 255 }, {
     speed: 200,
@@ -29,7 +40,17 @@ export const ELEMENTS = {
     destructionType: 'piercing',
     slowAmount: 0.5,
     slowDuration: 1.5
-  }, 'Slows and pierces enemies', false),
+  }, 'Slows and pierces enemies', {
+    trail: true,
+    trailType: 'trail',
+    trailDensity: 5,
+    trailSize: 3,
+    aura: false,
+    impactParticles: 15,
+    impactType: 'spark',
+    ambientParticles: true,
+    ambientType: 'glow'
+  }, false),
   
   storm: new Element('Storm', { r: 200, g: 150, b: 255 }, {
     speed: 400,
@@ -39,7 +60,18 @@ export const ELEMENTS = {
     destructionType: 'chain',
     chainCount: 2,
     chainRange: 100
-  }, 'Chains between enemies', false),
+  }, 'Chains between enemies', {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 8,
+    trailSize: 2,
+    aura: true,
+    auraSize: 25,
+    auraIntensity: 0.5,
+    impactParticles: 25,
+    impactType: 'spark',
+    crackle: true
+  }, false),
   
   stone: new Element('Stone', { r: 120, g: 100, b: 80 }, {
     speed: 150,
@@ -48,7 +80,16 @@ export const ELEMENTS = {
     particleShape: 'chunk',
     destructionType: 'shatter',
     knockback: 50
-  }, 'Heavy damage with knockback', false),
+  }, 'Heavy damage with knockback', {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 2,
+    trailSize: 6,
+    aura: false,
+    impactParticles: 30,
+    impactType: 'smoke',
+    shake: true
+  }, false),
 
   // Unlockable elements
   poison: new Element('Poison', { r: 120, g: 255, b: 80 }, {
@@ -60,7 +101,18 @@ export const ELEMENTS = {
     dotType: 'poison',
     dotDuration: 4,
     dotDamage: 8
-  }, 'Deals heavy damage over time'),
+  }, 'Deals heavy damage over time', {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 4,
+    trailSize: 5,
+    aura: true,
+    auraSize: 18,
+    auraIntensity: 0.3,
+    impactParticles: 18,
+    impactType: 'smoke',
+    drip: true
+  }),
 
   light: new Element('Light', { r: 255, g: 255, b: 200 }, {
     speed: 500,
@@ -70,7 +122,18 @@ export const ELEMENTS = {
     destructionType: 'piercing',
     pierce: true,
     maxPierce: 3
-  }, 'Pierces through multiple enemies'),
+  }, 'Pierces through multiple enemies', {
+    trail: true,
+    trailType: 'beam',
+    trailDensity: 10,
+    trailSize: 3,
+    aura: true,
+    auraSize: 30,
+    auraIntensity: 0.6,
+    impactParticles: 12,
+    impactType: 'spark',
+    beam: true
+  }),
 
   shadow: new Element('Shadow', { r: 80, g: 60, b: 120 }, {
     speed: 350,
@@ -79,7 +142,18 @@ export const ELEMENTS = {
     particleShape: 'wisp',
     destructionType: 'normal',
     lifesteal: 0.3
-  }, 'Homing projectiles that heal on hit'),
+  }, 'Homing projectiles that heal on hit', {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 6,
+    trailSize: 4,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.5,
+    impactParticles: 15,
+    impactType: 'swirl',
+    wispy: true
+  }),
 
   arcane: new Element('Arcane', { r: 180, g: 100, b: 255 }, {
     speed: 280,
@@ -89,7 +163,18 @@ export const ELEMENTS = {
     destructionType: 'explosive',
     splitCount: 3,
     splitAngle: 60
-  }, 'Splits into multiple projectiles'),
+  }, 'Splits into multiple projectiles', {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 7,
+    trailSize: 3,
+    aura: true,
+    auraSize: 22,
+    auraIntensity: 0.7,
+    impactParticles: 25,
+    impactType: 'swirl',
+    swirl: true
+  }),
 
   nature: new Element('Nature', { r: 80, g: 200, b: 100 }, {
     speed: 220,
@@ -101,7 +186,18 @@ export const ELEMENTS = {
     dotDuration: 3,
     slowAmount: 0.7,
     slowDuration: 3
-  }, 'Heavily slows enemies'),
+  }, 'Heavily slows enemies', {
+    trail: true,
+    trailType: 'aura',
+    trailDensity: 5,
+    trailSize: 3,
+    aura: true,
+    auraSize: 25,
+    auraIntensity: 0.4,
+    impactParticles: 20,
+    impactType: 'aura',
+    growth: true
+  }),
 
   blood: new Element('Blood', { r: 200, g: 20, b: 50 }, {
     speed: 240,
@@ -111,7 +207,16 @@ export const ELEMENTS = {
     destructionType: 'normal',
     lifesteal: 0.5,
     damageBonus: 0.1
-  }, 'Life steal and damage increase'),
+  }, 'Life steal and damage increase', {
+    trail: true,
+    trailType: 'trail',
+    trailDensity: 6,
+    trailSize: 2,
+    aura: false,
+    impactParticles: 18,
+    impactType: 'spark',
+    drip: true
+  }),
 
   void: new Element('Void', { r: 40, g: 20, b: 60 }, {
     speed: 200,
@@ -121,7 +226,19 @@ export const ELEMENTS = {
     destructionType: 'implosion',
     aoeRadius: 40,
     pullStrength: 100
-  }, 'Pulls and damages in area'),
+  }, 'Pulls and damages in area', {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 10,
+    trailSize: 2,
+    aura: true,
+    auraSize: 35,
+    auraIntensity: 0.6,
+    impactParticles: 30,
+    impactType: 'swirl',
+    vortex: true,
+    pullParticles: true
+  }),
 
   crystal: new Element('Crystal', { r: 150, g: 220, b: 255 }, {
     speed: 180,
@@ -132,7 +249,18 @@ export const ELEMENTS = {
     shield: true,
     shieldRadius: 60,
     shieldDamage: 10
-  }, 'Creates damaging shield around player'),
+  }, 'Creates damaging shield around player', {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 4,
+    trailSize: 3,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.5,
+    impactParticles: 22,
+    impactType: 'spark',
+    shimmer: true
+  }),
 
   chaos: new Element('Chaos', { r: 255, g: 100, b: 200 }, {
     speed: 320,
@@ -141,7 +269,19 @@ export const ELEMENTS = {
     particleShape: 'spark',
     destructionType: 'random',
     randomEffects: true
-  }, 'Unpredictable effects'),
+  }, 'Unpredictable effects', {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 12,
+    trailSize: 4,
+    aura: true,
+    auraSize: 28,
+    auraIntensity: 0.8,
+    impactParticles: 35,
+    impactType: 'spark',
+    chaotic: true,
+    randomColors: true
+  }),
 
   earth: new Element('Earth', { r: 140, g: 100, b: 60 }, {
     speed: 120,
@@ -151,7 +291,17 @@ export const ELEMENTS = {
     destructionType: 'shatter',
     aoeRadius: 50,
     knockback: 80
-  }, 'Large area damage and knockback'),
+  }, 'Large area damage and knockback', {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 3,
+    trailSize: 8,
+    aura: false,
+    impactParticles: 40,
+    impactType: 'smoke',
+    shake: true,
+    rocks: true
+  }),
 
   wind: new Element('Wind', { r: 200, g: 240, b: 255 }, {
     speed: 450,
@@ -161,7 +311,18 @@ export const ELEMENTS = {
     destructionType: 'normal',
     knockback: 30,
     multishot: 3
-  }, 'Fast projectiles with knockback'),
+  }, 'Fast projectiles with knockback', {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 8,
+    trailSize: 2,
+    aura: true,
+    auraSize: 22,
+    auraIntensity: 0.3,
+    impactParticles: 16,
+    impactType: 'swirl',
+    wispy: true
+  }),
 
   metal: new Element('Metal', { r: 180, g: 180, b: 200 }, {
     speed: 280,
@@ -172,7 +333,17 @@ export const ELEMENTS = {
     pierce: true,
     maxPierce: 2,
     bounceCount: 2
-  }, 'Piercing bouncing projectiles')
+  }, 'Piercing bouncing projectiles', {
+    trail: true,
+    trailType: 'trail',
+    trailDensity: 5,
+    trailSize: 2,
+    aura: false,
+    impactParticles: 20,
+    impactType: 'spark',
+    metallic: true,
+    sparks: true
+  })
 };
 
 export function getUnlockedElements() {
