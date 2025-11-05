@@ -15,8 +15,8 @@ class Game {
     this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height);
     this.hud = new HUD();
     
-    this.fusionUI = new FusionUI((spell, slotIndex) => {
-      this.gameState.player.equipSpell(spell, slotIndex);
+    this.fusionUI = new FusionUI((spells) => {
+      this.gameState.player.equipSpells(spells);
     });
 
     this.rewardUI = new RewardUI(() => {

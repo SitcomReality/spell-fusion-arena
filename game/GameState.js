@@ -32,8 +32,11 @@ export class GameState {
     }
 
     // Update player and check for casting
-    if (this.player.update(dt, CONFIG.player.castInterval)) {
-      this.castSpell();
+    const readySlots = this.player.update(dt, CONFIG.player.castInterval);
+    if (readySlots) {
+      for (const slotIndex of readySlots) {
+        this.castSpell(slotIndex);
+      }
     }
 
     // Update enemies
@@ -61,31 +64,32 @@ export class GameState {
     });
   }
 
-  castSpell() {
-    const equippedSpells = this.player.getEquippedSpells();
-    if (equippedSpells.length === 0) return;
+  castSpell(slotIndex) {
+    if (!this.player.equippedSpells[slotIndex]) return;
+
+    const spell = this.player.equippedSpells[slotIndex];
 
     // Find nearest enemy or shoot forward
     let targetX = this.centerX;
     let targetY = this.centerY - 100;
 
-    const nearest = this.findNearestEnemy();
-    if (nearest) {
-      targetX = nearest.x;
-      targetY = nearest.y;
+    if (this.enemies.length > 0) {
+      const nearest = this.findNearestEnemy();
+      if (nearest) {
+        targetX = nearest.x;
+        targetY = nearest.y;
+      }
     }
-    
-    equippedSpells.forEach(spell => {
-      if (!spell) return;
-      const projectile = new Projectile(
-        this.player.x,
-        this.player.y,
-        spell,
-        targetX,
-        targetY
-      );
-      this.projectiles.push(projectile);
-    });
+
+    const projectile = new Projectile(
+      this.player.x,
+      this.player.y,
+      spell,
+      targetX,
+      targetY
+    );
+
+    this.projectiles.push(projectile);
   }
 
   findNearestEnemy() {
