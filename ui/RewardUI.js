@@ -55,6 +55,18 @@ export class RewardUI {
       const card = document.createElement('div');
       card.className = 'reward-card';
       card.dataset.key = choice.key;
+      
+      // Build property genes list markup
+      const propertyGenes = elem.propertyGenes || {};
+      const propertiesHtml = Object.keys(propertyGenes).length === 0
+        ? '<div style="font-size:12px;color:#aaa;margin-top:8px;">No special properties</div>'
+        : '<div class="reward-card-properties" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">' + Object.entries(propertyGenes).map(([k,v]) =>
+            `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#ddd;">
+               <span style="text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
+               <span style="font-weight:600;color:#fff">${v}</span>
+             </div>`
+          ).join('') + '</div>';
+      
       card.innerHTML = `
         <div class="reward-card-color" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})"></div>
         <h3>${elem.name}</h3>
@@ -63,6 +75,7 @@ export class RewardUI {
           <span>Damage: ${elem.traits.damage}</span>
           <span>Speed: ${Math.round(elem.traits.speed)}</span>
         </div>
+        ${propertiesHtml}
       `;
       
       card.addEventListener('click', () => this.selectChoice(choice.key));
