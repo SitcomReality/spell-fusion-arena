@@ -1,14 +1,18 @@
+import { PROPERTY_TYPES } from './Element.js';
+
 export class SpellFusion {
   static fuse(...elements) {
     const blendedColor = this.blendColors(...elements.map(e => e.color));
     const fusedTraits = this.fuseTraits(...elements.map(e => e.traits));
     const fusedVisuals = this.fuseVisualEffects(...elements.map(e => e.visualEffects));
+    const activeProperties = this.fuseProperties(...elements);
     
     return {
       name: elements.map(e => e.name).join('-'),
       color: blendedColor,
       traits: fusedTraits,
       visualEffects: fusedVisuals,
+      properties: activeProperties,
       elements: elements
     };
   }
@@ -39,6 +43,47 @@ export class SpellFusion {
     };
   }
 
+  static fuseProperties(...elements) {
+    // Accumulate property contributions, with order mattering
+    const propertyScores = {};
+    const numElements = elements.length;
+    
+    // Base threshold: harder to get properties with fewer elements
+    const baseThreshold = numElements === 1 ? 4 : numElements === 2 ? 6 : 5;
+    
+    // Sum up property contributions in order
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i];
+      const positionMultiplier = 1 - (i * 0.1); // Earlier elements contribute more
+      
+      for (const [property, value] of Object.entries(element.propertyGenes || {})) {
+        if (!propertyScores[property]) {
+          propertyScores[property] = 0;
+        }
+        propertyScores[property] += value * positionMultiplier;
+      }
+    }
+    
+    // Determine which properties activate based on thresholds
+    // First property has lower threshold, subsequent ones need more
+    const activeProperties = {};
+    const sortedProperties = Object.entries(propertyScores)
+      .sort((a, b) => b[1] - a[1]); // Sort by score descending
+    
+    for (let i = 0; i < sortedProperties.length; i++) {
+      const [property, score] = sortedProperties[i];
+      // Threshold increases for each additional property
+      const threshold = baseThreshold + (i * 1.5);
+      
+      if (score >= threshold) {
+        // Normalize score to intensity (0-1)
+        activeProperties[property] = Math.min(1, score / (threshold + 5));
+      }
+    }
+    
+    return activeProperties;
+  }
+
   static fuseVisualEffects(...visuals) {
     // Combine visual effects from all elements
     const fused = {
@@ -65,4 +110,3 @@ export class SpellFusion {
     return fused;
   }
 }
-
