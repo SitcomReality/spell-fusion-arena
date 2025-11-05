@@ -44,7 +44,8 @@ export class EffectsRenderer {
   }
 
   renderTrailParticle(particle, alpha) {
-    const size = particle.size * (1 - (1 - alpha) * 0.5);
+    let size = particle.size * (1 - (1 - alpha) * 0.5);
+    size = Math.max(0.1, size); // Ensure minimum size
     const color = particle.color;
     
     const gradient = this.ctx.createRadialGradient(
@@ -93,7 +94,8 @@ export class EffectsRenderer {
   }
 
   renderSmokeParticle(particle, alpha) {
-    const size = particle.size * (1 + (1 - alpha) * 2);
+    let size = particle.size * (1 + (1 - alpha) * 2);
+    size = Math.max(0.1, size); // Ensure minimum size to prevent invalid gradients
     const color = particle.color;
     
     const gradient = this.ctx.createRadialGradient(
@@ -152,12 +154,13 @@ export class EffectsRenderer {
   }
 
   renderGlowParticle(particle, alpha) {
+    let size = particle.size * 3;
+    size = Math.max(0.1, size); // Ensure minimum size
     const color = particle.color;
-    const size = particle.size;
     
     const gradient = this.ctx.createRadialGradient(
       particle.x, particle.y, 0,
-      particle.x, particle.y, size * 3
+      particle.x, particle.y, size
     );
     gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.8})`);
     gradient.addColorStop(0.3, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.4})`);
@@ -165,7 +168,7 @@ export class EffectsRenderer {
     
     this.ctx.fillStyle = gradient;
     this.ctx.beginPath();
-    this.ctx.arc(particle.x, particle.y, size * 3, 0, Math.PI * 2);
+    this.ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
     this.ctx.fill();
   }
 
@@ -182,7 +185,8 @@ export class EffectsRenderer {
     if (!visualEffects || !visualEffects.aura) return;
     
     const color = spell.color;
-    const auraSize = visualEffects.auraSize || 20;
+    let auraSize = visualEffects.auraSize || 20;
+    auraSize = Math.max(0.1, auraSize); // Ensure minimum size
     const auraIntensity = visualEffects.auraIntensity || 0.3;
     
     const gradient = this.ctx.createRadialGradient(
