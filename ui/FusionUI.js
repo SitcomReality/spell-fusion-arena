@@ -1,4 +1,4 @@
-import { ELEMENTS } from '../spells/Element.js';
+import { getUnlockedElements } from '../spells/Element.js';
 import { SpellFusion } from '../spells/SpellFusion.js';
 
 export class FusionUI {
@@ -31,14 +31,22 @@ export class FusionUI {
     const grid = document.getElementById('element-grid');
     grid.innerHTML = '';
 
-    for (const [key, element] of Object.entries(ELEMENTS)) {
+    const unlockedElements = getUnlockedElements();
+    
+    for (const [key, element] of Object.entries(unlockedElements)) {
       const btn = document.createElement('button');
       btn.className = 'element-btn';
       btn.dataset.element = key;
       btn.textContent = element.name;
       btn.style.background = `rgb(${element.color.r}, ${element.color.g}, ${element.color.b})`;
+      btn.style.color = this.getContrastColor(element.color);
       grid.appendChild(btn);
     }
+  }
+
+  getContrastColor(rgb) {
+    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+    return brightness > 155 ? '#000' : '#fff';
   }
 
   attachListeners() {
@@ -57,10 +65,15 @@ export class FusionUI {
   }
 
   selectElement(elementKey) {
-    const element = ELEMENTS[elementKey];
+    const unlockedElements = getUnlockedElements();
+    const element = unlockedElements[elementKey];
 
     if (this.selectedElements.length < 2) {
       this.selectedElements.push(element);
+      
+      // Visual feedback
+      const buttons = document.querySelectorAll(`[data-element="${elementKey}"]`);
+      buttons.forEach(btn => btn.style.border = '3px solid #fff');
     }
 
     if (this.selectedElements.length === 2) {
@@ -78,9 +91,19 @@ export class FusionUI {
       <div class="spell-preview" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
       <p>Type: ${this.currentSpell.traits.projectileType}</p>
       <p>Damage: ${Math.round(this.currentSpell.traits.damage)}</p>
+      <p>Speed: ${Math.round(this.currentSpell.traits.speed)}</p>
     `;
 
     document.getElementById('equip-btn').disabled = false;
     this.selectedElements = [];
+    
+    // Reset button borders
+    document.querySelectorAll('.element-btn').forEach(btn => {
+      btn.style.border = '2px solid #333';
+    });
+  }
+
+  refresh() {
+    this.render();
   }
 }

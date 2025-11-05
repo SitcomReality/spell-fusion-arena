@@ -17,9 +17,12 @@ export class GameState {
     this.particles = [];
 
     this.score = 0;
+    this.paused = false;
   }
 
   update(dt) {
+    if (this.paused) return;
+
     // Update wave manager
     this.waveManager.update(dt);
 
@@ -117,7 +120,16 @@ export class GameState {
           const hit = enemy.takeDamage(projectile);
           if (hit) {
             this.createParticles(projectile.x, projectile.y, projectile.spell.color);
-            projectile.alive = false;
+            
+            // Check for pierce
+            if (!projectile.spell.traits.pierce) {
+              projectile.alive = false;
+            } else {
+              projectile.pierceCount = (projectile.pierceCount || 0) + 1;
+              if (projectile.pierceCount >= (projectile.spell.traits.maxPierce || 1)) {
+                projectile.alive = false;
+              }
+            }
           }
         }
       }
@@ -146,5 +158,13 @@ export class GameState {
       particle.life -= dt;
     }
     this.particles = this.particles.filter(p => p.life > 0);
+  }
+
+  pause() {
+    this.paused = true;
+  }
+
+  resume() {
+    this.paused = false;
   }
 }

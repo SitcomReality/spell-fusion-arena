@@ -9,6 +9,7 @@ export class WaveManager {
     this.waveActive = false;
     this.timeSinceWave = 0;
     this.enemiesRemaining = 0;
+    this.waveCompleteCallback = null;
   }
   
   update(dt) {
@@ -61,7 +62,14 @@ export class WaveManager {
     this.enemiesRemaining--;
     if (this.enemiesRemaining <= 0) {
       this.waveActive = false;
+      if (this.waveCompleteCallback) {
+        this.waveCompleteCallback(this.currentWave);
+      }
     }
+  }
+
+  onWaveComplete(callback) {
+    this.waveCompleteCallback = callback;
   }
 }
 

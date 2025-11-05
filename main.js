@@ -3,6 +3,7 @@ import { GameState } from './game/GameState.js';
 import { Renderer } from './rendering/Renderer.js';
 import { FusionUI } from './ui/FusionUI.js';
 import { HUD } from './ui/HUD.js';
+import { RewardUI } from './ui/RewardUI.js';
 
 class Game {
   constructor() {
@@ -16,6 +17,17 @@ class Game {
     
     this.fusionUI = new FusionUI((spell) => {
       this.gameState.player.equipSpell(spell);
+    });
+
+    this.rewardUI = new RewardUI(() => {
+      this.gameState.resume();
+      this.fusionUI.refresh();
+    });
+
+    // Set up wave complete callback
+    this.gameState.waveManager.onWaveComplete((waveNumber) => {
+      this.gameState.pause();
+      this.rewardUI.show(waveNumber);
     });
     
     this.lastTime = 0;
@@ -34,7 +46,7 @@ class Game {
     const dt = (currentTime - this.lastTime) / 1000;
     this.lastTime = currentTime;
     
-    if (dt < 0.1) { // Cap dt to prevent large jumps
+    if (dt < 0.1) {
       this.update(dt);
       this.render();
     }
