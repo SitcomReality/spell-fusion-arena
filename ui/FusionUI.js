@@ -92,6 +92,17 @@ export class FusionUI {
     
     const color = element.color;
     const traits = element.traits;
+
+    // Build property genes list markup
+    const propertyGenes = element.propertyGenes || {};
+    const propertiesHtml = Object.keys(propertyGenes).length === 0
+      ? '<div style="font-size:12px;color:#aaa;">No special properties</div>'
+      : '<div style="display:flex;flex-direction:column;gap:6px;">' + Object.entries(propertyGenes).map(([k,v]) =>
+          `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+             <span style="color:#ddd;text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
+             <span style="color:#fff;font-weight:600">${v}</span>
+           </div>`
+        ).join('') + '</div>';
     
     panel.innerHTML = `
       <div class="element-details-header">
@@ -114,9 +125,8 @@ export class FusionUI {
           <span class="details-stat-label">Type</span>
           <span class="details-stat-value" style="font-size: 11px;">${traits.projectileType}</span>
         </div>
-        <div class="details-stat">
-          <span class="details-stat-label">Destruction</span>
-          <span class="details-stat-value" style="font-size: 11px;">${traits.destructionType}</span>
+        <div class="details-stat" style="padding:8px;">
+          ${propertiesHtml}
         </div>
       </div>
     `;
