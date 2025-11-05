@@ -110,6 +110,7 @@ body {
   border: 1px solid #333;
 }
 
+#craft-spell-btn,
 #equip-btn {
   width: 100%;
   padding: 12px;
@@ -122,15 +123,101 @@ body {
   transition: background 0.2s;
 }
 
+#craft-spell-btn:hover:not(:disabled),
 #equip-btn:hover:not(:disabled) {
   background: #ddd;
 }
 
+#craft-spell-btn:disabled,
 #equip-btn:disabled {
   background: #333;
   color: #666;
   cursor: not-allowed;
 }
+
+
+/* New Fusion UI Styles */
+.spell-slots-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.spell-slot {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  background: #0a0a0a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spell-slot.unlocked:hover {
+  border-color: #666;
+}
+
+.spell-slot.active {
+  border-color: #fff;
+  transform: scale(1.1);
+  color: #fff;
+}
+
+.spell-slot.locked {
+  background: #111;
+  cursor: not-allowed;
+}
+
+.fusion-chamber {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.fusion-chamber h2 {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.fusion-element-slots {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.fusion-element-slot {
+  flex-grow: 1;
+  height: 40px;
+  border: 1px dashed #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  color: #666;
+  background: #111;
+}
+
+.fusion-element-slot.unlocked {
+  cursor: pointer;
+}
+
+.fusion-element-slot.unlocked:hover {
+  border-color: #666;
+  background: #191919;
+}
+
+.fusion-element-slot.locked {
+  cursor: not-allowed;
+  background: #000;
+  border-style: solid;
+}
+
 
 #reward-overlay {
   position: fixed;

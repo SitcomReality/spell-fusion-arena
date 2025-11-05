@@ -62,29 +62,30 @@ export class GameState {
   }
 
   castSpell() {
-    if (!this.player.equippedSpell) return;
+    const equippedSpells = this.player.getEquippedSpells();
+    if (equippedSpells.length === 0) return;
 
     // Find nearest enemy or shoot forward
     let targetX = this.centerX;
     let targetY = this.centerY - 100;
 
-    if (this.enemies.length > 0) {
-      const nearest = this.findNearestEnemy();
-      if (nearest) {
-        targetX = nearest.x;
-        targetY = nearest.y;
-      }
+    const nearest = this.findNearestEnemy();
+    if (nearest) {
+      targetX = nearest.x;
+      targetY = nearest.y;
     }
-
-    const projectile = new Projectile(
-      this.player.x,
-      this.player.y,
-      this.player.equippedSpell,
-      targetX,
-      targetY
-    );
-
-    this.projectiles.push(projectile);
+    
+    equippedSpells.forEach(spell => {
+      if (!spell) return;
+      const projectile = new Projectile(
+        this.player.x,
+        this.player.y,
+        spell,
+        targetX,
+        targetY
+      );
+      this.projectiles.push(projectile);
+    });
   }
 
   findNearestEnemy() {

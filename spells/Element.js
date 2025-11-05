@@ -175,6 +175,8 @@ export const ELEMENTS = {
   }, 'Piercing bouncing projectiles')
 };
 
+export const EMPTY_ELEMENT = new Element('Empty', { r: 20, g: 20, b: 20 }, {}, 'Empty slot');
+
 export function getUnlockedElements() {
   return Object.entries(ELEMENTS)
     .filter(([_, element]) => !element.locked)
