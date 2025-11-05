@@ -24,12 +24,43 @@ body {
   max-width: 1400px;
 }
 
+/* New wrapper for canvas + equipped spells */
+#canvas-and-spells {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Ensure canvas sizing remains */
 #game-canvas {
   border: 2px solid #333;
   background: #0a0a0a;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   flex-shrink: 0;
+}
+
+/* New equipped spells container placed below canvas */
+#equipped-spells {
+  width: 100%;
+  max-width: 800px;
+  background: #111;
+  border: 2px solid #333;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+/* Title within equipped area */
+.equipped-title {
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 6px;
+  text-align: left;
 }
 
 #hud {

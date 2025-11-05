@@ -4,6 +4,7 @@ import { SpellFusion } from '../spells/SpellFusion.js';
 export class FusionUI {
   constructor(onSpellEquipped) {
     this.container = document.getElementById('fusion-ui');
+    this.equippedContainer = document.getElementById('equipped-spells');
     this.onSpellEquipped = onSpellEquipped;
     this.selectedElements = [];
     this.currentSpell = null;
@@ -34,17 +35,12 @@ export class FusionUI {
             <p>Select ${this.maxFusionSlots} elements to create a spell</p>
           </div>
         </div>
-
-        <div class="fusion-section">
-          <h2>Equipped Spells (${this.equippedSpells.filter(s => s).length}/5)</h2>
-          <div class="spell-slots" id="spell-slots"></div>
-        </div>
       </div>
     `;
 
     this.renderElementsLibrary();
     this.renderFusionSlots();
-    this.renderSpellSlots();
+    this.renderSpellSlots(); // render into external container
     this.attachListeners();
   }
 
@@ -107,8 +103,11 @@ export class FusionUI {
   }
 
   renderSpellSlots() {
-    const slotsContainer = document.getElementById('spell-slots');
-    slotsContainer.innerHTML = '';
+    // Render into external equipped container below canvas
+    const slotsContainer = this.equippedContainer;
+    if (!slotsContainer) return;
+    slotsContainer.innerHTML = `<h3 class="equipped-title">Equipped Spells (${this.equippedSpells.filter(s => s).length}/5)</h3><div class="spell-slots" id="external-spell-slots"></div>`;
+    const grid = document.getElementById('external-spell-slots');
 
     for (let i = 0; i < 5; i++) {
       const slot = document.createElement('div');
@@ -134,7 +133,7 @@ export class FusionUI {
         slot.innerHTML = `<span class="spell-slot-placeholder">Empty</span>`;
       }
 
-      slotsContainer.appendChild(slot);
+      grid.appendChild(slot);
     }
   }
 
