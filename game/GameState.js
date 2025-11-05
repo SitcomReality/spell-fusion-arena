@@ -39,6 +39,19 @@ export class GameState {
       }
     }
 
+    // Update knockback on enemies
+    for (const enemy of this.enemies) {
+      if (enemy.knockbackTimer && enemy.knockbackTimer > 0) {
+        enemy.knockbackTimer -= dt;
+        enemy.x += enemy.knockbackVx * dt;
+        enemy.y += enemy.knockbackVy * dt;
+        
+        // Apply friction
+        enemy.knockbackVx *= 0.85;
+        enemy.knockbackVy *= 0.85;
+      }
+    }
+
     // Update enemies
     for (const enemy of this.enemies) {
       enemy.update(dt, this.centerX, this.centerY);
@@ -117,28 +130,55 @@ export class GameState {
     for (const projectile of this.projectiles) {
       if (!projectile.alive) continue;
 
+      // Check for chaining
+      const chainsAvailable = projectile.properties.chaining && projectile.properties.chaining > 0;
+      const maxChains = chainsAvailable ? Math.floor(projectile.properties.chaining) + 1 : 0;
+      const chainedEnemies = projectile.chainedEnemies || [];
+
       for (const enemy of this.enemies) {
         if (!enemy.alive) continue;
+
+        // For chaining, check if we've already hit this enemy
+        if (chainedEnemies.includes(enemy)) continue;
 
         const dx = projectile.x - enemy.x;
         const dy = projectile.y - enemy.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < projectile.radius + enemy.type.width / 2) {
+        let hitRadius = projectile.radius + enemy.type.width / 2;
+        
+        // AOE expands hit radius
+        if (projectile.properties.aoe && projectile.properties.aoe > 0) {
+          hitRadius += projectile.properties.aoe * 15;
+        }
+
+        if (dist < hitRadius) {
           const hit = enemy.takeDamage(projectile);
           if (hit) {
+            // Apply projectile properties
+            projectile.applyProjectileProperties(enemy);
+            
             // Create impact particles
             const impactParticles = projectile.createImpactParticles();
             this.particles.push(...impactParticles);
             
-            // Check for pierce
-            if (!projectile.spell.traits.pierce) {
+            // Handle piercing
+            const pierceIntensity = projectile.properties.piercing || 0;
+            const maxPierces = Math.floor(pierceIntensity) + 1;
+            const pierceCount = (projectile.pierceCount || 0);
+            
+            if (pierceCount >= maxPierces) {
               projectile.alive = false;
             } else {
-              projectile.pierceCount = (projectile.pierceCount || 0) + 1;
-              if (projectile.pierceCount >= (projectile.spell.traits.maxPierce || 1)) {
-                projectile.alive = false;
-              }
+              projectile.pierceCount = pierceCount + 1;
+            }
+
+            // Handle chaining
+            if (chainsAvailable && chainedEnemies.length < maxChains) {
+              chainedEnemies.push(enemy);
+              projectile.chainedEnemies = chainedEnemies;
+            } else if (!chainsAvailable) {
+              projectile.alive = false;
             }
           }
         }

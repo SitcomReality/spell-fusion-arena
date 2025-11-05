@@ -11,6 +11,12 @@ export class Projectile {
     this.bounces = 0;
     this.maxBounces = spell.traits.projectileType === 'bouncing' ? 3 : 0;
     this.particleTimer = 0;
+    
+    // Track enemies hit for piercing
+    this.enemiesHit = new Set();
+    
+    // Properties from spell
+    this.properties = spell.properties || {};
 
     this.initVelocity(targetX, targetY);
   }
@@ -143,8 +149,13 @@ export class Projectile {
     const particles = [];
     const count = visuals.impactParticles || 15;
     
-    for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+    // Increase particles for certain properties
+    let particleMultiplier = 1;
+    if (this.properties.aoe && this.properties.aoe > 0) particleMultiplier += 0.5;
+    if (this.properties.knockback && this.properties.knockback > 0) particleMultiplier += 0.3;
+    
+    for (let i = 0; i < count * particleMultiplier; i++) {
+      const angle = (Math.PI * 2 * i) / (count * particleMultiplier) + (Math.random() - 0.5) * 0.5;
       const speed = 50 + Math.random() * 100;
       
       const particle = {
@@ -164,6 +175,44 @@ export class Projectile {
     }
     
     return particles;
+  }
+
+  applyProjectileProperties(enemy) {
+    const props = this.properties;
+    
+    // Knockback
+    if (props.knockback && props.knockback > 0) {
+      const dx = enemy.x - this.x;
+      const dy = enemy.y - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 0) {
+        const knockbackForce = 150 * props.knockback;
+        enemy.knockbackVx = (dx / dist) * knockbackForce;
+        enemy.knockbackVy = (dy / dist) * knockbackForce;
+        enemy.knockbackTimer = 0.2;
+      }
+    }
+    
+    // Slowing
+    if (props.slowing && props.slowing > 0) {
+      const duration = 2 + props.slowing * 2;
+      const slowAmount = Math.min(0.7, 0.3 + props.slowing * 0.1);
+      enemy.applySlowing(duration, slowAmount);
+    }
+    
+    // Burning
+    if (props.burning && props.burning > 0) {
+      const duration = 2 + props.burning * 1.5;
+      const damagePerTick = Math.max(1, this.spell.traits.damage * props.burning * 0.15);
+      enemy.applyBurning(duration, damagePerTick);
+    }
+    
+    // Poison
+    if (props.poison && props.poison > 0) {
+      const duration = 3 + props.poison * 2;
+      const damagePerTick = Math.max(1, this.spell.traits.damage * props.poison * 0.1);
+      enemy.applyPoison(duration, damagePerTick);
+    }
   }
 
   findNearestEnemy(enemies) {
