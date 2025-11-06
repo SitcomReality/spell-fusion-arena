@@ -8,7 +8,7 @@ export class FusionPreview {
     this.container = container;
     // Render the full preview layout in a visually disabled state
     this.container.innerHTML = `
-      <div class="spell-result disabled">
+      <div class="spell-result panel disabled">
         <div class="spell-summary">
           <div class="spell-summary-info">
             <div class="spell-result-color" style="background: #111"></div>
@@ -34,7 +34,7 @@ export class FusionPreview {
     if (!this.container) return;
     // Update to disabled layout with provided message in the properties area
     this.container.innerHTML = `
-      <div class="spell-result disabled">
+      <div class="spell-result panel disabled">
         <div class="spell-summary">
           <div class="spell-summary-info">
             <div class="spell-result-color" style="background: #111"></div>
@@ -71,7 +71,7 @@ export class FusionPreview {
         ).join('') + '</div>';
 
     this.container.innerHTML = `
-      <div class="spell-result">
+      <div class="spell-result panel">
         <div class="spell-summary">
           <div class="spell-summary-info">
             <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>

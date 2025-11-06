@@ -8,7 +8,7 @@ export class ElementDetailsPanel {
     this.container.innerHTML = '';
 
     // Render the full structure in an inactive state (no add button enabled)
-    this.container.classList.add('active', 'inactive');
+    this.container.classList.add('active', 'inactive', 'panel');
     this.container.innerHTML = `
       <div class="element-summary">
         <div class="element-summary-info">
