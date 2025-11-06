@@ -316,9 +316,11 @@
   display: none;
 }
 
-/* Hide the slot-props button by default (desktop) */
-.slot-props-btn {
-  display: none;
+/* Hide the slot-props button by default on desktop; allow mobile rules to show it */
+@media (min-width: 769px) {
+  .slot-props-btn {
+    display: none;
+  }
 }
 
 /* Small screen adjustments */
