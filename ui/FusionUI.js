@@ -49,6 +49,8 @@ export class FusionUI {
   addEssenceToBank(amount) {
     this.essenceBank += amount;
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    // Notify host (Game) about updated spells/essence/bank
+    if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
   unlockFusionSlot(slotIndex) {
@@ -64,6 +66,8 @@ export class FusionUI {
 
     this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    // Notify host (Game) about updated spells/essence/bank
+    if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
   render() {
@@ -153,7 +157,7 @@ export class FusionUI {
     if (emptyIndex !== -1) {
       this.equippedSpells[emptyIndex] = spell;
       // notify GameState via callback, passing full arrays
-      this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+      if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
       this.renderSpellSlots();
     }
   }
@@ -161,7 +165,7 @@ export class FusionUI {
   unequipSpell(index) {
     this.equippedSpells[index] = null;
     this.spellSlotEssence[index] = Math.floor(this.spellSlotEssence[index] * 0.75);
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+    if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
     this.renderSpellSlots();
   }
 
@@ -169,7 +173,7 @@ export class FusionUI {
     if (this.essenceBank <= 0) return;
     this.spellSlotEssence[slotIndex] = (this.spellSlotEssence[slotIndex] || 0) + 1;
     this.essenceBank -= 1;
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+    if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
     this.renderSpellSlots();
   }
 
@@ -183,5 +187,7 @@ export class FusionUI {
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
     this.updateFusionPreview();
+    // Ensure host knows about current bank/state when UI refreshes
+    if (this.onSpellEquipped) this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 }

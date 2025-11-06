@@ -21,8 +21,10 @@ class Game {
     this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height);
     this.hud = new HUD();
     
-    this.fusionUI = new FusionUI((spells, essence) => {
+    this.fusionUI = new FusionUI((spells, essence, bank) => {
       this.gameState.player.equipSpells(spells, essence);
+      // keep gameState/player aware of unassigned Mana Essence (bank)
+      this.gameState.player.essenceBank = bank || 0;
     });
 
     this.rewardUI = new RewardUI((reward) => {
@@ -103,4 +105,3 @@ class Game {
 document.addEventListener('DOMContentLoaded', () => {
   new Game();
 });
-
