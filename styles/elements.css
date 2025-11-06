@@ -20,7 +20,8 @@
 /* Elements Library */
 .elements-library {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 160px));
+  justify-content: start;
   gap: 6px;
   max-height: 280px;
   overflow-y: auto;
@@ -80,9 +81,10 @@
 /* Mobile: 2 columns, adjusted sizing */
 @media (max-width: 768px) {
   .elements-library {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(100px, 140px));
     gap: 6px;
     max-height: 200px;
+    justify-content: start;
   }
 
   .element-card {
@@ -137,7 +139,9 @@
 /* Small mobile: single column */
 @media (max-width: 480px) {
   .elements-library {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 120px));
+    gap: 6px;
+    justify-content: start;
   }
 
   .element-details-stats {
