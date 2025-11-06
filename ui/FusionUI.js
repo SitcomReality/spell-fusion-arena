@@ -1,4 +1,8 @@
-import { getUnlockedElements } from '../spells/Element.js';
+import { ElementsLibrary } from './elements/ElementsLibrary.js';
+import { ElementDetailsPanel } from './elements/ElementDetailsPanel.js';
+import { FusionBuilder } from './FusionBuilder.js';
+import { FusionPreview } from './FusionPreview.js';
+import { SpellSlotsUI } from './SpellSlotsUI.js';
 import { SpellFusion } from '../spells/SpellFusion.js';
 
 export class FusionUI {
@@ -6,22 +10,43 @@ export class FusionUI {
     this.container = document.getElementById('fusion-ui');
     this.equippedContainer = document.getElementById('equipped-spells');
     this.onSpellEquipped = onSpellEquipped;
+
     this.selectedElements = [];
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null, null];
-    this.spellSlotEssence = [5, 0, 0, 0, 0]; // Mana Essence per slot
-    this.essenceBank = 0; // global unassigned Mana Essence
+    this.spellSlotEssence = [5, 0, 0, 0, 0];
+    this.essenceBank = 0;
     this.maxFusionSlots = 2;
-    this.selectedElementForDetails = null;
+
+    // Create subcomponents
+    this.elementsLibrary = new ElementsLibrary((key, element, cardEl) => {
+      this.onElementClicked(key, element, cardEl);
+    });
+
+    this.detailsPanel = new ElementDetailsPanel();
+
+    this.fusionBuilder = new FusionBuilder({
+      maxFusionSlots: this.maxFusionSlots,
+      onClear: () => this.clearFusion(),
+      onCreate: () => this.createSpellFromSelection()
+    });
+
+    this.fusionPreview = new FusionPreview();
+
+    this.spellSlotsUI = new SpellSlotsUI(this.equippedContainer, {
+      getEquippedSpells: () => this.equippedSpells,
+      getSpellSlotEssence: () => this.spellSlotEssence,
+      getEssenceBank: () => this.essenceBank,
+      onUnequip: (i) => this.unequipSpell(i),
+      onAllocateEssence: (i) => this.allocateEssenceToSlot(i)
+    });
 
     this.render();
   }
 
   addEssenceToBank(amount) {
     this.essenceBank += amount;
-    this.renderSpellSlots();
-    // Also reflect bank in UI side panel
-    this.renderEssenceBankHeader();
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
   render() {
@@ -35,318 +60,110 @@ export class FusionUI {
         
         <div class="fusion-section">
           <h2>Create Spell</h2>
-          <div class="fusion-builder">
-            <div class="fusion-slots" id="fusion-slots"></div>
-            <div class="fusion-controls">
-              <button id="clear-fusion-btn">Clear</button>
-              <button id="create-spell-btn" disabled>Create Spell</button>
-            </div>
-          </div>
-          <div class="fusion-preview" id="fusion-preview">
-            <p>Select ${this.maxFusionSlots} elements to create a spell</p>
-          </div>
+          <div class="fusion-builder" id="fusion-builder"></div>
+          <div class="fusion-preview" id="fusion-preview"></div>
         </div>
       </div>
     `;
 
-    this.renderElementsLibrary();
-    this.renderFusionSlots();
-    this.renderSpellSlots();
-    this.renderEssenceBankHeader();
-    this.attachListeners();
-  }
+    // mount subcomponents into DOM
+    this.elementsLibrary.mount(document.getElementById('elements-library'));
+    this.detailsPanel.mount(document.getElementById('element-details-panel'));
+    this.fusionBuilder.mount(document.getElementById('fusion-builder'), {
+      onSlotRemove: (idx) => this.removeElement(idx),
+      onSlotAddPlaceholderClick: () => {} // handled by element clicks
+    });
+    this.fusionPreview.mount(document.getElementById('fusion-preview'));
+    this.spellSlotsUI.mount();
 
-  renderEssenceBankHeader() {
-    // Show bank amount at top of equipped container
-    if (!this.equippedContainer) return;
-    let header = this.equippedContainer.querySelector('.equipped-title');
-    if (!header) return;
-    header.innerHTML = `Equipped Spells (${this.equippedSpells.filter(s => s).length}/5) — Bank: ${this.essenceBank} ME`;
-  }
+    // initial updates
+    this.elementsLibrary.refresh();
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
 
-  renderElementsLibrary() {
-    const library = document.getElementById('elements-library');
-    library.innerHTML = '';
-
-    const unlockedElements = getUnlockedElements();
-    
-    for (const [key, element] of Object.entries(unlockedElements)) {
-      const card = document.createElement('div');
-      card.className = 'element-card';
-      card.dataset.element = key;
-      card.innerHTML = `
-        <div class="element-card-color" style="background: rgb(${element.color.r}, ${element.color.g}, ${element.color.b})"></div>
-        <div class="element-card-content">
-          <h4>${element.name}</h4>
-          <p class="element-desc">${element.description}</p>
-          <div class="element-stats">
-            <span>DMG: ${element.traits.damage}</span>
-            <span>SPD: ${Math.round(element.traits.speed)}</span>
-          </div>
-          <div class="element-type">${element.traits.projectileType}</div>
-        </div>
-      `;
-      
-      card.addEventListener('click', () => {
-        this.selectElementForDetails(key, element, card);
-        this.selectElement(key, element);
-      });
-      library.appendChild(card);
-    }
-  }
-
-  selectElementForDetails(key, element, cardElement) {
-    // Remove previous selection highlight
-    document.querySelectorAll('.element-card.selected').forEach(c => c.classList.remove('selected'));
-    cardElement.classList.add('selected');
-    
-    this.selectedElementForDetails = element;
-    this.renderDetailsPanel(element);
-  }
-
-  renderDetailsPanel(element) {
-    const panel = document.getElementById('element-details-panel');
-    panel.classList.add('active');
-    
-    const color = element.color;
-    const traits = element.traits;
-
-    // Build property genes list markup
-    const propertyGenes = element.propertyGenes || {};
-    const propertiesHtml = Object.keys(propertyGenes).length === 0
-      ? '<div style="font-size:12px;color:#aaa;">No special properties</div>'
-      : '<div style="display:flex;flex-direction:column;gap:6px;">' + Object.entries(propertyGenes).map(([k,v]) =>
-          `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
-             <span style="color:#ddd;text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
-             <span style="color:#fff;font-weight:600">${v}</span>
-           </div>`
-        ).join('') + '</div>';
-    
-    panel.innerHTML = `
-      <div class="element-details-header">
-        <div class="element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-        <div>
-          <div class="element-details-name">${element.name}</div>
-          <div class="element-details-desc">${element.description}</div>
-        </div>
-      </div>
-      <div class="element-details-stats">
-        <div class="details-stat">
-          <span class="details-stat-label">Damage</span>
-          <span class="details-stat-value">${traits.damage}</span>
-        </div>
-        <div class="details-stat">
-          <span class="details-stat-label">Speed</span>
-          <span class="details-stat-value">${Math.round(traits.speed)}</span>
-        </div>
-        <div class="details-stat">
-          <span class="details-stat-label">Type</span>
-          <span class="details-stat-value" style="font-size: 11px;">${traits.projectileType}</span>
-        </div>
-        <div class="details-stat" style="padding:8px;">
-          ${propertiesHtml}
-        </div>
-      </div>
-    `;
-  }
-
-  renderFusionSlots() {
-    const slotsContainer = document.getElementById('fusion-slots');
-    slotsContainer.innerHTML = '';
-
-    for (let i = 0; i < this.maxFusionSlots; i++) {
-      const slot = document.createElement('div');
-      slot.className = 'fusion-slot';
-      slot.dataset.slot = i;
-
-      if (this.selectedElements[i]) {
-        const elem = this.selectedElements[i];
-        slot.innerHTML = `
-          <div class="fusion-slot-content" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})">
-            <span>${elem.name}</span>
-            <button class="fusion-slot-remove">×</button>
-          </div>
-        `;
-        
-        slot.querySelector('.fusion-slot-remove').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.removeElement(i);
-        });
-      } else {
-        slot.innerHTML = '<span class="fusion-slot-placeholder">+</span>';
-      }
-
-      slotsContainer.appendChild(slot);
-    }
+    // wire builder's request to place element into fusion slots
+    this.fusionBuilder.onRequestPlaceElement = (element) => {
+      this.addElementToFusion(element);
+    };
   }
 
   renderSpellSlots() {
-    // Render into external equipped container below canvas
-    const slotsContainer = this.equippedContainer;
-    if (!slotsContainer) return;
-    slotsContainer.innerHTML = `<h3 class="equipped-title">Equipped Spells (${this.equippedSpells.filter(s => s).length}/5)</h3><div class="spell-slots" id="external-spell-slots"></div>`;
-    const grid = document.getElementById('external-spell-slots');
-
-    for (let i = 0; i < 5; i++) {
-      const slot = document.createElement('div');
-      slot.className = 'spell-slot';
-      slot.dataset.slot = i;
-      const essence = this.spellSlotEssence[i];
-
-      if (this.equippedSpells[i]) {
-        const spell = this.equippedSpells[i];
-        const color = spell.color;
-        slot.innerHTML += `
-          <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
-            <span class="spell-slot-name">${spell.name}</span>
-            <div class="spell-slot-essence">ME: ${essence}</div>
-            <span class="spell-slot-number">${i + 1}</span>
-            <button class="spell-slot-unequip">−</button>
-          </div>
-        `;
-        
-        slot.querySelector('.spell-slot-unequip').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.unequipSpell(i);
-        });
-      } else {
-        slot.innerHTML += `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
-      }
-
-      // Optional plus button above slot when bank > 0 — add AFTER innerHTML so it isn't removed
-      if (this.essenceBank > 0) {
-        const addBtn = document.createElement('button');
-        addBtn.className = 'slot-add-essence';
-        addBtn.textContent = '+';
-        addBtn.title = 'Assign 1 Mana Essence to this slot';
-        addBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.allocateEssenceToSlot(i);
-        });
-        slot.appendChild(addBtn);
-      }
-
-      grid.appendChild(slot);
-    }
-
-    // Update header to show bank
-    this.renderEssenceBankHeader();
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
-  allocateEssenceToSlot(slotIndex) {
-    if (this.essenceBank <= 0) return;
-    this.spellSlotEssence[slotIndex] = (this.spellSlotEssence[slotIndex] || 0) + 1;
-    this.essenceBank -= 1;
-    // Recompute player intervals via callback
-    this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
-    this.renderSpellSlots();
+  renderEssenceBankHeader() {
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
-  selectElement(elementKey, element) {
-    if (this.selectedElements.length < this.maxFusionSlots) {
-      this.selectedElements.push(element);
-      this.renderFusionSlots();
-      this.updateFusionPreview();
-    }
+  onElementClicked(key, element, cardEl) {
+    // highlight & show details
+    this.elementsLibrary.markSelectedCard(cardEl);
+    this.detailsPanel.show(element);
+    // allow adding to fusion
+    this.addElementToFusion(element);
+  }
+
+  addElementToFusion(element) {
+    if (this.selectedElements.length >= this.maxFusionSlots) return;
+    this.selectedElements.push(element);
+    this.fusionBuilder.setSelectedElements(this.selectedElements);
+    this.updateFusionPreview();
   }
 
   removeElement(index) {
     this.selectedElements.splice(index, 1);
-    this.renderFusionSlots();
+    this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
   }
 
-  updateFusionPreview() {
-    const preview = document.getElementById('fusion-preview');
-    const createBtn = document.getElementById('create-spell-btn');
+  clearFusion() {
+    this.selectedElements = [];
+    this.currentSpell = null;
+    this.fusionBuilder.setSelectedElements(this.selectedElements);
+    this.updateFusionPreview(true);
+  }
 
-    if (this.selectedElements.length < this.maxFusionSlots) {
-      preview.innerHTML = `<p>Select ${this.maxFusionSlots - this.selectedElements.length} more element(s)</p>`;
-      createBtn.disabled = true;
+  updateFusionPreview(forceEmpty = false) {
+    if (forceEmpty || this.selectedElements.length < this.maxFusionSlots) {
+      this.fusionPreview.showMessage(`Select ${this.maxFusionSlots - this.selectedElements.length} more element(s)`);
       return;
     }
 
-    // Create spell preview
     this.currentSpell = SpellFusion.fuse(...this.selectedElements);
-    const color = this.currentSpell.color;
-
-    // Build properties list markup
-    const props = this.currentSpell.properties || {};
-    const propEntries = Object.entries(props);
-    const propertiesHtml = propEntries.length === 0
-      ? '<div style="font-size:12px;color:#aaa;">No special properties</div>'
-      : '<div style="display:flex;flex-direction:column;gap:6px;">' + propEntries.map(([k, v]) =>
-          `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
-             <span style="color:#ddd;text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
-             <span style="color:#fff;font-weight:600">${(Math.round(v * 100) / 100)}</span>
-           </div>`
-        ).join('') + '</div>';
-
-    preview.innerHTML = `
-      <div class="spell-result">
-        <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-        <div class="spell-result-info">
-          <h3>${this.currentSpell.name}</h3>
-          <div class="spell-result-stats">
-            <div class="stat">
-              <span class="stat-label">Damage</span>
-              <span class="stat-value">${Math.round(this.currentSpell.traits.damage)}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Speed</span>
-              <span class="stat-value">${Math.round(this.currentSpell.traits.speed)}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Type</span>
-              <span class="stat-value">${this.currentSpell.traits.projectileType}</span>
-            </div>
-          </div>
-         <div style="margin-top:10px;">
-           <div style="font-size:12px;color:#777;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px;">Projectile Properties</div>
-           <div style="background:#0d0d0d;border:1px solid #222;padding:8px;border-radius:4px;">
-             ${propertiesHtml}
-           </div>
-         </div>
-        </div>
-      </div>
-    `;
-
-    createBtn.disabled = false;
+    this.fusionPreview.showSpell(this.currentSpell);
   }
 
-  attachListeners() {
-    document.getElementById('clear-fusion-btn').addEventListener('click', () => {
-      this.selectedElements = [];
-      this.currentSpell = null;
-      this.render();
-    });
-
-    document.getElementById('create-spell-btn').addEventListener('click', () => {
-      if (this.currentSpell) {
-        this.equipSpell(this.currentSpell);
-        this.selectedElements = [];
-        this.currentSpell = null;
-        this.render();
-      }
-    });
+  createSpellFromSelection() {
+    if (!this.currentSpell) return;
+    this.equipSpell(this.currentSpell);
+    this.selectedElements = [];
+    this.currentSpell = null;
+    this.fusionBuilder.setSelectedElements(this.selectedElements);
+    this.updateFusionPreview(true);
+    this.renderSpellSlots();
   }
 
   equipSpell(spell) {
-    // Find first empty slot
     const emptyIndex = this.equippedSpells.findIndex(s => s === null);
-    
     if (emptyIndex !== -1) {
       this.equippedSpells[emptyIndex] = spell;
-      this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
+      // notify GameState via callback, passing full arrays
+      this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
       this.renderSpellSlots();
     }
   }
 
   unequipSpell(index) {
     this.equippedSpells[index] = null;
-    // Penalty: lose 25% of essence on unequip
     this.spellSlotEssence[index] = Math.floor(this.spellSlotEssence[index] * 0.75);
-    this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
+    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+    this.renderSpellSlots();
+  }
+
+  allocateEssenceToSlot(slotIndex) {
+    if (this.essenceBank <= 0) return;
+    this.spellSlotEssence[slotIndex] = (this.spellSlotEssence[slotIndex] || 0) + 1;
+    this.essenceBank -= 1;
+    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
     this.renderSpellSlots();
   }
 
@@ -355,6 +172,9 @@ export class FusionUI {
   }
 
   refresh() {
-    this.render();
+    this.elementsLibrary.refresh();
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    this.fusionBuilder.setSelectedElements(this.selectedElements);
+    this.updateFusionPreview();
   }
 }
