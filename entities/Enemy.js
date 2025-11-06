@@ -121,15 +121,30 @@ export class Enemy {
     this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 4);
   }
   
-  takeDamage(projectile) {
-    const localX = projectile.x - (this.x - this.type.width / 2);
-    const localY = projectile.y - (this.y - this.type.height / 2);
+  takeDamageFromSource(sourceX, sourceY, destructionRadius, destructionType = 'explosive') {
+    const localX = sourceX - (this.x - this.type.width / 2);
+    const localY = sourceY - (this.y - this.type.height / 2);
     
     const destroyed = this.pixelBody.damage(
       localX,
       localY,
-      projectile.radius * 2,
-      'explosive' // Default destruction type since it's removed from spells
+      destructionRadius,
+      destructionType
+    );
+    
+    return destroyed > 0;
+  }
+  
+  takeDamage(projectile) {
+    // Standard projectile damage application
+    const destructionRadius = projectile.radius * 2;
+    // Note: Projectiles currently don't pass destructionType dynamically, using default 'explosive'
+    
+    const destroyed = this.takeDamageFromSource(
+      projectile.x, 
+      projectile.y, 
+      destructionRadius, 
+      'explosive'
     );
     
     return destroyed > 0;

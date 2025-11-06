@@ -120,7 +120,12 @@ export class CollisionHandler {
           radius: projectile.radius
         };
 
-        enemy.takeDamage(aoeDamageProj);
+        // Calculate destruction radius based on damage magnitude. 
+        // Base destruction is 4 pixels radius, multiplied by damageMultiplier and aoeIntensity influence.
+        const destructionRadius = 4 + 10 * damageMultiplier; 
+
+        // Use new generalized damage function for AoE, centered at centerEnemy
+        enemy.takeDamageFromSource(centerEnemy.x, centerEnemy.y, destructionRadius, 'explosive');
 
         // Apply DoT properties from projectile
         const dotIntensity = projectile.properties.dot || 0;
