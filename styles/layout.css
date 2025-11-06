@@ -162,6 +162,7 @@
   #equipped-spells {
     width: 100%;
     max-width: 100%;
+    padding: 4px;
   }
 
   #hud {
@@ -239,4 +240,37 @@
   #hud:focus-within {
     transform: translateX(-50%) translateY(-1px);
   }
+}
+
+/* Scrollbar styling for Fusion UI elements (Moved from reward.css) */
+#fusion-ui::-webkit-scrollbar {
+  width: 8px;
+}
+
+#fusion-ui::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+#fusion-ui::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+#fusion-ui::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.elements-library::-webkit-scrollbar {
+  width: 6px;
+}
+
+.elements-library::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elements-library::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+.elements-library::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
