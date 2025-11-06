@@ -285,41 +285,273 @@
 }
 
 .prop-badge {
-  font-size: 10px;
-  padding: 2px 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(138, 43, 226, 0.1);
+  border: 1px solid #4a2a7f;
+  padding: 6px 8px;
   border-radius: 4px;
-  background: rgba(10,10,15,0.4);
-  border: 1px solid rgba(255,255,255,0.04);
-  color: #bfe9ff;
-  text-transform: lowercase;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.property-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+}
+
+.property-badge[data-property="damage"] .property-icon { background-image: url('/img/damage.png'); }
+.property-badge[data-property="speed"] .property-icon { background-image: url('/img/speed.png'); }
+.property-badge[data-property="knockback"] .property-icon { background-image: url('/img/knockback.png'); }
+.property-badge[data-property="aoe"] .property-icon { background-image: url('/img/aoe.png'); }
+.property-badge[data-property="dot"] .property-icon { background-image: url('/img/dot.png'); }
+.property-badge[data-property="piercing"] .property-icon { background-image: url('/img/piercing.png'); }
+.property-badge[data-property="homing"] .property-icon { background-image: url('/img/homing.png'); }
+.property-badge[data-property="slowing"] .property-icon { background-image: url('/img/slowing.png'); }
+.property-badge[data-property="lifesteal"] .property-icon { background-image: url('/img/lifesteal.png'); }
+.property-badge[data-property="chaining"] .property-icon { background-image: url('/img/splitting.png'); }
+.property-badge[data-property="vortex"] .property-icon { background-image: url('/img/spiral.png'); }
+.property-badge[data-property="shield"] .property-icon { background-image: url('/img/repulsion.png'); }
+.property-badge[data-property="wave"] .property-icon { background-image: url('/img/wave.png'); }
+
+.property-name {
+  color: #9db4ff;
+  text-transform: capitalize;
+}
+
+.property-value {
+  color: #64c8ff;
   font-weight: 600;
 }
 
-.fusion-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+.properties-empty {
+  font-size: 12px;
+  color: #aaa;
 }
 
-.fusion-controls button {
-  padding: 10px;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #fff;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  transition: all 0.2s;
+/* New helper to keep properties + controls on one row when space allows */
+.properties-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.fusion-controls button:hover:not(:disabled) {
-  border-color: #666;
-  background: #2a2a2a;
+.properties-row .properties-section {
+  flex: 1 1 auto;
+  min-width: 0; /* allow proper shrinking for long content */
 }
 
-.fusion-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.properties-row .fusion-preview-controls,
+.properties-row .element-details-controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .spell-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  /* Reduce gap between equipped spell wrappers on small screens */
+  .spell-slot-wrapper {
+    gap: 2px;
+    flex: 1 1 0; /* Added: allow stretching */
+    justify-content: center; /* Added: vertical centering */
+  }
+  
+  .spell-summary-info {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .spell-result-color {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .spell-summary-text h3 {
+    font-size: 14px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .spell-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+}
+
+/* Tablet: 4 columns still fits but smaller */
+@media (max-width: 1024px) {
+  .spell-slots {
+    gap: 8px;
+  }
+
+  .spell-slot-name {
+    font-size: 10px;
+  }
+
+  .spell-slot-essence {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-unequip {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Mobile: responsive grid */
+@media (max-width: 768px) {
+  .spell-slots {
+    display: flex; /* Override grid behavior */
+    flex-direction: column; /* Stack vertically */
+    gap: 6px;
+    height: 100%; /* Fill the height of #equipped-spells */
+    justify-content: space-between;
+  }
+
+  /* When equipped-spells area is translucent, make slots slightly less saturated
+     and restore full visibility when the user hovers, focuses, or touches. */
+  #equipped-spells:hover .spell-slot,
+  #equipped-spells:active .spell-slot,
+  #equipped-spells:focus-within .spell-slot {
+    opacity: 1;
+  }
+
+  /* Keep items slightly dimmed when parent is translucent to match opacity behavior */
+  #equipped-spells .spell-slot {
+    transition: opacity 160ms ease, transform 160ms ease;
+    opacity: 0.95; /* slightly lower so parent opacity produces the desired overall look */
+  }
+
+  .spell-slot {
+    aspect-ratio: 1;
+    width: 100%; /* Fill wrapper width (fixed to 62px in layout.css) */
+    max-width: 100%;
+    min-height: auto;
+  }
+
+  .spell-slot-content {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .spell-slot-name {
+    font-size: 9px;
+  }
+
+  .spell-slot-essence {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 8px;
+  }
+
+  .spell-slot-unequip {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    top: -10px;
+  }
+}
+
+/* Small mobile: 4 columns still fit */
+@media (max-width: 480px) {
+  .spell-slots {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .spell-slot {
+    min-height: 50px;
+  }
+  
+  /* Even on very small screens ensure tighter spacing for spell slot wrappers */
+  .spell-slot-wrapper {
+    gap: 2px;
+  }
+}
+
+/* Medium breakpoint - halfway between base and small */
+@media (max-width: 640px) {
+  .spell-slot-content {
+    gap: 2px;
+    padding: 4px;
+  }
+  
+  .spell-slot-stats {
+    gap: 2px;
+    margin-bottom: 3px;
+  }
+  
+  .spell-slot-stats .stat-item {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+  
+  .prop-badge {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+}
+
+/* Small mobile - smallest screen size */
+@media (max-width: 480px) {
+  .spell-slot-content {
+    gap: 1px;
+    padding: 2px;
+  }
+  
+  .spell-slot-stats {
+    gap: 1px;
+    margin-bottom: 2px;
+  }
+  
+  .spell-slot-stats .stat-item {
+    padding: 1px 2px;
+    font-size: 8px;
+  }
+  
+  .prop-badge {
+    padding: 1px 2px;
+    font-size: 8px;
+  }
 }
 
 /* Fusion Preview */
@@ -389,27 +621,6 @@
   gap: 6px;
   flex: 1 1 auto;
   min-width: 160px;
-}
-
-.property-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #0d0d0d;
-  border: 1px solid #222;
-  padding: 6px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.property-name {
-  color: #ddd;
-  text-transform: capitalize;
-}
-
-.property-value {
-  color: #fff;
-  font-weight: 600;
 }
 
 .properties-empty {

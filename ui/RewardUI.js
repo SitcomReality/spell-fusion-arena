@@ -119,7 +119,7 @@ export class RewardUI {
         ? '<div class="reward-card-small-desc">No special properties</div>'
         : '<div class="reward-card-properties">' + Object.entries(propertyGenes).map(([k,v]) =>
             `<div class="reward-card-property-row">
-               <span class="reward-card-property-name">${k.replace(/_/g,' ')}</span>
+               <span class="reward-card-property-icon" data-property="${k}"></span>
                <span class="reward-card-property-value">${v}</span>
              </div>`
           ).join('') + '</div>';

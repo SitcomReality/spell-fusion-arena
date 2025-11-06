@@ -70,8 +70,8 @@ export class FusionPreview {
     const propertiesHtml = propEntries.length === 0
       ? '<div class="properties-empty">No special properties</div>'
       : '<div class="properties-list">' + propEntries.map(([k, v]) =>
-          `<div class="property-badge">
-            <span class="property-name">${k.replace(/_/g, ' ')}</span>
+          `<div class="property-badge" data-property="${k}">
+            <span class="property-icon"></span>
             <span class="property-value">${Math.round(v * 100) / 100}</span>
           </div>`
         ).join('') + '</div>';

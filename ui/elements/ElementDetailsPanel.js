@@ -42,8 +42,8 @@ export class ElementDetailsPanel {
     const propertiesHtml = propertiesEntries.length === 0
       ? `<div class="properties-empty">No special properties</div>`
       : `<div class="properties-list">` + propertiesEntries.map(([k, v]) =>
-          `<div class="property-badge">
-            <span class="property-name">${k.replace(/_/g, ' ')}</span>
+          `<div class="property-badge" data-property="${k}">
+            <span class="property-icon"></span>
             <span class="property-value">${v}</span>
           </div>`
         ).join('') + `</div>`;
