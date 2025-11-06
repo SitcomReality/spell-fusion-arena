@@ -9,7 +9,7 @@ export class Projectile {
     this.lifetime = 5000;
     this.alive = true;
     this.bounces = 0;
-    this.maxBounces = spell.traits.projectileType === 'bouncing' ? 3 : 0;
+    this.maxBounces = spell.properties.bouncing || 0;
     this.particleTimer = 0;
     
     // Track enemies hit for piercing
@@ -22,12 +22,12 @@ export class Projectile {
   }
 
   initVelocity(targetX, targetY) {
-    const speed = this.spell.traits.speed;
+    const speed = this.spell.properties.speed;
     const dx = targetX - this.x;
     const dy = targetY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (this.spell.traits.projectileType === 'lob') {
+    if (this.spell.properties.lob) {
       this.vx = (dx / dist) * speed * 0.7;
       this.vy = (dy / dist) * speed * 0.7 - 100;
       this.gravity = 200;
@@ -49,7 +49,7 @@ export class Projectile {
     this.vy += this.gravity * dt;
 
     // Homing behavior
-    if (this.spell.traits.projectileType === 'homing' && enemies.length > 0) {
+    if (this.properties.homing && enemies.length > 0) {
       const target = this.findNearestEnemy(enemies);
       if (target) {
         const dx = target.x - this.x;
@@ -61,7 +61,7 @@ export class Projectile {
 
         // Maintain speed
         const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-        const targetSpeed = this.spell.traits.speed;
+        const targetSpeed = this.spell.properties.speed;
         this.vx = (this.vx / currentSpeed) * targetSpeed;
         this.vy = (this.vy / currentSpeed) * targetSpeed;
       }
@@ -71,7 +71,7 @@ export class Projectile {
     this.y += this.vy * dt;
 
     // Bounce off walls
-    if (this.spell.traits.projectileType === 'bouncing' && this.bounces < this.maxBounces) {
+    if (this.properties.bouncing && this.bounces < this.maxBounces) {
       if (this.x < 0 || this.x > canvasWidth) {
         this.vx *= -1;
         this.x = Math.max(0, Math.min(canvasWidth, this.x));
@@ -203,14 +203,14 @@ export class Projectile {
     // Burning
     if (props.burning && props.burning > 0) {
       const duration = 2 + props.burning * 1.5;
-      const damagePerTick = Math.max(1, this.spell.traits.damage * props.burning * 0.15);
+      const damagePerTick = Math.max(1, this.spell.properties.damage * props.burning * 0.15);
       enemy.applyBurning(duration, damagePerTick);
     }
     
     // Poison
     if (props.poison && props.poison > 0) {
       const duration = 3 + props.poison * 2;
-      const damagePerTick = Math.max(1, this.spell.traits.damage * props.poison * 0.1);
+      const damagePerTick = Math.max(1, this.spell.properties.damage * props.poison * 0.1);
       enemy.applyPoison(duration, damagePerTick);
     }
   }

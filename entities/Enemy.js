@@ -127,7 +127,7 @@ export class Enemy {
       localX,
       localY,
       projectile.radius * 2,
-      projectile.spell.traits.destructionType
+      'explosive' // Default destruction type since it's removed from spells
     );
     
     return destroyed > 0;

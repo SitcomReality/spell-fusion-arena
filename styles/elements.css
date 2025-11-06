@@ -269,6 +269,7 @@
   border: 1px solid #2a2a2a;
   background: #0d0d0d;
   border-radius: 12px;
+  text-transform: capitalize;
 }
 
 .properties-section {

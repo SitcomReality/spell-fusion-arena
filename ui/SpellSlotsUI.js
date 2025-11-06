@@ -36,14 +36,15 @@ export class SpellSlotsUI {
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
         const color = spell.color;
-        const dmg = Math.round(spell.traits.damage);
-        const spd = Math.round(spell.traits.speed);
-        const type = spell.traits.projectileType;
+        const dmg = Math.round(spell.properties.damage);
+        const spd = Math.round(spell.properties.speed);
         // build properties markup (small badges)
         const propEntries = Object.entries(spell.properties || {});
         const propsHtml = propEntries.length === 0
           ? ''
-          : '<div class="spell-slot-properties">' + propEntries.map(([k,v]) =>
+          : '<div class="spell-slot-properties">' + propEntries
+            .filter(([k,v]) => k !== 'damage' && k !== 'speed') // Don't show core stats as badges
+            .map(([k,v]) =>
               `<span class="prop-badge">${k.replace(/_/g,' ')}:${Math.round(v*100)/100}</span>`
             ).join('') + '</div>';
 
@@ -52,7 +53,6 @@ export class SpellSlotsUI {
             <div class="spell-slot-stats">
               <span class="stat-item">DMG:${dmg}</span>
               <span class="stat-item">SPD:${spd}</span>
-              <span class="stat-item">${type}</span>
             </div>
             <span class="spell-slot-name">${spell.name}</span>
             ${propsHtml}

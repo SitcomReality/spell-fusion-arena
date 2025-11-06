@@ -118,15 +118,15 @@ export class FusionPreview {
 
           <div class="spell-summary-stats">
             <div class="key-stat">
-              <div class="key-stat-value">${Math.round(spell.traits.damage)}</div>
+              <div class="key-stat-value">${Math.round(spell.properties.damage)}</div>
               <div class="key-stat-label">Damage</div>
             </div>
             <div class="key-stat">
-              <div class="key-stat-value">${Math.round(spell.traits.speed)}</div>
+              <div class="key-stat-value">${Math.round(spell.properties.speed)}</div>
               <div class="key-stat-label">Speed</div>
             </div>
             <div class="key-stat type-stat">
-              <div class="type-pill">${spell.traits.projectileType}</div>
+              <div class="type-pill">spell</div>
               <div class="key-stat-label">Type</div>
             </div>
           </div>

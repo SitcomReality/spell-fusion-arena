@@ -3,16 +3,14 @@ import { PROPERTY_TYPES } from './Element.js';
 export class SpellFusion {
   static fuse(...elements) {
     const blendedColor = this.blendColors(...elements.map(e => e.color));
-    const fusedTraits = this.fuseTraits(...elements.map(e => e.traits));
+    const fusedProperties = this.fuseProperties(...elements);
     const fusedVisuals = this.fuseVisualEffects(...elements.map(e => e.visualEffects));
-    const activeProperties = this.fuseProperties(...elements);
     
     return {
       name: elements.map(e => e.name).join('-'),
       color: blendedColor,
-      traits: fusedTraits,
       visualEffects: fusedVisuals,
-      properties: activeProperties,
+      properties: fusedProperties,
       elements: elements
     };
   }
@@ -44,10 +42,13 @@ export class SpellFusion {
   }
 
   static fuseProperties(...elements) {
-    // Accumulate property contributions, with order mattering
     const propertyScores = {};
     const numElements = elements.length;
     
+    // Core stats that are averaged, not thresholded
+    let totalDamage = 0;
+    let totalSpeed = 0;
+
     // Base threshold: harder to get properties with fewer elements
     const baseThreshold = numElements === 1 ? 4 : numElements === 2 ? 6 : 5;
     
@@ -57,6 +58,15 @@ export class SpellFusion {
       const positionMultiplier = 1 - (i * 0.1); // Earlier elements contribute more
       
       for (const [property, value] of Object.entries(element.propertyGenes || {})) {
+        if (property === 'damage') {
+          totalDamage += value;
+          continue;
+        }
+        if (property === 'speed') {
+          totalSpeed += value;
+          continue;
+        }
+
         if (!propertyScores[property]) {
           propertyScores[property] = 0;
         }
@@ -66,7 +76,11 @@ export class SpellFusion {
     
     // Determine which properties activate based on thresholds
     // First property has lower threshold, subsequent ones need more
-    const activeProperties = {};
+    const activeProperties = {
+      damage: totalDamage / numElements,
+      speed: totalSpeed / numElements,
+    };
+
     const sortedProperties = Object.entries(propertyScores)
       .sort((a, b) => b[1] - a[1]); // Sort by score descending
     

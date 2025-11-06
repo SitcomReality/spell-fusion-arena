@@ -1,8 +1,7 @@
 export class Element {
-  constructor(name, color, traits, propertyGenes, visualEffects, locked = true) {
+  constructor(name, color, propertyGenes, visualEffects, locked = true) {
     this.name = name;
     this.color = color;
-    this.traits = traits;
     this.propertyGenes = propertyGenes || {}; // property contribution system
     this.visualEffects = visualEffects;
     this.locked = locked;
@@ -28,8 +27,6 @@ export const ELEMENTS = {
   fire: new Element('Fire', { r: 255, g: 80, b: 20 }, {
     speed: 280,
     damage: 20,
-    projectileType: 'straight'
-  }, {
     dot: 8,
     chaining: 4
   }, {
@@ -47,8 +44,6 @@ export const ELEMENTS = {
   frost: new Element('Frost', { r: 100, g: 200, b: 255 }, {
     speed: 240,
     damage: 18,
-    projectileType: 'straight'
-  }, {
     slowing: 7,
     piercing: 5,
     aoe: 2
@@ -67,8 +62,6 @@ export const ELEMENTS = {
   storm: new Element('Storm', { r: 200, g: 150, b: 255 }, {
     speed: 320,
     damage: 19,
-    projectileType: 'straight'
-  }, {
     chaining: 7,
     piercing: 3,
     knockback: 3
@@ -88,8 +81,6 @@ export const ELEMENTS = {
   stone: new Element('Stone', { r: 120, g: 100, b: 80 }, {
     speed: 160,
     damage: 32,
-    projectileType: 'straight'
-  }, {
     knockback: 8,
     aoe: 5,
     piercing: 2
@@ -108,8 +99,6 @@ export const ELEMENTS = {
   poison: new Element('Poison', { r: 120, g: 255, b: 80 }, {
     speed: 260,
     damage: 16,
-    projectileType: 'straight'
-  }, {
     dot: 8,
     slowing: 3,
     aoe: 2
@@ -129,8 +118,6 @@ export const ELEMENTS = {
   light: new Element('Light', { r: 255, g: 255, b: 200 }, {
     speed: 360,
     damage: 17,
-    projectileType: 'straight'
-  }, {
     piercing: 8,
     chaining: 2,
     aoe: 3
@@ -150,8 +137,6 @@ export const ELEMENTS = {
   shadow: new Element('Shadow', { r: 80, g: 60, b: 120 }, {
     speed: 300,
     damage: 21,
-    projectileType: 'straight'
-  }, {
     homing: 6,
     lifesteal: 5,
     piercing: 2
@@ -171,8 +156,6 @@ export const ELEMENTS = {
   arcane: new Element('Arcane', { r: 180, g: 100, b: 255 }, {
     speed: 270,
     damage: 22,
-    projectileType: 'straight'
-  }, {
     chaining: 5,
     aoe: 4,
     piercing: 3
@@ -192,8 +175,6 @@ export const ELEMENTS = {
   nature: new Element('Nature', { r: 80, g: 200, b: 100 }, {
     speed: 220,
     damage: 15,
-    projectileType: 'straight'
-  }, {
     slowing: 8,
     dot: 3,
     aoe: 4
@@ -213,8 +194,6 @@ export const ELEMENTS = {
   blood: new Element('Blood', { r: 200, g: 20, b: 50 }, {
     speed: 250,
     damage: 23,
-    projectileType: 'straight'
-  }, {
     lifesteal: 7,
     knockback: 3,
     dot: 2
@@ -232,8 +211,6 @@ export const ELEMENTS = {
   void: new Element('Void', { r: 40, g: 20, b: 60 }, {
     speed: 200,
     damage: 28,
-    projectileType: 'straight'
-  }, {
     vortex: 7,
     aoe: 6,
     piercing: 2
@@ -254,8 +231,6 @@ export const ELEMENTS = {
   crystal: new Element('Crystal', { r: 150, g: 220, b: 255 }, {
     speed: 210,
     damage: 19,
-    projectileType: 'straight'
-  }, {
     piercing: 4,
     aoe: 4
   }, {
@@ -274,8 +249,6 @@ export const ELEMENTS = {
   chaos: new Element('Chaos', { r: 255, g: 100, b: 200 }, {
     speed: 290,
     damage: 24,
-    projectileType: 'straight'
-  }, {
     chaining: 4,
     dot: 4,
     knockback: 4
@@ -296,8 +269,6 @@ export const ELEMENTS = {
   earth: new Element('Earth', { r: 140, g: 100, b: 60 }, {
     speed: 140,
     damage: 35,
-    projectileType: 'straight'
-  }, {
     knockback: 10,
     aoe: 8
   }, {
@@ -315,8 +286,6 @@ export const ELEMENTS = {
   wind: new Element('Wind', { r: 200, g: 240, b: 255 }, {
     speed: 380,
     damage: 14,
-    projectileType: 'straight'
-  }, {
     knockback: 5,
     piercing: 4,
     chaining: 2
@@ -336,8 +305,6 @@ export const ELEMENTS = {
   metal: new Element('Metal', { r: 180, g: 180, b: 200 }, {
     speed: 270,
     damage: 26,
-    projectileType: 'straight'
-  }, {
     piercing: 6,
     chaining: 4,
     knockback: 2

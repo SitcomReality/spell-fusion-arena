@@ -126,8 +126,8 @@ export class RewardUI {
         <h3>${elem.name}</h3>
         <!-- description removed; name, stats and properties are shown below -->
         <div class="reward-card-stats">
-          <span>Damage: ${elem.traits.damage}</span>
-          <span>Speed: ${Math.round(elem.traits.speed)}</span>
+          <span>Damage: ${elem.propertyGenes.damage}</span>
+          <span>Speed: ${Math.round(elem.propertyGenes.speed)}</span>
         </div>
         ${propertiesHtml}
       `;

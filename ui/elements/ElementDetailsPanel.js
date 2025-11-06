@@ -51,7 +51,6 @@ export class ElementDetailsPanel {
   show(element, onAdd) {
     if (!this.container) return;
     const color = element.color;
-    const traits = element.traits;
     const propertyGenes = element.propertyGenes || {};
 
     const propertiesEntries = Object.entries(propertyGenes);
@@ -78,15 +77,15 @@ export class ElementDetailsPanel {
 
         <div class="element-summary-stats">
           <div class="key-stat">
-            <div class="key-stat-value">${traits.damage}</div>
+            <div class="key-stat-value">${propertyGenes.damage}</div>
             <div class="key-stat-label">Damage</div>
           </div>
           <div class="key-stat">
-            <div class="key-stat-value">${Math.round(traits.speed)}</div>
+            <div class="key-stat-value">${Math.round(propertyGenes.speed)}</div>
             <div class="key-stat-label">Speed</div>
           </div>
           <div class="key-stat type-stat">
-            <div class="type-pill">${traits.projectileType}</div>
+            <div class="type-pill">element</div>
             <div class="key-stat-label">Type</div>
           </div>
         </div>
