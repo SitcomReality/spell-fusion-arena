@@ -311,6 +311,16 @@
   }
 }
 
+/* Ensure the slot-props tooltip is hidden by default at all sizes */
+.slot-props-tooltip {
+  display: none;
+}
+
+/* Hide the slot-props button by default (desktop) */
+.slot-props-btn {
+  display: none;
+}
+
 /* Small screen adjustments */
 @media (max-width: 480px) {
   .spell-slots {
