@@ -126,23 +126,14 @@
 }
 
 @media (max-width: 480px) {
-  .reward-choices { grid-template-columns: 1fr; gap: 10px; }
+  /* Show element choices side-by-side on very small screens, but ensure the essence card spans both columns */
+  .reward-choices { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .reward-card { padding: 10px; }
   .reward-card h3 { font-size: 14px; }
   .reward-card-color { height: 40px; }
   .reward-card-desc { font-size: 10px; }
-}
-
-/* Keep scrollbar styling for the reward modal (matches fusion-ui styling) */
-.reward-modal::-webkit-scrollbar {
-  width: 8px;
-}
-.reward-modal::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-.reward-modal::-webkit-scrollbar-thumb {
-  background: #333;
-}
-.reward-modal::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  /* Ensure the essence card (which is appended after a full-width spacer) spans both columns */
+  .reward-choices .essence-card {
+    grid-column: 1 / -1;
+  }
 }
