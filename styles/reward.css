@@ -69,6 +69,42 @@
   height: 60px;
   margin-bottom: 15px;
   border: 1px solid #333;
+  background-size: cover;
+  background-position: center;
+}
+
+.reward-card-color.default-bg {
+  background: #222;
+}
+
+.reward-card-small-desc {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.reward-card-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.reward-card-property-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.reward-card-property-name {
+  text-transform: capitalize;
+}
+
+.reward-card-property-value {
+  font-weight: 600;
+  color: #fff;
 }
 
 .reward-card h3 {

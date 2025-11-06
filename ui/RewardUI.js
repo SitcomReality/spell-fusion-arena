@@ -75,10 +75,10 @@ export class RewardUI {
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
-      <div class="reward-card-color" style="background: #222"></div>
+      <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
       <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
-      <div style="font-size:12px;color:#aaa;margin-bottom:12px;">Use Mana Essence to power up spell slots — assign to slots to increase their firing speed.</div>
+      <div class="reward-card-small-desc">Use Mana Essence to power up spell slots — assign to slots to increase their firing speed.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>
       </div>
@@ -113,16 +113,16 @@ export class RewardUI {
       // Build property genes list markup
       const propertyGenes = elem.propertyGenes || {};
       const propertiesHtml = Object.keys(propertyGenes).length === 0
-        ? '<div style="font-size:12px;color:#aaa;margin-top:8px;">No special properties</div>'
-        : '<div class="reward-card-properties" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">' + Object.entries(propertyGenes).map(([k,v]) =>
-            `<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#ddd;">
-               <span style="text-transform:capitalize;">${k.replace(/_/g,' ')}</span>
-               <span style="font-weight:600;color:#fff">${v}</span>
+        ? '<div class="reward-card-small-desc">No special properties</div>'
+        : '<div class="reward-card-properties">' + Object.entries(propertyGenes).map(([k,v]) =>
+            `<div class="reward-card-property-row">
+               <span class="reward-card-property-name">${k.replace(/_/g,' ')}</span>
+               <span class="reward-card-property-value">${v}</span>
              </div>`
           ).join('') + '</div>';
       
       card.innerHTML = `
-        <div class="reward-card-color" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})"></div>
+        <div class="reward-card-color"></div>
         <h3>${elem.name}</h3>
         <p class="reward-card-desc">${elem.description}</p>
         <div class="reward-card-stats">
@@ -131,6 +131,10 @@ export class RewardUI {
         </div>
         ${propertiesHtml}
       `;
+      
+      // apply dynamic color via JS instead of inline style
+      const colorEl = card.querySelector('.reward-card-color');
+      if (colorEl) colorEl.style.background = `rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})`;
       
       card.addEventListener('click', () => this.selectElement(choice.key));
       choicesContainer.appendChild(card);
@@ -147,10 +151,10 @@ export class RewardUI {
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
-      <div class="reward-card-color" style="background: #222"></div>
+      <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
       <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
-      <div style="font-size:12px;color:#aaa;margin-bottom:12px;">Assign Mana Essence to spell slots to increase their firing rate; if you have essence in your bank you can allocate it after choosing this.</div>
+      <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate; if you have essence in your bank you can allocate it after choosing this.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>
       </div>
