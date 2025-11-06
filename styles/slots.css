@@ -366,19 +366,6 @@
   word-break: break-word;
 }
 
-.spell-summary-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.spell-result-color {
-  width: 45px;
-  height: 45px;
-  flex-shrink: 0;
-  border: 1px solid #333;
-}
-
 .properties-section {
   display: flex;
   flex-direction: column;
@@ -472,11 +459,6 @@
     align-items: flex-start;
   }
   
-  .spell-summary-stats {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-  
   .spell-result-color {
     width: 40px;
     height: 40px;
@@ -492,11 +474,6 @@
   .spell-summary {
     grid-template-columns: 1fr 1fr;
     gap: 6px;
-  }
-  
-  .spell-summary-stats {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
   }
 }
 

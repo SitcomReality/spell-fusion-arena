@@ -16,21 +16,6 @@ export class FusionPreview {
               <h3>No spell</h3>
             </div>
           </div>
-
-          <div class="spell-summary-stats">
-            <div class="key-stat">
-              <div class="key-stat-value">—</div>
-              <div class="key-stat-label">Damage</div>
-            </div>
-            <div class="key-stat">
-              <div class="key-stat-value">—</div>
-              <div class="key-stat-label">Speed</div>
-            </div>
-            <div class="key-stat type-stat">
-              <div class="type-pill">—</div>
-              <div class="key-stat-label">Type</div>
-            </div>
-          </div>
         </div>
 
         <div class="properties-row">
@@ -58,21 +43,6 @@ export class FusionPreview {
             <div class="spell-result-color" style="background: #111"></div>
             <div class="spell-summary-text">
               <h3>No spell</h3>
-            </div>
-          </div>
-
-          <div class="spell-summary-stats">
-            <div class="key-stat">
-              <div class="key-stat-value">—</div>
-              <div class="key-stat-label">Damage</div>
-            </div>
-            <div class="key-stat">
-              <div class="key-stat-value">—</div>
-              <div class="key-stat-label">Speed</div>
-            </div>
-            <div class="key-stat type-stat">
-              <div class="type-pill">—</div>
-              <div class="key-stat-label">Type</div>
             </div>
           </div>
         </div>
@@ -113,21 +83,6 @@ export class FusionPreview {
             <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
             <div class="spell-summary-text">
               <h3>${spell.name}</h3>
-            </div>
-          </div>
-
-          <div class="spell-summary-stats">
-            <div class="key-stat">
-              <div class="key-stat-value">${Math.round(spell.properties.damage)}</div>
-              <div class="key-stat-label">Damage</div>
-            </div>
-            <div class="key-stat">
-              <div class="key-stat-value">${Math.round(spell.properties.speed)}</div>
-              <div class="key-stat-label">Speed</div>
-            </div>
-            <div class="key-stat type-stat">
-              <div class="type-pill">spell</div>
-              <div class="key-stat-label">Type</div>
             </div>
           </div>
         </div>
