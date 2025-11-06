@@ -20,6 +20,52 @@
   justify-content: center;
 }
 
+.fusion-slot.locked {
+  position: relative;
+  background: linear-gradient(180deg, #0a0a0a 0%, #090909 100%);
+  border: 2px dashed #2a2a2a;
+  color: #999;
+}
+
+/* Locked overlay inside the slot */
+.fusion-slot-locked {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:100%;
+  height:100%;
+  padding:6px;
+  text-align:center;
+}
+
+.fusion-slot-lock-icon {
+  font-size:20px;
+  opacity:0.9;
+}
+
+.fusion-slot-unlock {
+  padding:6px 8px;
+  font-size:12px;
+  border:1px solid #333;
+  background:#1a1a1a;
+  color:#fff;
+  cursor:pointer;
+  border-radius:4px;
+}
+
+.fusion-slot-unlock:hover {
+  border-color:#666;
+  background:#2a2a2a;
+}
+
+.fusion-slot-locked-hint {
+  font-size:11px;
+  color:#aaa;
+  margin-top:4px;
+}
+
 .fusion-slot-content {
   width: 100%;
   height: 100%;

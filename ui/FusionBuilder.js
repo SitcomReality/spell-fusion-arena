@@ -1,7 +1,8 @@
 export class FusionBuilder {
   constructor(options = {}) {
     this.container = null;
-    this.maxFusionSlots = options.maxFusionSlots || 1;
+    this.totalSlots = options.totalSlots || 4;
+    this.unlockedSlots = options.unlockedSlots || 1;
     this.selectedElements = [];
     this.onSlotRemove = options.onSlotRemove || (() => {});
     this.onUnlockSlot = options.onUnlockSlot || (() => {});
@@ -20,7 +21,12 @@ export class FusionBuilder {
   }
 
   setMaxSlots(max) {
-    this.maxFusionSlots = max;
+    // backwards-compatible alias for unlockedSlots
+    this.setUnlockedSlots(max);
+  }
+
+  setUnlockedSlots(n) {
+    this.unlockedSlots = Math.max(0, Math.min(this.totalSlots, n));
     this.refresh();
   }
 
@@ -33,26 +39,45 @@ export class FusionBuilder {
     if (!this.slotsContainer) return;
     this.slotsContainer.innerHTML = '';
     
-    // Show unlocked slots
-    for (let i = 0; i < this.maxFusionSlots; i++) {
+    // Always render total slots, show locked overlay for locked ones
+    for (let i = 0; i < this.totalSlots; i++) {
       const slot = document.createElement('div');
       slot.className = 'fusion-slot';
       slot.dataset.slot = i;
 
-      if (this.selectedElements[i]) {
-        const elem = this.selectedElements[i];
+      if (i < this.unlockedSlots) {
+        // unlocked slot
+        if (this.selectedElements[i]) {
+          const elem = this.selectedElements[i];
+          slot.innerHTML = `
+            <div class="fusion-slot-content" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})">
+              <span>${elem.name}</span>
+              <button class="fusion-slot-remove">×</button>
+            </div>
+          `;
+          slot.querySelector('.fusion-slot-remove').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.onSlotRemove(i);
+          });
+        } else {
+          slot.innerHTML = '<span class="fusion-slot-placeholder">+</span>';
+        }
+      } else {
+        // locked slot with unlock CTA
+        slot.classList.add('locked');
         slot.innerHTML = `
-          <div class="fusion-slot-content" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})">
-            <span>${elem.name}</span>
-            <button class="fusion-slot-remove">×</button>
+          <div class="fusion-slot-locked">
+            <div class="fusion-slot-lock-icon">🔒</div>
+            <div class="fusion-slot-locked-controls">
+              <button class="fusion-slot-unlock">Unlock</button>
+              <div class="fusion-slot-locked-hint">Cost: 1 ME</div>
+            </div>
           </div>
         `;
-        slot.querySelector('.fusion-slot-remove').addEventListener('click', (e) => {
+        slot.querySelector('.fusion-slot-unlock').addEventListener('click', (e) => {
           e.stopPropagation();
-          this.onSlotRemove(i);
+          this.onUnlockSlot(i);
         });
-      } else {
-        slot.innerHTML = '<span class="fusion-slot-placeholder">+</span>';
       }
 
       this.slotsContainer.appendChild(slot);

@@ -27,9 +27,10 @@ export class FusionUI {
     this.detailsPanel = new ElementDetailsPanel();
 
     this.fusionBuilder = new FusionBuilder({
-      maxFusionSlots: this.unlockedFusionSlots,
+      totalSlots: 4,
+      unlockedSlots: this.unlockedFusionSlots,
       onSlotRemove: (idx) => this.removeElement(idx),
-      onUnlockSlot: () => this.unlockFusionSlot()
+      onUnlockSlot: (slotIndex) => this.unlockFusionSlot(slotIndex)
     });
 
     this.fusionPreview = new FusionPreview();
@@ -50,14 +51,18 @@ export class FusionUI {
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
-  unlockFusionSlot() {
+  unlockFusionSlot(slotIndex) {
     if (this.unlockedFusionSlots >= this.maxFusionSlots) return;
-    if (this.essenceBank < 1) return;
+    if (this.essenceBank < 1) {
+      // not enough essence, ignore
+      return;
+    }
 
-    this.unlockedFusionSlots += 1;
+    // unlock next slot in sequence (ensure sequential)
+    this.unlockedFusionSlots = Math.min(this.maxFusionSlots, this.unlockedFusionSlots + 1);
     this.essenceBank -= 1;
 
-    this.fusionBuilder.setMaxSlots(this.unlockedFusionSlots);
+    this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
@@ -176,6 +181,7 @@ export class FusionUI {
     this.elementsLibrary.refresh();
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
+    this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
     this.updateFusionPreview();
   }
 }
