@@ -19,7 +19,9 @@ export const PROPERTY_TYPES = {
   aoe: 'aoe',
   shield: 'shield',
   lifesteal: 'lifesteal',
-  vortex: 'vortex'
+  vortex: 'vortex',
+  splitting: 'splitting',
+  repulsion: 'repulsion'
 };
 
 export const ELEMENTS = {
@@ -100,7 +102,7 @@ export const ELEMENTS = {
   poison: new Element('Poison', { r: 120, g: 255, b: 80 }, {
     speed: 260,
     damage: 16,
-    dot: 8,
+    poison: 8,
     slowing: 3,
     aoe: 2
   }, {

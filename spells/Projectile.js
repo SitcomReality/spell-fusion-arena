@@ -204,25 +204,18 @@ export class Projectile {
       enemy.applySlowing(duration, slowAmount);
     }
     
-    // General DoT (burning effect)
+    // General DoT (treat as burning effect)
     if (props.dot && props.dot > 0) {
       const duration = 2 + props.dot * 1.5;
       const damagePerTick = Math.max(1, this.spell.properties.damage * props.dot * 0.15);
-      enemy.applyBurning(duration, damagePerTick);
-    }
-    
-    // Burning
-    if (props.burning && props.burning > 0) {
-      const duration = 2 + props.burning * 1.5;
-      const damagePerTick = Math.max(1, this.spell.properties.damage * props.burning * 0.15);
-      enemy.applyBurning(duration, damagePerTick);
+      enemy.applyBurning(duration, damagePerTick, this.spell.color);
     }
     
     // Poison
     if (props.poison && props.poison > 0) {
       const duration = 3 + props.poison * 2;
       const damagePerTick = Math.max(1, this.spell.properties.damage * props.poison * 0.1);
-      enemy.applyPoison(duration, damagePerTick);
+      enemy.applyPoison(duration, damagePerTick, this.spell.color);
     }
   }
 

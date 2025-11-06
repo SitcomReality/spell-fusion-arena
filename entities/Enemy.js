@@ -14,12 +14,14 @@ export class Enemy {
     
     // Status effects
     this.statusEffects = {
-      burning: { active: false, duration: 0, damage: 0 },
-      poison: { active: false, duration: 0, damage: 0 },
+      burning: { active: false, duration: 0, damage: 0, color: null },
+      poison: { active: false, duration: 0, damage: 0, color: null },
       slowing: { active: false, duration: 0, slowAmount: 0 }
     };
     this.burnTickTimer = 0;
     this.poisonTickTimer = 0;
+    
+    this.particleRequests = []; // Stores particles to be emitted by GameState
   }
   
   update(dt, centerX, centerY) {
@@ -63,6 +65,7 @@ export class Enemy {
         this.statusEffects.burning.active = false;
       } else if (this.burnTickTimer <= 0) {
         this.takeBurnDamage(this.statusEffects.burning.damage);
+        this.emitDoTParticles('burning', this.statusEffects.burning.color);
         this.burnTickTimer = 0.3; // Burn ticks every 0.3 seconds
       }
     }
@@ -76,6 +79,7 @@ export class Enemy {
         this.statusEffects.poison.active = false;
       } else if (this.poisonTickTimer <= 0) {
         this.takePoisonDamage(this.statusEffects.poison.damage);
+        this.emitDoTParticles('poison', this.statusEffects.poison.color);
         this.poisonTickTimer = 0.25; // Poison ticks every 0.25 seconds
       }
     }
@@ -89,20 +93,22 @@ export class Enemy {
     }
   }
 
-  applyBurning(duration, damagePerTick) {
+  applyBurning(duration, damagePerTick, color) {
     if (!this.statusEffects.burning.active || this.statusEffects.burning.duration < duration) {
       this.statusEffects.burning.active = true;
       this.statusEffects.burning.duration = duration;
       this.statusEffects.burning.damage = damagePerTick;
+      this.statusEffects.burning.color = color;
       this.burnTickTimer = 0;
     }
   }
 
-  applyPoison(duration, damagePerTick) {
+  applyPoison(duration, damagePerTick, color) {
     if (!this.statusEffects.poison.active || this.statusEffects.poison.duration < duration) {
       this.statusEffects.poison.active = true;
       this.statusEffects.poison.duration = duration;
       this.statusEffects.poison.damage = damagePerTick;
+      this.statusEffects.poison.color = color;
       this.poisonTickTimer = 0;
     }
   }
@@ -121,6 +127,32 @@ export class Enemy {
     this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 4);
   }
   
+  emitDoTParticles(type, color) {
+    // Generate particles derived from the DoT effect color
+    if (!color) return;
+    
+    const count = type === 'burning' ? 1 : 1;
+    const speed = 10 + Math.random() * 20;
+    const particleType = type === 'burning' ? 'spark' : 'smoke';
+    const size = type === 'burning' ? 1.5 : 2;
+    
+    for(let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      this.particleRequests.push({
+        x: this.x + (Math.random() - 0.5) * this.type.width * 0.3,
+        y: this.y + (Math.random() - 0.5) * this.type.height * 0.3,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: color,
+        life: 0.2 + Math.random() * 0.2,
+        maxLife: 0.4,
+        size: size,
+        type: particleType,
+        opacity: 0.8
+      });
+    }
+  }
+
   takeDamageFromSource(sourceX, sourceY, destructionRadius, destructionType = 'explosive') {
     const localX = sourceX - (this.x - this.type.width / 2);
     const localY = sourceY - (this.y - this.type.height / 2);
