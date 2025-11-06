@@ -161,7 +161,7 @@
     top: auto;
     left: auto;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     min-width: auto;
     font-size: 11px;
     width: 100%;
@@ -169,6 +169,9 @@
   }
 
   .hud-item {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 12px;
     font-size: 10px;
     margin-bottom: 6px;
   }
