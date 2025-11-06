@@ -11,8 +11,7 @@ export class Element {
 
 // Available properties that projectiles can have
 export const PROPERTY_TYPES = {
-  poison: 'poison',
-  burning: 'burning',
+  dot: 'dot',
   chaining: 'chaining',
   piercing: 'piercing',
   homing: 'homing',
@@ -31,8 +30,7 @@ export const ELEMENTS = {
     damage: 20,
     projectileType: 'straight'
   }, {
-    burning: 6,
-    poison: 4,
+    dot: 10,
     knockback: 2
   }, {
     trail: true,
@@ -112,7 +110,7 @@ export const ELEMENTS = {
     damage: 16,
     projectileType: 'straight'
   }, {
-    poison: 8,
+    dot: 8,
     slowing: 3,
     aoe: 2
   }, {
@@ -197,7 +195,7 @@ export const ELEMENTS = {
     projectileType: 'straight'
   }, {
     slowing: 8,
-    poison: 3,
+    dot: 3,
     aoe: 4
   }, {
     trail: true,
@@ -219,7 +217,7 @@ export const ELEMENTS = {
   }, {
     lifesteal: 7,
     knockback: 3,
-    burning: 2
+    dot: 2
   }, {
     trail: true,
     trailType: 'trail',
@@ -279,7 +277,7 @@ export const ELEMENTS = {
     projectileType: 'straight'
   }, {
     chaining: 4,
-    burning: 4,
+    dot: 4,
     knockback: 4
   }, {
     trail: true,
