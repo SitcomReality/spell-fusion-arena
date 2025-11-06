@@ -41,7 +41,7 @@
   text-align: center;
   /* let cards size to their content but not get too small */
   flex: 0 0 auto;
-  min-width: 80px;
+  min-width: 50px;
   max-width: 160px;
 }
 
