@@ -259,9 +259,8 @@ export const ELEMENTS = {
     damage: 19,
     projectileType: 'straight'
   }, 'Defensive barrier', {
-    shield: 6,
-    piercing: 3,
-    aoe: 3
+    piercing: 4,
+    aoe: 4
   }, {
     trail: true,
     trailType: 'spark',
@@ -273,7 +272,7 @@ export const ELEMENTS = {
     impactParticles: 22,
     impactType: 'spark',
     shimmer: true
-  }),
+  }, false),
 
   chaos: new Element('Chaos', { r: 255, g: 100, b: 200 }, {
     speed: 290,
@@ -302,9 +301,8 @@ export const ELEMENTS = {
     damage: 35,
     projectileType: 'straight'
   }, 'Massive impact', {
-    knockback: 9,
-    aoe: 7,
-    shield: 2
+    knockback: 10,
+    aoe: 8
   }, {
     trail: true,
     trailType: 'smoke',
