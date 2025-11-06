@@ -18,21 +18,6 @@ export class ElementDetailsPanel {
             <!-- description removed: name, stats and properties convey behavior -->
           </div>
         </div>
-
-        <div class="element-summary-stats">
-          <div class="key-stat">
-            <div class="key-stat-value">—</div>
-            <div class="key-stat-label">Damage</div>
-          </div>
-          <div class="key-stat">
-            <div class="key-stat-value">—</div>
-            <div class="key-stat-label">Speed</div>
-          </div>
-          <div class="key-stat type-stat">
-            <div class="type-pill">—</div>
-            <div class="key-stat-label">Type</div>
-          </div>
-        </div>
       </div>
 
       <div class="properties-row">
@@ -72,21 +57,6 @@ export class ElementDetailsPanel {
           <div class="element-summary-text">
             <div class="element-details-name">${element.name}</div>
             <!-- description removed: using name, stats and properties only -->
-          </div>
-        </div>
-
-        <div class="element-summary-stats">
-          <div class="key-stat">
-            <div class="key-stat-value">${propertyGenes.damage}</div>
-            <div class="key-stat-label">Damage</div>
-          </div>
-          <div class="key-stat">
-            <div class="key-stat-value">${Math.round(propertyGenes.speed)}</div>
-            <div class="key-stat-label">Speed</div>
-          </div>
-          <div class="key-stat type-stat">
-            <div class="type-pill">element</div>
-            <div class="key-stat-label">Type</div>
           </div>
         </div>
       </div>

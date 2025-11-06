@@ -231,12 +231,6 @@
   word-break: break-word;
 }
 
-.element-summary-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
 .key-stat {
   display: flex;
   flex-direction: column;
@@ -332,10 +326,8 @@
   background-clip: padding-box;
 }
 
-/* Mobile adjustments reference a slightly larger color preview already elsewhere;
-   keep that behavior by allowing the rule above to be overridden in mobile media queries if present. */
-
 /* Mobile adjustments */
+/* Note: removed references to .element-summary-stats in the mobile rules */
 @media (max-width: 768px) {
   .element-details-panel {
     padding: 10px;
@@ -359,10 +351,7 @@
     gap: 10px;
     align-items: flex-start;
   }
-  .element-summary-stats {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
+  /* .element-summary-stats rules removed */
   .key-stat {
     padding: 5px;
     min-height: 40px;
@@ -390,10 +379,7 @@
     gap: 10px;
     align-items: flex-start;
   }
-  .element-summary-stats {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-  }
+  /* .element-summary-stats rules removed */
   .key-stat {
     padding: 4px;
     min-height: 36px;
