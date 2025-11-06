@@ -71,15 +71,19 @@ export class FusionUI {
       <div class="fusion-container">
         <div class="fusion-section">
           <h2>Elements</h2>
-          <div class="elements-library" id="elements-library"></div>
-          <div class="element-details-panel" id="element-details-panel"></div>
+          <div class="elements-layout-wrapper">
+            <div class="elements-library" id="elements-library"></div>
+            <div class="element-details-panel" id="element-details-panel"></div>
+          </div>
         </div>
         
         <div class="fusion-section">
           <h2>Create Spell</h2>
-          <div class="fusion-builder" id="fusion-builder"></div>
-          <!-- Spell result panel is now a direct sibling of the fusion-builder -->
-          <div id="fusion-panel"></div>
+          <div class="fusion-layout-wrapper">
+            <div class="fusion-builder" id="fusion-builder"></div>
+            <!-- Spell result panel is now a direct sibling of the fusion-builder -->
+            <div id="fusion-panel"></div>
+          </div>
         </div>
       </div>
     `;

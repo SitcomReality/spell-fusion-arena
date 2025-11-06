@@ -79,6 +79,14 @@
   line-height: 1.2;
 }
 
+/* Add layout wrappers */
+.elements-layout-wrapper,
+.fusion-layout-wrapper {
+  display: flex;
+  flex-direction: column; /* Default stack behavior */
+  gap: 12px;
+}
+
 /* Tablet: 2 columns */
 @media (max-width: 1024px) {
   .elements-library {
@@ -138,6 +146,34 @@
 
   .details-stat-value {
     font-size: 12px;
+  }
+
+  /* Small mobile: side-by-side layout for wrappers */
+  @media (max-width: 480px) {
+    .elements-library {
+      /* keep flex wrapping behavior on mobile so items pack tightly */
+      gap: 6px;
+      max-height: 200px;
+      justify-content: start;
+    }
+
+    .elements-layout-wrapper,
+    .fusion-layout-wrapper {
+      flex-direction: row;
+      gap: 8px;
+    }
+    
+    /* Ensure children take equal space */
+    .elements-library,
+    .element-details-panel,
+    .fusion-builder,
+    #fusion-panel {
+      flex: 1 1 50%;
+    }
+
+    .element-details-stats {
+      grid-template-columns: 1fr;
+    }
   }
 }
 

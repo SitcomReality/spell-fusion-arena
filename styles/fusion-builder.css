@@ -131,3 +131,12 @@
     border-width: 1px;
   }
 }
+
+/* Small mobile layout adjustment (<= 480px) */
+@media (max-width: 480px) {
+  .fusion-slots {
+    /* Change to 2x2 layout */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
