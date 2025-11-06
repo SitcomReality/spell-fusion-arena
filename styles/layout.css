@@ -135,6 +135,13 @@
     aspect-ratio: 4 / 3;
     max-width: 500px;
     height: auto;
+    /* Keep the canvas fixed at the top so the rest of the UI scrolls underneath */
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 110;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   }
 
   #game-canvas,
@@ -148,6 +155,24 @@
     max-width: 100%;
   }
 
+  /* Ensure HUD is fixed and sits in front of the fixed canvas */
+  #hud {
+    position: fixed;
+    top: calc(12px + 8px); /* slightly inset from the top of the fixed canvas */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 500px;
+    z-index: 130;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Reserve space at the top of the page equal to the fixed canvas + some gap,
+     so the rest of the UI starts below the fixed canvas and HUD and can scroll. */
+  body {
+    padding-top: calc(min(500px, 100vw * 0.75) + 56px);
+  }
+
   /* Allow the fusion UI to expand naturally on small screens so the page scrolls instead of the panel */
   #fusion-ui {
     width: 100%;
@@ -159,26 +184,7 @@
   }
 
   /* HUD overlay on top of canvas: centered, semi-transparent, increase to full opacity on hover/touch */
-  #hud {
-    position: absolute; /* overlay */
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 40px);
-    max-width: 500px;
-    z-index: 120;
-    background: rgba(0, 0, 0, 0.7); /* default semi-transparent */
-    padding: 10px;
-    border: 1px solid #333;
-    opacity: 0.95; /* keep text readable while using rgba background */
-    transition: background 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
-    border-radius: 6px;
-    pointer-events: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-  }
+  /* (fixed HUD handled above) */
 
   /* Increase opacity (and slightly lift) when hovered, active (touch) or focused */
   #hud:hover,
