@@ -26,12 +26,6 @@ export class ElementsLibrary {
         <div class="element-card-color" style="background: rgb(${element.color.r}, ${element.color.g}, ${element.color.b})"></div>
         <div class="element-card-content">
           <h4>${element.name}</h4>
-          <p class="element-desc">${element.description}</p>
-          <div class="element-stats">
-            <span>DMG: ${element.traits.damage}</span>
-            <span>SPD: ${Math.round(element.traits.speed)}</span>
-          </div>
-          <div class="element-type">${element.traits.projectileType}</div>
         </div>
       `;
       card.addEventListener('click', () => {
@@ -47,4 +41,3 @@ export class ElementsLibrary {
     if (cardEl) cardEl.classList.add('selected');
   }
 }
-
