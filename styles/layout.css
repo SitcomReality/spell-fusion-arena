@@ -235,6 +235,7 @@
     max-height: none;
     overflow-y: scroll;
     padding: 4px;
+    min-height: 150px;
   }
 
   #hud {
