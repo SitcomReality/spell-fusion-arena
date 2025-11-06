@@ -297,6 +297,19 @@
   color: #aaa;
 }
 
+/* Ensure the small color preview in element details is visible and matches the spell-result color sizing */
+.element-details-color {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border: 1px solid #333;
+  box-shadow: none;
+  background-clip: padding-box;
+}
+
+/* Mobile adjustments reference a slightly larger color preview already elsewhere;
+   keep that behavior by allowing the rule above to be overridden in mobile media queries if present. */
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .element-details-panel {
