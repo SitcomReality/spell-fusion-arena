@@ -147,7 +147,7 @@
     max-width: 500px;
     height: auto;
     position: fixed;
-    top: 12px;
+    top: 4px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 110;
@@ -165,7 +165,8 @@
     max-width: 100%;
     padding: 4px;
     position: fixed;
-    top: calc(12px + min(500px, 100vw * 0.75) + 12px);
+    /* 4px top gap + canvas height (min(...) ) + 4px gap */
+    top: calc(4px + min(500px, 100vw * 0.75) + 4px);
     left: 50%;
     transform: translateX(-50%);
     max-width: 500px;
@@ -176,7 +177,7 @@
 
   #hud {
     position: fixed;
-    top: calc(12px + 8px);
+    top: calc(4px + 8px);
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -201,7 +202,8 @@
     padding: 4px;
     border: 2px solid #4a9eff;
     position: fixed;
-    top: calc(12px + min(500px, 100vw * 0.75) + 12px + 140px);
+    /* stack: canvas top (4px) + canvas height + small gap (4px) + equipped height (120px) + gap (4px) */
+    top: calc(4px + min(500px, 100vw * 0.75) + 4px + 120px + 4px);
     left: 50%;
     transform: translateX(-50%);
     max-width: 500px;
