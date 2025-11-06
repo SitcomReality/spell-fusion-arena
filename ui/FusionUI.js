@@ -95,11 +95,9 @@ export class FusionUI {
   }
 
   onElementClicked(key, element, cardEl) {
-    // highlight & show details
+    // highlight & show details with add button
     this.elementsLibrary.markSelectedCard(cardEl);
-    this.detailsPanel.show(element);
-    // allow adding to fusion
-    this.addElementToFusion(element);
+    this.detailsPanel.show(element, () => this.addElementToFusion(element));
   }
 
   addElementToFusion(element) {
@@ -129,7 +127,7 @@ export class FusionUI {
     }
 
     this.currentSpell = SpellFusion.fuse(...this.selectedElements);
-    this.fusionPreview.showSpell(this.currentSpell);
+    this.fusionPreview.showSpell(this.currentSpell, () => this.equipSpell(this.currentSpell));
   }
 
   createSpellFromSelection() {

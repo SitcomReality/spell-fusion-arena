@@ -13,24 +13,9 @@ export class FusionBuilder {
     this.container.innerHTML = `
       <div class="fusion-builder-inner">
         <div class="fusion-slots" id="fusion-slots-inner"></div>
-        <div class="fusion-controls">
-          <button id="clear-fusion-btn-inner">Clear</button>
-          <button id="create-spell-btn-inner" disabled>Create Spell</button>
-        </div>
       </div>
     `;
     this.slotsContainer = this.container.querySelector('#fusion-slots-inner');
-    this.clearBtn = this.container.querySelector('#clear-fusion-btn-inner');
-    this.createBtn = this.container.querySelector('#create-spell-btn-inner');
-
-    this.clearBtn.addEventListener('click', () => {
-      this.selectedElements = [];
-      this.onClear();
-      this.refresh();
-    });
-    this.createBtn.addEventListener('click', () => {
-      if (!this.createBtn.disabled) this.onCreate();
-    });
 
     this.refresh();
   }
@@ -71,8 +56,5 @@ export class FusionBuilder {
 
       this.slotsContainer.appendChild(slot);
     }
-
-    // enable create button when full
-    this.createBtn.disabled = this.selectedElements.length < this.maxFusionSlots;
   }
 }

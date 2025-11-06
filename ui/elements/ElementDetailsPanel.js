@@ -8,7 +8,7 @@ export class ElementDetailsPanel {
     this.container.innerHTML = '';
   }
 
-  show(element) {
+  show(element, onAdd) {
     if (!this.container) return;
     const color = element.color;
     const traits = element.traits;
@@ -55,7 +55,16 @@ export class ElementDetailsPanel {
         <div class="properties-title">Projectile Properties</div>
         ${propertiesHtml}
       </div>
+
+      <div class="element-details-controls">
+        <button class="element-add-btn">Add to Fusion</button>
+      </div>
     `;
+
+    // Add event listener for the add button
+    this.container.querySelector('.element-add-btn').addEventListener('click', () => {
+      if (onAdd) onAdd(element);
+    });
   }
 }
 

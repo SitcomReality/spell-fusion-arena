@@ -13,7 +13,7 @@ export class FusionPreview {
     this.container.innerHTML = `<p>${msg}</p>`;
   }
 
-  showSpell(spell) {
+  showSpell(spell, onEquip) {
     if (!this.container) return;
     const color = spell.color;
     const props = spell.properties || {};
@@ -57,8 +57,31 @@ export class FusionPreview {
           <div class="properties-title">Projectile Properties</div>
           ${propertiesHtml}
         </div>
+
+        <div class="fusion-preview-controls">
+          <button class="fusion-preview-clear">Clear</button>
+          <button class="fusion-preview-equip">Equip Spell</button>
+        </div>
       </div>
     `;
+
+    // Add event listeners for the integrated controls
+    this.container.querySelector('.fusion-preview-clear').addEventListener('click', () => {
+      this.clearFusion();
+    });
+
+    this.container.querySelector('.fusion-preview-equip').addEventListener('click', () => {
+      if (onEquip) onEquip();
+    });
+  }
+
+  clearFusion() {
+    // This will be set by the parent component
+    if (this.onClear) this.onClear();
+  }
+
+  setOnClear(callback) {
+    this.onClear = callback;
   }
 }
 
