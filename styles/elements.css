@@ -188,10 +188,10 @@
   pointer-events: none;
 }
 
-/* Ensure disabled buttons look overtly inaccessible */
-.element-details-panel .element-add-btn[disabled],
+/* Ensure disabled buttons look overtly inaccessible for panel-like components */
 .spell-result.disabled .fusion-preview-clear[disabled],
-.spell-result.disabled .fusion-preview-equip[disabled] {
+.spell-result.disabled .fusion-preview-equip[disabled],
+.panel .element-add-btn[disabled] {
   cursor: not-allowed;
   opacity: 0.6;
   transform: none;
