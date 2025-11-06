@@ -110,10 +110,6 @@
     font-size: 11px;
   }
 
-  .element-details-panel {
-    padding: 10px;
-  }
-
   .element-details-color {
     width: 50px;
     height: 50px;
@@ -156,81 +152,6 @@
   .element-details-stats {
     grid-template-columns: 1fr;
   }
-}
-
-/* Element Details Panel */
-.element-details-panel {
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
-  border: 1px solid #4a9eff;
-  padding: 12px;
-  margin-top: 8px;
-  display: flex; /* Use flex column layout */
-  flex-direction: column;
-  gap: 12px; /* Gap between sections */
-  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15), inset 0 0 10px rgba(74, 158, 255, 0.05);
-}
-
-.element-details-panel.active {
-  display: flex;
-}
-
-/* Inactive (placeholder) state: dimmed and non-interactive */
-.element-details-panel.inactive {
-  opacity: 0.55;
-  filter: grayscale(10%);
-  pointer-events: none;
-}
-
-/* Re-use for fusion preview disabled look */
-.spell-result.disabled {
-  opacity: 0.55;
-  filter: grayscale(8%);
-  pointer-events: none;
-}
-
-/* Ensure disabled buttons look overtly inaccessible for panel-like components */
-.spell-result.disabled .fusion-preview-clear[disabled],
-.spell-result.disabled .fusion-preview-equip[disabled],
-.panel .element-add-btn[disabled] {
-  cursor: not-allowed;
-  opacity: 0.6;
-  transform: none;
-  box-shadow: none;
-}
-
-.element-summary {
-  display: flex; /* Changed from grid */
-  gap: 12px;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.element-summary-info {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.element-summary-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0; /* enables text wrapping */
-}
-
-.element-details-name {
-  font-size: 16px;
-  font-weight: 600; /* Slightly bolder name */
-  white-space: normal;
-  word-break: break-word;
-}
-
-.element-details-desc {
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 0;
-  white-space: normal;
-  word-break: break-word;
 }
 
 /* Key stats were removed, keeping key-stat styles but they are not used in HTML now */
@@ -308,10 +229,6 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-  .element-details-panel {
-    padding: 10px;
-    gap: 10px;
-  }
   .element-details-color {
     width: 50px;
     height: 50px;
