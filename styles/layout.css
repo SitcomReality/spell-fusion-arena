@@ -191,6 +191,12 @@
     display: flex;
     flex-direction: column; 
     justify-content: space-between; 
+    transform: translateY(10px);
+    flex: 0 0 56px;
+    width: 56px;
+    max-width: 56px;
+    opacity: 0.6;
+    transition: opacity 160ms ease, transform 160ms ease;
   }
 
   #hud {

@@ -542,6 +542,20 @@
     justify-content: space-between;
   }
 
+  /* When equipped-spells area is translucent, make slots slightly less saturated
+     and restore full visibility when the user hovers, focuses, or touches. */
+  #equipped-spells:hover .spell-slot,
+  #equipped-spells:active .spell-slot,
+  #equipped-spells:focus-within .spell-slot {
+    opacity: 1;
+  }
+
+  /* Keep items slightly dimmed when parent is translucent to match opacity behavior */
+  #equipped-spells .spell-slot {
+    transition: opacity 160ms ease, transform 160ms ease;
+    opacity: 0.95; /* slightly lower so parent opacity produces the desired overall look */
+  }
+
   .spell-slot {
     aspect-ratio: 1;
     width: 100%; /* Fill wrapper width (fixed to 62px in layout.css) */
