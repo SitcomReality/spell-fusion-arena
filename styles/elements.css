@@ -178,7 +178,6 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  max-width: 50%;
 }
 
 .element-summary-text {
@@ -307,7 +306,9 @@
     gap: 8px;
   }
   .element-summary-info {
-    max-width: 50%;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
   }
   .element-summary-stats {
     grid-template-columns: repeat(3, 1fr);
@@ -336,7 +337,9 @@
     gap: 6px;
   }
   .element-summary-info {
-    max-width: 50%;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
   }
   .element-summary-stats {
     grid-template-columns: 1fr 1fr 1fr;
