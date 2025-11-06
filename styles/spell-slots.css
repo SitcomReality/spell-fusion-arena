@@ -163,6 +163,23 @@
   margin-top: 6px;
 }
 
+.prop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* darker, more opaque background for better contrast on bright slot colors */
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(30,30,30,0.6);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.prop-badge .property-icon {
+  opacity: 0.9;
+}
+
 /* Responsive and mobile variations for spell slots */
 @media (max-width: 768px) {
   .spell-slots {

@@ -1,0 +1,141 @@
+/* Centralized property badge and properties section styles */
+
+/* Property badges (used in spell slots, fusion preview, element details, rewards) */
+.property-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(138, 43, 226, 0.1);
+  border: 1px solid #4a2a7f;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.property-badge:hover {
+  border-color: #7a5aaf;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+}
+
+/* Property icon styles */
+.property-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+}
+
+/* Property icon mappings */
+.property-badge[data-property="damage"] .property-icon,
+.reward-card-property-icon[data-property="damage"] { background-image: url('/img/damage.png'); }
+
+.property-badge[data-property="speed"] .property-icon,
+.reward-card-property-icon[data-property="speed"] { background-image: url('/img/speed.png'); }
+
+.property-badge[data-property="knockback"] .property-icon,
+.reward-card-property-icon[data-property="knockback"] { background-image: url('/img/knockback.png'); }
+
+.property-badge[data-property="aoe"] .property-icon,
+.reward-card-property-icon[data-property="aoe"] { background-image: url('/img/aoe.png'); }
+
+.property-badge[data-property="dot"] .property-icon,
+.reward-card-property-icon[data-property="dot"] { background-image: url('/img/dot.png'); }
+
+.property-badge[data-property="piercing"] .property-icon,
+.reward-card-property-icon[data-property="piercing"] { background-image: url('/img/piercing.png'); }
+
+.property-badge[data-property="homing"] .property-icon,
+.reward-card-property-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
+
+.property-badge[data-property="slowing"] .property-icon,
+.reward-card-property-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
+
+.property-badge[data-property="lifesteal"] .property-icon,
+.reward-card-property-icon[data-property="lifesteal"] { background-image: url('/img/lifesteal.png'); }
+
+.property-badge[data-property="chaining"] .property-icon,
+.reward-card-property-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
+
+.property-badge[data-property="vortex"] .property-icon,
+.reward-card-property-icon[data-property="vortex"] { background-image: url('/img/attraction.png'); }
+
+.property-badge[data-property="repulsion"] .property-icon,
+.reward-card-property-icon[data-property="repulsion"] { background-image: url('/img/repulsion.png'); }
+
+.property-badge[data-property="splitting"] .property-icon,
+.reward-card-property-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
+
+.property-badge[data-property="wave"] .property-icon,
+.reward-card-property-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
+
+.property-badge[data-property="spiral"] .property-icon,
+.reward-card-property-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
+
+/* Properties section containers */
+.properties-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.properties-title {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 160px;
+}
+
+.properties-empty {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.property-name {
+  color: #9db4ff;
+  text-transform: capitalize;
+}
+
+.property-value {
+  color: #64c8ff;
+  font-weight: 600;
+}
+
+/* Properties row layout (used in preview and details panels) */
+.properties-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.properties-row .properties-section {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.properties-row .fusion-preview-controls,
+.properties-row .element-details-controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
