@@ -1,0 +1,54 @@
+/* Layout and containers */
+#game-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 20px;
+  max-width: 1400px;
+}
+
+/* New wrapper for canvas + equipped spells */
+#canvas-and-spells {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Canvas wrapper for layering */
+#canvas-wrapper {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  flex-shrink: 0;
+}
+
+/* HUD */
+#hud {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 15px;
+  border: 1px solid #333;
+  min-width: 150px;
+  z-index: 100;
+}
+
+.hud-item {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Fusion UI panel */
+#fusion-ui {
+  flex: 1;
+  background: #111;
+  border: 2px solid #333;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}

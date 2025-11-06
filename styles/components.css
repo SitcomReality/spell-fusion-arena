@@ -1,0 +1,35 @@
+/* Canvas and canvas layers */
+#game-canvas,
+#fx-canvas {
+  border: 2px solid #333;
+  background: #0a0a0a;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+}
+
+#fx-canvas {
+  pointer-events: none;
+  background: transparent;
+  border: none;
+}
+
+/* Generic card and panel styling */
+.reward-card,
+.element-card,
+.element-details-panel,
+.fusion-preview,
+.spell-slot,
+.fusion-slot {
+  background: #0a0a0a;
+  border: 1px solid #333;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+}

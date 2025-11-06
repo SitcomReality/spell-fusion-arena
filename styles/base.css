@@ -1,0 +1,21 @@
+/* Base / reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Utility classes used across components */
+.hidden { display: none !important; }
+.center { display:flex; align-items:center; justify-content:center; }

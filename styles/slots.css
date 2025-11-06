@@ -1,0 +1,133 @@
+/* Fusion Builder & Fusion Preview */
+.fusion-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fusion-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.fusion-slot {
+  aspect-ratio: 1;
+  background: #0a0a0a;
+  border: 2px dashed #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fusion-slot-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  padding: 10px;
+  text-align: center;
+}
+
+.fusion-slot-content span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fusion-slot-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.fusion-slot-remove:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.fusion-slot-placeholder {
+  font-size: 28px;
+  color: #555;
+  font-weight: 300;
+}
+
+.fusion-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fusion-controls button {
+  padding: 10px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.fusion-controls button:hover:not(:disabled) {
+  border-color: #666;
+  background: #2a2a2a;
+}
+
+.fusion-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Fusion Preview */
+.fusion-preview {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  padding: 15px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spell-result {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.spell-result-color {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border: 1px solid #333;
+}
+
+.spell-result-info {
+  flex: 1;
+}
+
+.spell-result-info h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.spell-result-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
