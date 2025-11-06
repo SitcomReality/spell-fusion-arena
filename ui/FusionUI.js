@@ -10,10 +10,18 @@ export class FusionUI {
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null, null];
     this.spellSlotEssence = [5, 0, 0, 0, 0]; // Mana Essence per slot
+    this.essenceBank = 0; // global unassigned Mana Essence
     this.maxFusionSlots = 2;
     this.selectedElementForDetails = null;
 
     this.render();
+  }
+
+  addEssenceToBank(amount) {
+    this.essenceBank += amount;
+    this.renderSpellSlots();
+    // Also reflect bank in UI side panel
+    this.renderEssenceBankHeader();
   }
 
   render() {
@@ -44,7 +52,16 @@ export class FusionUI {
     this.renderElementsLibrary();
     this.renderFusionSlots();
     this.renderSpellSlots();
+    this.renderEssenceBankHeader();
     this.attachListeners();
+  }
+
+  renderEssenceBankHeader() {
+    // Show bank amount at top of equipped container
+    if (!this.equippedContainer) return;
+    let header = this.equippedContainer.querySelector('.equipped-title');
+    if (!header) return;
+    header.innerHTML = `Equipped Spells (${this.equippedSpells.filter(s => s).length}/5) — Bank: ${this.essenceBank} ME`;
   }
 
   renderElementsLibrary() {
@@ -176,10 +193,23 @@ export class FusionUI {
       slot.dataset.slot = i;
       const essence = this.spellSlotEssence[i];
 
+      // Optional plus button above slot when bank > 0
+      if (this.essenceBank > 0) {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'slot-add-essence';
+        addBtn.textContent = '+';
+        addBtn.title = 'Assign 1 Mana Essence to this slot';
+        addBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.allocateEssenceToSlot(i);
+        });
+        slot.appendChild(addBtn);
+      }
+
       if (this.equippedSpells[i]) {
         const spell = this.equippedSpells[i];
         const color = spell.color;
-        slot.innerHTML = `
+        slot.innerHTML += `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
             <span class="spell-slot-name">${spell.name}</span>
             <div class="spell-slot-essence">ME: ${essence}</div>
@@ -193,11 +223,23 @@ export class FusionUI {
           this.unequipSpell(i);
         });
       } else {
-        slot.innerHTML = `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
+        slot.innerHTML += `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
       }
 
       grid.appendChild(slot);
     }
+
+    // Update header to show bank
+    this.renderEssenceBankHeader();
+  }
+
+  allocateEssenceToSlot(slotIndex) {
+    if (this.essenceBank <= 0) return;
+    this.spellSlotEssence[slotIndex] = (this.spellSlotEssence[slotIndex] || 0) + 1;
+    this.essenceBank -= 1;
+    // Recompute player intervals via callback
+    this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
+    this.renderSpellSlots();
   }
 
   selectElement(elementKey, element) {

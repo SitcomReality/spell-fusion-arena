@@ -25,7 +25,11 @@ class Game {
       this.gameState.player.equipSpells(spells, essence);
     });
 
-    this.rewardUI = new RewardUI(() => {
+    this.rewardUI = new RewardUI((reward) => {
+      // Handle chosen reward
+      if (reward.type === 'essence') {
+        this.fusionUI.addEssenceToBank(reward.amount);
+      }
       this.gameState.resume();
       this.fusionUI.refresh();
     });
@@ -99,3 +103,4 @@ class Game {
 document.addEventListener('DOMContentLoaded', () => {
   new Game();
 });
+

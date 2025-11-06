@@ -1,26 +1,30 @@
 import { getLockedElements, unlockElement } from '../spells/Element.js';
 
 export class RewardUI {
-  constructor(onElementChosen) {
-    this.onElementChosen = onElementChosen;
+  constructor(onRewardChosen) {
+    this.onRewardChosen = onRewardChosen; // changed name to reflect generic reward
     this.container = null;
     this.choices = [];
+    this.essenceOffer = 0; // amount offered this time
   }
 
   show(waveNumber) {
     const lockedElements = getLockedElements();
     const elementKeys = Object.keys(lockedElements);
     
+    // Determine offered Mana Essence (biased distribution 2-10)
+    this.essenceOffer = this.rollEssenceOffer();
+
     if (elementKeys.length === 0) {
-      // All elements unlocked
-      this.onElementChosen();
+      // All elements unlocked; just offer essence
+      this.renderEssenceOnly(waveNumber);
       return;
     }
 
-    // Pick 3 random locked elements
+    // Pick 2 random locked elements
     this.choices = [];
     const availableKeys = [...elementKeys];
-    const numChoices = Math.min(3, availableKeys.length);
+    const numChoices = Math.min(2, availableKeys.length);
     
     for (let i = 0; i < numChoices; i++) {
       const randomIndex = Math.floor(Math.random() * availableKeys.length);
@@ -34,6 +38,54 @@ export class RewardUI {
     this.render(waveNumber);
   }
 
+  rollEssenceOffer() {
+    // Weighted probabilities: strong bias towards 2, rare 10
+    const weighted = [
+      { amt: 2, w: 40 },
+      { amt: 3, w: 20 },
+      { amt: 4, w: 12 },
+      { amt: 5, w: 8 },
+      { amt: 6, w: 6 },
+      { amt: 7, w: 5 },
+      { amt: 8, w: 4 },
+      { amt: 9, w: 3 },
+      { amt: 10, w: 2 }
+    ];
+    const total = weighted.reduce((s, x) => s + x.w, 0);
+    let r = Math.random() * total;
+    for (const x of weighted) {
+      if ((r -= x.w) <= 0) return x.amt;
+    }
+    return 2;
+  }
+
+  renderEssenceOnly(waveNumber) {
+    this.container = document.createElement('div');
+    this.container.id = 'reward-overlay';
+    this.container.innerHTML = `
+      <div class="reward-modal">
+        <h2>Wave ${waveNumber} Complete!</h2>
+        <p class="reward-subtitle">Take your reward</p>
+        <div class="reward-choices" id="reward-choices"></div>
+      </div>
+    `;
+    document.body.appendChild(this.container);
+    const choicesContainer = document.getElementById('reward-choices');
+
+    const essenceCard = document.createElement('div');
+    essenceCard.className = 'reward-card essence-card';
+    essenceCard.innerHTML = `
+      <div class="reward-card-color" style="background: #222"></div>
+      <h3>Mana Essence</h3>
+      <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
+      <div class="reward-card-stats">
+        <span>Essence: ${this.essenceOffer}</span>
+      </div>
+    `;
+    essenceCard.addEventListener('click', () => this.selectEssence());
+    choicesContainer.appendChild(essenceCard);
+  }
+
   render(waveNumber) {
     // Create overlay
     this.container = document.createElement('div');
@@ -41,7 +93,7 @@ export class RewardUI {
     this.container.innerHTML = `
       <div class="reward-modal">
         <h2>Wave ${waveNumber} Complete!</h2>
-        <p class="reward-subtitle">Choose an element to unlock</p>
+        <p class="reward-subtitle">Choose an element to unlock or take Mana Essence</p>
         <div class="reward-choices" id="reward-choices"></div>
       </div>
     `;
@@ -50,7 +102,8 @@ export class RewardUI {
 
     const choicesContainer = document.getElementById('reward-choices');
     
-    this.choices.forEach((choice, index) => {
+    // Element choices (2)
+    this.choices.forEach((choice) => {
       const elem = choice.element;
       const card = document.createElement('div');
       card.className = 'reward-card';
@@ -78,15 +131,35 @@ export class RewardUI {
         ${propertiesHtml}
       `;
       
-      card.addEventListener('click', () => this.selectChoice(choice.key));
+      card.addEventListener('click', () => this.selectElement(choice.key));
       choicesContainer.appendChild(card);
     });
+
+    // Essence choice card
+    const essenceCard = document.createElement('div');
+    essenceCard.className = 'reward-card essence-card';
+    essenceCard.innerHTML = `
+      <div class="reward-card-color" style="background: #222"></div>
+      <h3>Mana Essence</h3>
+      <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
+      <div class="reward-card-stats">
+        <span>Essence: ${this.essenceOffer}</span>
+      </div>
+    `;
+    essenceCard.addEventListener('click', () => this.selectEssence());
+    choicesContainer.appendChild(essenceCard);
   }
 
-  selectChoice(elementKey) {
+  selectElement(elementKey) {
     unlockElement(elementKey);
     this.hide();
-    this.onElementChosen();
+    this.onRewardChosen({ type: 'element', key: elementKey });
+  }
+
+  selectEssence() {
+    const amount = this.essenceOffer;
+    this.hide();
+    this.onRewardChosen({ type: 'essence', amount });
   }
 
   hide() {
