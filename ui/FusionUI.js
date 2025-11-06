@@ -78,7 +78,8 @@ export class FusionUI {
         <div class="fusion-section">
           <h2>Create Spell</h2>
           <div class="fusion-builder" id="fusion-builder"></div>
-          <div class="fusion-preview" id="fusion-preview"></div>
+          <!-- Spell result panel is now a direct sibling of the fusion-builder -->
+          <div id="fusion-panel"></div>
         </div>
       </div>
     `;
@@ -87,7 +88,7 @@ export class FusionUI {
     this.elementsLibrary.mount(document.getElementById('elements-library'));
     this.detailsPanel.mount(document.getElementById('element-details-panel'));
     this.fusionBuilder.mount(document.getElementById('fusion-builder'));
-    this.fusionPreview.mount(document.getElementById('fusion-preview'));
+    this.fusionPreview.mount(document.getElementById('fusion-panel'));
     this.spellSlotsUI.mount();
 
     // initial updates
