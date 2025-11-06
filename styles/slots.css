@@ -65,6 +65,42 @@
   font-weight: 300;
 }
 
+/* Wrapper for each equipped slot to place essence below */
+.spell-slot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.spell-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spell-slot-placeholder {
+  font-size: 20px;
+  color: #222; /* slightly darker than slot border (#333) */
+  font-weight: 500;
+}
+
+.spell-slot-essence {
+  font-size: 11px;
+  background: transparent;
+  color: #aaeaff;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.spell-slot-essence.inactive {
+  color: #777;
+}
+
 .fusion-controls {
   display: grid;
   grid-template-columns: 1fr 1fr;

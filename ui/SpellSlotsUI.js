@@ -23,18 +23,21 @@ export class SpellSlotsUI {
     const grid = document.getElementById('external-spell-slots');
 
     for (let i = 0; i < 5; i++) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'spell-slot-wrapper';
+      wrapper.dataset.slot = i;
+
       const slot = document.createElement('div');
       slot.className = 'spell-slot';
-      slot.dataset.slot = i;
+
       const essence = slotEssence[i] || 0;
 
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
         const color = spell.color;
-        slot.innerHTML += `
+        slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
             <span class="spell-slot-name">${spell.name}</span>
-            <div class="spell-slot-essence">ME: ${essence}</div>
             <span class="spell-slot-number">${i + 1}</span>
             <button class="spell-slot-unequip">−</button>
           </div>
@@ -44,9 +47,11 @@ export class SpellSlotsUI {
           this.onUnequip(i);
         });
       } else {
-        slot.innerHTML += `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
+        // simple symbol placeholder "O"
+        slot.innerHTML = `<span class="spell-slot-placeholder">O</span>`;
       }
 
+      // Add add-essence button overlay if bank available
       if (bank > 0) {
         const addBtn = document.createElement('button');
         addBtn.className = 'slot-add-essence';
@@ -59,7 +64,14 @@ export class SpellSlotsUI {
         slot.appendChild(addBtn);
       }
 
-      grid.appendChild(slot);
+      // essence display moved below the slot
+      const essenceEl = document.createElement('div');
+      essenceEl.className = `spell-slot-essence ${equippedSpells[i] ? '' : 'inactive'}`;
+      essenceEl.textContent = `ME: ${essence}`;
+
+      wrapper.appendChild(slot);
+      wrapper.appendChild(essenceEl);
+      grid.appendChild(wrapper);
     }
   }
 }
