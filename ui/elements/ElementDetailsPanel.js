@@ -26,26 +26,28 @@ export class ElementDetailsPanel {
 
     this.container.classList.add('active');
     this.container.innerHTML = `
-      <div class="element-details-header">
-        <div class="element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-        <div>
-          <div class="element-details-name">${element.name}</div>
-          <div class="element-details-desc">${element.description}</div>
+      <div class="element-summary">
+        <div class="element-summary-info">
+          <div class="element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
+          <div class="element-summary-text">
+            <div class="element-details-name">${element.name}</div>
+            <div class="element-details-desc">${element.description}</div>
+          </div>
         </div>
-      </div>
 
-      <div class="element-stats-row">
-        <div class="key-stat">
-          <div class="key-stat-value">${traits.damage}</div>
-          <div class="key-stat-label">Damage</div>
-        </div>
-        <div class="key-stat">
-          <div class="key-stat-value">${Math.round(traits.speed)}</div>
-          <div class="key-stat-label">Speed</div>
-        </div>
-        <div class="key-stat">
-          <div class="type-pill">${traits.projectileType}</div>
-          <div class="key-stat-label">Type</div>
+        <div class="element-summary-stats">
+          <div class="key-stat">
+            <div class="key-stat-value">${traits.damage}</div>
+            <div class="key-stat-label">Damage</div>
+          </div>
+          <div class="key-stat">
+            <div class="key-stat-value">${Math.round(traits.speed)}</div>
+            <div class="key-stat-label">Speed</div>
+          </div>
+          <div class="key-stat type-stat">
+            <div class="type-pill">${traits.projectileType}</div>
+            <div class="key-stat-label">Type</div>
+          </div>
         </div>
       </div>
 

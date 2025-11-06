@@ -167,11 +167,17 @@
   display: block;
 }
 
-.element-details-header {
-  display: flex;
+.element-summary {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
   gap: 12px;
-  margin-bottom: 12px;
-  align-items: center;
+  align-items: start;
+}
+
+.element-summary-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
 
 .element-details-color {
@@ -179,6 +185,12 @@
   height: 60px;
   flex-shrink: 0;
   border: 1px solid #333;
+}
+
+.element-summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .element-details-name {
@@ -189,13 +201,12 @@
 .element-details-desc {
   font-size: 12px;
   color: #aaa;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
-/* New compact stats row */
-.element-stats-row {
+.element-summary-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -206,12 +217,12 @@
   justify-content: center;
   background: #1a1a1a;
   border: 1px solid #2a2a2a;
-  padding: 8px;
-  min-height: 52px;
+  padding: 6px;
+  min-height: 44px;
 }
 
 .key-stat-value {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1;
 }
@@ -221,19 +232,18 @@
   color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .type-pill {
   font-size: 12px;
   font-weight: 600;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border: 1px solid #2a2a2a;
   background: #0d0d0d;
   border-radius: 12px;
 }
 
-/* Properties section */
 .properties-section {
   margin-top: 10px;
 }
@@ -278,7 +288,7 @@
   color: #aaa;
 }
 
-/* Mobile adjustments for details panel */
+/* Mobile adjustments */
 @media (max-width: 768px) {
   .element-details-panel {
     padding: 10px;
@@ -293,12 +303,17 @@
   .element-details-desc {
     font-size: 11px;
   }
-  .element-stats-row {
+  .element-summary {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .element-summary-stats {
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
   }
   .key-stat {
-    padding: 6px;
-    min-height: 46px;
+    padding: 5px;
+    min-height: 40px;
   }
   .key-stat-value {
     font-size: 14px;
@@ -318,7 +333,7 @@
 
 /* Small mobile */
 @media (max-width: 480px) {
-  .element-stats-row {
+  .element-summary-stats {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
   }
