@@ -121,6 +121,9 @@
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
 }
 
 .spell-slot-stats .stat-item {
@@ -130,6 +133,8 @@
   border: 1px solid rgba(255,255,255,0.04);
   font-weight: 600;
   color: #dff6ff;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .spell-slot-properties {
