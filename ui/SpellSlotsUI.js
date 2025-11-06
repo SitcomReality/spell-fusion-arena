@@ -23,7 +23,7 @@ export class SpellSlotsUI {
     this.externalContainer.innerHTML = `<div class="spell-slots" id="external-spell-slots"></div>`;
     const grid = document.getElementById('external-spell-slots');
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       const wrapper = document.createElement('div');
       wrapper.className = 'spell-slot-wrapper';
       wrapper.dataset.slot = i;

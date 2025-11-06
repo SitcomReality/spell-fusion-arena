@@ -5,9 +5,9 @@ export class Player {
     this.radius = radius;
     this.equippedSpells = []; // Array of spells for each slot
     this.spellSlotEssence = []; // Mana Essence for each slot
-    this.timeSinceLastCast = [0, 0, 0, 0, 0]; // Track cast timing per slot
-    this.castIntervals = [Infinity, Infinity, Infinity, Infinity, Infinity];
-    this.maxSpellSlots = 5;
+    this.timeSinceLastCast = [0, 0, 0, 0]; // Track cast timing per slot
+    this.castIntervals = [Infinity, Infinity, Infinity, Infinity];
+    this.maxSpellSlots = 4;
   }
   
   equipSpells(spells, essence) {

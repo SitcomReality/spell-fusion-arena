@@ -12,7 +12,7 @@ export class GameState {
 
     this.player = new Player(this.centerX, this.centerY, CONFIG.player.radius);
     // Initial setup for player spells and essence
-    this.player.equipSpells([], [5, 0, 0, 0, 0]);
+    this.player.equipSpells([], [5, 0, 0, 0]);
 
     this.waveManager = new WaveManager(this.centerX, this.centerY);
     this.enemies = [];

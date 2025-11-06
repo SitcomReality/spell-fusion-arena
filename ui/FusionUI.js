@@ -13,8 +13,8 @@ export class FusionUI {
 
     this.selectedElements = [];
     this.currentSpell = null;
-    this.equippedSpells = [null, null, null, null, null];
-    this.spellSlotEssence = [5, 0, 0, 0, 0];
+    this.equippedSpells = [null, null, null, null];
+    this.spellSlotEssence = [5, 0, 0, 0];
     this.essenceBank = 0;
     this.maxFusionSlots = 4; // Can unlock up to 4
     this.unlockedFusionSlots = 1; // Start with 1 unlocked

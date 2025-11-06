@@ -116,14 +116,14 @@
 
 .fusion-slot-placeholder {
   font-size: 28px;
-  color: #555;
+  color: #222;
   font-weight: 300;
 }
 
 /* Equipped Spell Slots (Consolidated from reward.css and slots.css) */
 .spell-slots {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 
@@ -498,7 +498,7 @@
   }
 }
 
-/* Tablet: 5 columns still fits but smaller */
+/* Tablet: 4 columns still fits but smaller */
 @media (max-width: 1024px) {
   .spell-slots {
     gap: 8px;
@@ -533,7 +533,7 @@
 /* Mobile: responsive grid */
 @media (max-width: 768px) {
   .spell-slots {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
   }
 
@@ -574,10 +574,10 @@
   }
 }
 
-/* Small mobile: stack or 3-2 layout */
+/* Small mobile: 4 columns still fit */
 @media (max-width: 480px) {
   .spell-slots {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .spell-slot {
