@@ -26,6 +26,17 @@ export class HUD {
       <div class="hud-item">Enemies: ${gameState.enemies.length}</div>
       <div class="hud-item">Mana Essence: ${unspentEssence}</div>
     `;
+
+    // Add touch-friendly class toggling for opacity on touch devices
+    if (this.container) {
+      // remove any existing listener marker
+      this.container.ontouchstart = () => {
+        this.container.classList.add('touch-active');
+      };
+      this.container.ontouchend = () => {
+        // briefly keep visible then allow fade back via CSS when touch ends
+        setTimeout(() => this.container.classList.remove('touch-active'), 800);
+      };
+    }
   }
 }
-
