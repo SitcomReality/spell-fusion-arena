@@ -69,16 +69,4 @@ button:disabled {
 
 /* Touch-friendly button sizes on mobile */
 @media (max-width: 768px) {
-  button {
-    font-size: 14px;
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  .slot-add-essence,
-  .fusion-slot-remove,
-  .spell-slot-unequip {
-    min-width: 40px;
-    min-height: 40px;
-  }
 }
