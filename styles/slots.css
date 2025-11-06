@@ -451,6 +451,52 @@
   }
 }
 
+/* Medium breakpoint - halfway between base and small */
+@media (max-width: 640px) {
+  .spell-slot-content {
+    gap: 2px;
+    padding: 4px;
+  }
+  
+  .spell-slot-stats {
+    gap: 2px;
+    margin-bottom: 3px;
+  }
+  
+  .spell-slot-stats .stat-item {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+  
+  .prop-badge {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+}
+
+/* Small mobile - smallest screen size */
+@media (max-width: 480px) {
+  .spell-slot-content {
+    gap: 1px;
+    padding: 2px;
+  }
+  
+  .spell-slot-stats {
+    gap: 1px;
+    margin-bottom: 2px;
+  }
+  
+  .spell-slot-stats .stat-item {
+    padding: 1px 2px;
+    font-size: 8px;
+  }
+  
+  .prop-badge {
+    padding: 1px 2px;
+    font-size: 8px;
+  }
+}
+
 /* Fusion Preview Controls */
 .fusion-preview-controls {
   display: flex;
