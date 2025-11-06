@@ -16,15 +16,14 @@ export class FusionPreview {
               <h3>No spell</h3>
             </div>
           </div>
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
+          </div>
         </div>
 
         <div class="spell-details-body"> 
           <div class="properties-empty">Add elements to create a spell</div>
-        </div>
-
-        <div class="fusion-preview-controls">
-          <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-          <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
         </div>
       </div>
     `;
@@ -42,15 +41,14 @@ export class FusionPreview {
               <h3>No spell</h3>
             </div>
           </div>
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
+          </div>
         </div>
 
         <div class="spell-details-body">
           <div class="properties-empty">${msg}</div>
-        </div>
-
-        <div class="fusion-preview-controls">
-          <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-          <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
         </div>
       </div>
     `;
@@ -79,27 +77,32 @@ export class FusionPreview {
               <h3>${spell.name}</h3>
             </div>
           </div>
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear">Clear</button>
+            <button class="fusion-preview-equip">Equip</button>
+          </div>
         </div>
 
         <div class="spell-details-body">
           ${propertiesHtml}
         </div>
-        
-        <div class="fusion-preview-controls">
-          <button class="fusion-preview-clear">Clear</button>
-          <button class="fusion-preview-equip">Equip</button>
-        </div>
       </div>
     `;
 
     // Add event listeners for the integrated controls
-    this.container.querySelector('.fusion-preview-clear').addEventListener('click', () => {
-      if (this.onClear) this.onClear();
-    });
+    const clearBtn = this.container.querySelector('.fusion-preview-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (this.onClear) this.onClear();
+      });
+    }
 
-    this.container.querySelector('.fusion-preview-equip').addEventListener('click', () => {
-      if (onEquip) onEquip();
-    });
+    const equipBtn = this.container.querySelector('.fusion-preview-equip');
+    if (equipBtn) {
+      equipBtn.addEventListener('click', () => {
+        if (onEquip) onEquip();
+      });
+    }
   }
 
   setOnClear(callback) {

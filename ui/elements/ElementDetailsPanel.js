@@ -18,14 +18,13 @@ export class ElementDetailsPanel {
             <!-- description removed: name, stats and properties convey behavior -->
           </div>
         </div>
+        <div class="element-details-controls">
+          <button class="element-add-btn" disabled aria-disabled="true">Add</button>
+        </div>
       </div>
 
       <div class="element-details-body">
         <div class="properties-empty">No element selected</div>
-      </div>
-
-      <div class="element-details-controls">
-        <button class="element-add-btn" disabled aria-disabled="true">Add</button>
       </div>
     `;
   }
@@ -56,14 +55,13 @@ export class ElementDetailsPanel {
             <!-- description removed: using name, stats and properties only -->
           </div>
         </div>
+        <div class="element-details-controls">
+          <button class="element-add-btn">Add</button>
+        </div>
       </div>
 
       <div class="element-details-body">
         ${propertiesHtml}
-      </div>
-
-      <div class="element-details-controls">
-        <button class="element-add-btn">Add</button>
       </div>
     `;
 

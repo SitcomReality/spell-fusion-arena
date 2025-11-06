@@ -17,21 +17,27 @@
   gap: 12px;
 }
 
-.spell-summary {
+/* Ensure summary row places title on left and controls on the right */
+.spell-summary,
+.element-summary {
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin-bottom: 0;
+  width: 100%;
 }
 
-.spell-summary-info {
+.spell-summary-info,
+.element-summary-info {
   display: flex;
   gap: 10px;
   align-items: flex-start;
+  min-width: 0;
 }
 
-.spell-summary-text {
+.spell-summary-text,
+.element-summary-text {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -45,7 +51,8 @@
   word-break: break-word;
 }
 
-.spell-result-color {
+.spell-result-color,
+.element-details-color {
   width: 50px;
   height: 50px;
   border: 1px solid #333;
@@ -53,24 +60,24 @@
 }
 
 /* New element for property grouping */
-.spell-details-body {
+.spell-details-body,
+.element-details-body {
     flex: 1 1 auto;
 }
 
-/* Fusion Preview Controls */
-.fusion-preview-controls {
+/* Move controls styling to be compact when placed in summary */
+.fusion-preview-controls,
+.element-details-controls {
   display: flex;
   gap: 8px;
-  margin-top: 0;
-  padding-top: 12px;
-  border-top: 1px solid #333;
-  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
   align-items: center;
-  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
-.fusion-preview-clear,
-.fusion-preview-equip {
+.fusion-preview-controls button,
+.element-details-controls button {
   padding: 6px 10px;
   border: 1px solid #4a9eff;
   background: rgba(74, 158, 255, 0.08);
@@ -84,50 +91,14 @@
   letter-spacing: 0.4px;
 }
 
-.fusion-preview-clear:hover,
-.fusion-preview-equip:hover:not(:disabled) {
+.fusion-preview-controls button:hover,
+.element-details-controls button:hover:not(:disabled) {
   border-color: #64c8ff;
   background: rgba(100, 200, 255, 0.15);
   box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
 }
 
-.fusion-preview-equip:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Element Details Controls */
-.element-details-controls {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #4a2a7f;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.element-add-btn {
-  padding: 6px 10px;
-  border: 1px solid #4a9eff;
-  background: rgba(74, 158, 255, 0.08);
-  color: #b0d4ff;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 12px;
-  transition: all 0.15s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  width: auto;
-}
-
-.element-add-btn:hover:not(:disabled) {
-  border-color: #64c8ff;
-  background: rgba(100, 200, 255, 0.15);
-  box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
-}
-
+.fusion-preview-equip:disabled,
 .element-add-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -135,7 +106,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .spell-summary {
+  .spell-summary, .element-summary {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -143,7 +114,8 @@
     justify-content: flex-start;
   }
 
-  .spell-result-color {
+  .spell-result-color,
+  .element-details-color {
     width: 40px;
     height: 40px;
   }
