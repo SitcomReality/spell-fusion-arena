@@ -172,4 +172,13 @@
   .reward-choices .essence-card {
     grid-column: 1 / -1;
   }
+
+  /* Added spacing adjustments for very small screens */
+  .reward-choices {
+    margin-top: 10px;
+  }
+
+  .reward-subtitle {
+    margin-bottom: 10px;
+  }
 }
