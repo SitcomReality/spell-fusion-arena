@@ -18,6 +18,10 @@ export class Projectile {
     // Properties from spell
     this.properties = spell.properties || {};
 
+    // Generation tracking for splitting/chaining potency degradation
+    this.generation = 0;
+    this.potencyMultiplier = 1.0; // How strong this generation's properties are
+
     this.initVelocity(targetX, targetY);
   }
 
