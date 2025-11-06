@@ -102,7 +102,7 @@ export const ELEMENTS = {
   poison: new Element('Poison', { r: 120, g: 255, b: 80 }, {
     speed: 260,
     damage: 16,
-    poison: 8,
+    dot: 8,
     slowing: 3,
     aoe: 2
   }, {
