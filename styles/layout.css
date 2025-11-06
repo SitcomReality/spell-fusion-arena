@@ -125,6 +125,7 @@
   body {
     min-height: auto;
     padding: 0;
+    overflow: hidden;
   }
 
   #game-container {
@@ -134,47 +135,48 @@
     padding: 10px;
     max-width: 100%;
   }
-  
-  /* Keep HUD, canvas and equipped-spells together as a fixed top block */
+
   #canvas-and-spells {
-    position: fixed;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 110;
     width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-    pointer-events: auto;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    max-width: 100%;
   }
-  
+
   #canvas-wrapper {
     width: 100%;
     aspect-ratio: 4 / 3;
     max-width: 500px;
     height: auto;
-    position: relative;
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 110;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
   }
-  
+
   #game-canvas,
   #fx-canvas {
     width: 100% !important;
     height: 100% !important;
   }
-  
+
   #equipped-spells {
     width: 100%;
     max-width: 100%;
     padding: 4px;
+    position: fixed;
+    top: calc(12px + min(500px, 100vw * 0.75) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    z-index: 120;
+    height: 140px;
+    overflow: hidden;
   }
-  
+
   #hud {
     position: fixed;
-    top: 12px;
+    top: calc(12px + 8px);
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -184,7 +186,7 @@
     opacity: 0.7;
     transition: opacity 0.2s, background 0.2s;
   }
-  
+
   #hud:hover,
   #hud:active,
   #hud:focus-within {
@@ -192,30 +194,22 @@
     opacity: 1;
     transform: translateX(-50%) translateY(-2px);
   }
-  
-  /* Reserve space for the fixed top block so the rest of the layout starts beneath it */
-  body {
-    padding-top: calc(min(500px, 100vw * 0.75) + 96px);
-  }
-  
-  /* Make fusion UI the only scrollable area under the fixed top block */
+
   #fusion-ui {
     width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    box-sizing: border-box;
-    height: calc(100vh - (min(500px, 100vw * 0.75) + 96px));
-    overflow-y: auto;
-    padding: 8px;
+    max-width: 100%;
+    padding: 4px;
     border: 2px solid #4a9eff;
-    background-clip: padding-box;
-    z-index: 100;
+    position: fixed;
+    top: calc(12px + min(500px, 100vw * 0.75) + 12px + 140px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    bottom: 0;
+    overflow-y: auto;
+    min-height: 220px;
   }
-  
-  #hud {
-    font-size: 11px;
-  }
-  
+
   .hud-item {
     display: inline-block;
     margin-bottom: 0;
