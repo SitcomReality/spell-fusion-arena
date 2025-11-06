@@ -6,6 +6,46 @@ export class ElementDetailsPanel {
   mount(container) {
     this.container = container;
     this.container.innerHTML = '';
+
+    // Render the full structure in an inactive state (no add button enabled)
+    this.container.classList.add('active', 'inactive');
+    this.container.innerHTML = `
+      <div class="element-summary">
+        <div class="element-summary-info">
+          <div class="element-details-color" style="background: #111"></div>
+          <div class="element-summary-text">
+            <div class="element-details-name">No element selected</div>
+            <div class="element-details-desc">Select an element to view details and add it to the fusion builder.</div>
+          </div>
+        </div>
+
+        <div class="element-summary-stats">
+          <div class="key-stat">
+            <div class="key-stat-value">—</div>
+            <div class="key-stat-label">Damage</div>
+          </div>
+          <div class="key-stat">
+            <div class="key-stat-value">—</div>
+            <div class="key-stat-label">Speed</div>
+          </div>
+          <div class="key-stat type-stat">
+            <div class="type-pill">—</div>
+            <div class="key-stat-label">Type</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="properties-row">
+        <div class="properties-section">
+          <div class="properties-title">Projectile Properties</div>
+          <div class="properties-empty">No element selected</div>
+        </div>
+
+        <div class="element-details-controls">
+          <button class="element-add-btn" disabled aria-disabled="true">Add</button>
+        </div>
+      </div>
+    `;
   }
 
   show(element, onAdd) {
@@ -24,7 +64,8 @@ export class ElementDetailsPanel {
           </div>`
         ).join('') + `</div>`;
 
-    this.container.classList.add('active');
+    // Remove inactive state and populate real values
+    this.container.classList.remove('inactive');
     this.container.innerHTML = `
       <div class="element-summary">
         <div class="element-summary-info">
@@ -64,7 +105,8 @@ export class ElementDetailsPanel {
     `;
 
     // Add event listener for the add button
-    this.container.querySelector('.element-add-btn').addEventListener('click', () => {
+    const addBtn = this.container.querySelector('.element-add-btn');
+    addBtn.addEventListener('click', () => {
       if (onAdd) onAdd(element);
     });
   }

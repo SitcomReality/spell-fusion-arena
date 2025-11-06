@@ -6,12 +6,90 @@ export class FusionPreview {
 
   mount(container) {
     this.container = container;
-    this.container.innerHTML = `<p>Add an element to create a spell</p>`;
+    // Render the full preview layout in a visually disabled state
+    this.container.innerHTML = `
+      <div class="spell-result disabled">
+        <div class="spell-summary">
+          <div class="spell-summary-info">
+            <div class="spell-result-color" style="background: #111"></div>
+            <div class="spell-summary-text">
+              <h3>No spell</h3>
+            </div>
+          </div>
+
+          <div class="spell-summary-stats">
+            <div class="key-stat">
+              <div class="key-stat-value">—</div>
+              <div class="key-stat-label">Damage</div>
+            </div>
+            <div class="key-stat">
+              <div class="key-stat-value">—</div>
+              <div class="key-stat-label">Speed</div>
+            </div>
+            <div class="key-stat type-stat">
+              <div class="type-pill">—</div>
+              <div class="key-stat-label">Type</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="properties-row">
+          <div class="properties-section">
+            <div class="properties-title">Projectile Properties</div>
+            <div class="properties-empty">Add elements to create a spell</div>
+          </div>
+
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   showMessage(msg) {
     if (!this.container) return;
-    this.container.innerHTML = `<p>${msg}</p>`;
+    // Update to disabled layout with provided message in the properties area
+    this.container.innerHTML = `
+      <div class="spell-result disabled">
+        <div class="spell-summary">
+          <div class="spell-summary-info">
+            <div class="spell-result-color" style="background: #111"></div>
+            <div class="spell-summary-text">
+              <h3>No spell</h3>
+            </div>
+          </div>
+
+          <div class="spell-summary-stats">
+            <div class="key-stat">
+              <div class="key-stat-value">—</div>
+              <div class="key-stat-label">Damage</div>
+            </div>
+            <div class="key-stat">
+              <div class="key-stat-value">—</div>
+              <div class="key-stat-label">Speed</div>
+            </div>
+            <div class="key-stat type-stat">
+              <div class="type-pill">—</div>
+              <div class="key-stat-label">Type</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="properties-row">
+          <div class="properties-section">
+            <div class="properties-title">Projectile Properties</div>
+            <div class="properties-empty">${msg}</div>
+          </div>
+
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   showSpell(spell, onEquip) {
