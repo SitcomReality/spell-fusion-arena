@@ -1,0 +1,72 @@
+/* ...existing styles... */
+.spell-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+/* ...existing styles... */
+
+/* Tablet: 4 columns still fits but slightly smaller */
+@media (max-width: 1024px) {
+  .spell-slots {
+    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .spell-slot-name {
+    font-size: 10px;
+  }
+  /* ...existing context lines ... */
+}
+
+/* Mobile: responsive grid - keep four on one row and preserve square shape */
+@media (max-width: 768px) {
+  .spell-slots {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .spell-slot {
+    aspect-ratio: 1;
+    min-height: 60px;
+  }
+
+  .spell-slot-content {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .spell-slot-name {
+    font-size: 9px;
+  }
+
+  /* ...existing context lines ... */
+}
+
+/* Small mobile: keep four in a single row where possible (tighter spacing) */
+@media (max-width: 480px) {
+  .spell-slots {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .spell-slot {
+    min-height: 48px;
+  }
+  
+  /* Even on very small screens ensure tighter spacing for spell slot wrappers */
+  .spell-slot-wrapper {
+    gap: 2px;
+  }
+}
+/* ...existing styles... */
+
+/* ...existing code... */
+@media (max-width: 768px) {
+  /* ensure compact touch-friendly buttons do not force slot row wrapping */
+  button {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+}
+/* ...existing code... */
+
