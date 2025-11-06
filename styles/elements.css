@@ -19,12 +19,13 @@
 
 /* Elements Library */
 .elements-library {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 160px));
-  justify-content: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 6px;
   max-height: 280px;
   overflow-y: auto;
+  justify-content: flex-start;
 }
 
 .element-card {
@@ -38,6 +39,10 @@
   transition: all 0.2s;
   align-items: center;
   text-align: center;
+  /* let cards size to their content but not get too small */
+  flex: 0 0 auto;
+  min-width: 80px;
+  max-width: 160px;
 }
 
 .element-card:hover {
@@ -81,10 +86,10 @@
 /* Mobile: 2 columns, adjusted sizing */
 @media (max-width: 768px) {
   .elements-library {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 140px));
+    /* keep flex wrapping behavior on mobile so items pack tightly */
     gap: 6px;
     max-height: 200px;
-    justify-content: start;
+    justify-content: flex-start;
   }
 
   .element-card {
