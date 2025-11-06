@@ -110,12 +110,14 @@ export class Enemy {
   takeBurnDamage(damage) {
     const localX = this.x;
     const localY = this.y;
+    // Damage in small bursts for DoT effect
     this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 3);
   }
 
   takePoisonDamage(damage) {
     const localX = this.x;
     const localY = this.y;
+    // Poison is more precise/small
     this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 4);
   }
   

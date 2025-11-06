@@ -156,12 +156,18 @@ export class GameState {
         if (dist < hitRadius) {
           const hit = enemy.takeDamage(projectile);
           if (hit) {
-            // Apply projectile properties
+            // Apply projectile properties to hit enemy
             projectile.applyProjectileProperties(enemy);
             
             // Create impact particles
             const impactParticles = projectile.createImpactParticles();
             this.particles.push(...impactParticles);
+            
+            // Handle AoE damage to nearby enemies
+            const aoeIntensity = projectile.properties.aoe || 0;
+            if (aoeIntensity > 0) {
+              this.handleAoEDamage(projectile, enemy, aoeIntensity);
+            }
             
             // Handle piercing
             const pierceIntensity = projectile.properties.piercing || 0;
@@ -206,6 +212,53 @@ export class GameState {
               projectile.alive = false;
             }
           }
+        }
+      }
+    }
+  }
+
+  handleAoEDamage(projectile, centerEnemy, aoeIntensity) {
+    const aoeRadius = 50 + aoeIntensity * 30; // Base 50px, scales with intensity
+    
+    for (const enemy of this.enemies) {
+      if (!enemy.alive || enemy === centerEnemy) continue;
+      
+      const dx = enemy.x - centerEnemy.x;
+      const dy = enemy.y - centerEnemy.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < aoeRadius) {
+        // Damage falls off with distance
+        const falloff = 1 - (dist / aoeRadius);
+        const damageMultiplier = falloff * (0.5 + aoeIntensity * 0.1); // Scales with intensity
+        
+        // Deal damage to this enemy
+        const baseDamage = projectile.spell.properties.damage || 10;
+        const damage = baseDamage * damageMultiplier;
+        
+        // Create a temporary projectile-like object to use takeDamage
+        const aoeDamageProj = {
+          x: centerEnemy.x,
+          y: centerEnemy.y,
+          radius: projectile.radius
+        };
+        
+        enemy.takeDamage(aoeDamageProj);
+        
+        // Apply DoT properties from projectile
+        const dotIntensity = projectile.properties.dot || 0;
+        if (dotIntensity > 0) {
+          const duration = 2 + dotIntensity * 1.5;
+          const damagePerTick = Math.max(1, damage * dotIntensity * 0.12);
+          enemy.applyBurning(duration, damagePerTick);
+        }
+        
+        // Apply slowing from AoE
+        const slowIntensity = projectile.properties.slowing || 0;
+        if (slowIntensity > 0) {
+          const duration = 1.5 + slowIntensity * 1;
+          const slowAmount = Math.min(0.6, 0.2 + slowIntensity * 0.08);
+          enemy.applySlowing(duration, slowAmount);
         }
       }
     }

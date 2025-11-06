@@ -204,6 +204,13 @@ export class Projectile {
       enemy.applySlowing(duration, slowAmount);
     }
     
+    // General DoT (burning effect)
+    if (props.dot && props.dot > 0) {
+      const duration = 2 + props.dot * 1.5;
+      const damagePerTick = Math.max(1, this.spell.properties.damage * props.dot * 0.15);
+      enemy.applyBurning(duration, damagePerTick);
+    }
+    
     // Burning
     if (props.burning && props.burning > 0) {
       const duration = 2 + props.burning * 1.5;
