@@ -44,9 +44,13 @@ export class SpellSlotsUI {
           ? ''
           : '<div class="spell-slot-properties">' + propEntries
             .filter(([k,v]) => k !== 'damage' && k !== 'speed') // Don't show core stats as badges
-            .map(([k,v]) =>
-              `<span class="prop-badge">${k.replace(/_/g,' ')}:${Math.round(v*100)/100}</span>`
-            ).join('') + '</div>';
+            .map(([k,v]) => {
+              const val = (typeof v === 'number') ? (Math.round(v * 100) / 100) : v;
+              return `<div class="property-badge" data-property="${k}">
+                        <span class="property-icon"></span>
+                        <span class="property-value">${val}</span>
+                      </div>`;
+            }).join('') + '</div>';
 
         slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
