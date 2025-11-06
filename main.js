@@ -129,5 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const game = new Game();
   // Expose for UI components (HUD) to read dynamic values like essenceBank
   window.gameInstance = game;
-});
 
+  // Add press-to-show tooltip behavior for property badges on touch devices
+  (function() {
+    let activeBadge = null;
+    document.addEventListener('touchstart', (ev) => {
+      const el = ev.target.closest && ev.target.closest('.property-badge');
+      if (el) {
+        activeBadge = el;
+        el.classList.add('active');
+      }
+    }, { passive: true });
+    const clearActive = () => {
+      if (activeBadge) {
+        activeBadge.classList.remove('active');
+        activeBadge = null;
+      }
+    };
+    document.addEventListener('touchend', clearActive, { passive: true });
+    document.addEventListener('touchcancel', clearActive, { passive: true });
+    // Support mouse press for accessibility: add mousedown/mouseup toggles
+    document.addEventListener('mousedown', (ev) => {
+      const el = ev.target.closest && ev.target.closest('.property-badge');
+      if (el) el.classList.add('active');
+    });
+    document.addEventListener('mouseup', () => document.querySelectorAll('.property-badge.active').forEach(e => e.classList.remove('active')));
+  })();
+});
