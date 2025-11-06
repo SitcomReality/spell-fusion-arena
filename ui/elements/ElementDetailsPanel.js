@@ -20,15 +20,12 @@ export class ElementDetailsPanel {
         </div>
       </div>
 
-      <div class="properties-row">
-        <div class="properties-section">
-          <div class="properties-title">Projectile Properties</div>
-          <div class="properties-empty">No element selected</div>
-        </div>
+      <div class="element-details-body">
+        <div class="properties-empty">No element selected</div>
+      </div>
 
-        <div class="element-details-controls">
-          <button class="element-add-btn" disabled aria-disabled="true">Add</button>
-        </div>
+      <div class="element-details-controls">
+        <button class="element-add-btn" disabled aria-disabled="true">Add</button>
       </div>
     `;
   }
@@ -61,15 +58,12 @@ export class ElementDetailsPanel {
         </div>
       </div>
 
-      <div class="properties-row">
-        <div class="properties-section">
-          <div class="properties-title">Projectile Properties</div>
-          ${propertiesHtml}
-        </div>
+      <div class="element-details-body">
+        ${propertiesHtml}
+      </div>
 
-        <div class="element-details-controls">
-          <button class="element-add-btn">Add</button>
-        </div>
+      <div class="element-details-controls">
+        <button class="element-add-btn">Add</button>
       </div>
     `;
 

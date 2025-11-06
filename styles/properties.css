@@ -93,6 +93,7 @@
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 6px;
+  display: none;
 }
 
 .properties-list {
@@ -116,26 +117,4 @@
 .property-value {
   color: #64c8ff;
   font-weight: 600;
-}
-
-/* Properties row layout (used in preview and details panels) */
-.properties-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.properties-row .properties-section {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.properties-row .fusion-preview-controls,
-.properties-row .element-details-controls {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 8px;
-  align-items: center;
 }

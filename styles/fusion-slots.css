@@ -1,21 +1,2 @@
 /* Shared helpers for properties/controls and rows used by fusion & details */
-.properties-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.properties-row .properties-section {
-  flex: 1 1 auto;
-  min-width: 0; /* allow proper shrinking for long content */
-}
-
-.properties-row .fusion-preview-controls,
-.properties-row .element-details-controls {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+/* REMOVED: Layout definitions moved/handled by parent components */

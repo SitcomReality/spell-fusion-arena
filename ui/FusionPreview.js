@@ -18,16 +18,13 @@ export class FusionPreview {
           </div>
         </div>
 
-        <div class="properties-row">
-          <div class="properties-section">
-            <div class="properties-title">Projectile Properties</div>
-            <div class="properties-empty">Add elements to create a spell</div>
-          </div>
+        <div class="spell-details-body"> 
+          <div class="properties-empty">Add elements to create a spell</div>
+        </div>
 
-          <div class="fusion-preview-controls">
-            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
-          </div>
+        <div class="fusion-preview-controls">
+          <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+          <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
         </div>
       </div>
     `;
@@ -47,16 +44,13 @@ export class FusionPreview {
           </div>
         </div>
 
-        <div class="properties-row">
-          <div class="properties-section">
-            <div class="properties-title">Projectile Properties</div>
-            <div class="properties-empty">${msg}</div>
-          </div>
+        <div class="spell-details-body">
+          <div class="properties-empty">${msg}</div>
+        </div>
 
-          <div class="fusion-preview-controls">
-            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
-          </div>
+        <div class="fusion-preview-controls">
+          <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
+          <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
         </div>
       </div>
     `;
@@ -87,16 +81,13 @@ export class FusionPreview {
           </div>
         </div>
 
-        <div class="properties-row">
-          <div class="properties-section">
-            <div class="properties-title">Projectile Properties</div>
-            ${propertiesHtml}
-          </div>
-
-          <div class="fusion-preview-controls">
-            <button class="fusion-preview-clear">Clear</button>
-            <button class="fusion-preview-equip">Equip</button>
-          </div>
+        <div class="spell-details-body">
+          ${propertiesHtml}
+        </div>
+        
+        <div class="fusion-preview-controls">
+          <button class="fusion-preview-clear">Clear</button>
+          <button class="fusion-preview-equip">Equip</button>
         </div>
       </div>
     `;
