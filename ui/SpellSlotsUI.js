@@ -19,7 +19,8 @@ export class SpellSlotsUI {
 
   update(equippedSpells, slotEssence, bank) {
     if (!this.externalContainer) return;
-    this.externalContainer.innerHTML = `<h3 class="equipped-title">Equipped Spells (${equippedSpells.filter(s => s).length}/5) — Bank: ${bank} ME</h3><div class="spell-slots" id="external-spell-slots"></div>`;
+    // Removed the equipped-title header per request
+    this.externalContainer.innerHTML = `<div class="spell-slots" id="external-spell-slots"></div>`;
     const grid = document.getElementById('external-spell-slots');
 
     for (let i = 0; i < 5; i++) {
