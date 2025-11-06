@@ -203,6 +203,64 @@
     justify-content: space-between;
   }
 
+  /* Hide the inline property badges on mobile to save space */
+  .spell-slot .spell-slot-properties {
+    display: none;
+  }
+
+  /* Button to reveal properties while pressed */
+  .slot-props-btn {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #4a9eff;
+    background: rgba(10,10,15,0.6);
+    color: #64c8ff;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    padding: 0;
+  }
+
+  .slot-props-tooltip {
+    position: absolute;
+    left: 36px;
+    top: 4px;
+    min-width: 140px;
+    max-width: 220px;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+    border: 1px solid #4a9eff;
+    padding: 8px;
+    box-shadow: 0 6px 16px rgba(10,10,10,0.6);
+    display: none;
+    z-index: 30;
+    font-size: 12px;
+  }
+
+  .slot-props-tooltip.active {
+    display: block;
+  }
+
+  .slot-props-tooltip .property-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    color: #dfefff;
+    margin-bottom: 6px;
+  }
+
+  .slot-props-tooltip .property-row:last-child { margin-bottom: 0; }
+
+  #equipped-spells .spell-slot {
+    padding-left: 2px; /* make room for the props button */
+  }
+
   #equipped-spells:hover .spell-slot,
   #equipped-spells:active .spell-slot,
   #equipped-spells:focus-within .spell-slot {

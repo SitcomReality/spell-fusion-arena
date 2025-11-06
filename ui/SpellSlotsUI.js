@@ -52,6 +52,8 @@ export class SpellSlotsUI {
 
         slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
+            <button class="slot-props-btn" aria-label="Show properties">i</button>
+            <div class="slot-props-tooltip" aria-hidden="true"></div>
             <span class="spell-slot-name">${spell.name}</span>
             ${propsHtml}
             <span class="spell-slot-number">${i + 1}</span>
@@ -62,6 +64,49 @@ export class SpellSlotsUI {
           e.stopPropagation();
           this.onUnequip(i);
         });
+
+        // Populate tooltip content with properties (used on mobile while pressing)
+        const tooltipEl = slot.querySelector('.slot-props-tooltip');
+        if (tooltipEl) {
+          if (propEntries.length === 0) {
+            tooltipEl.innerHTML = `<div class="property-row properties-empty">No special properties</div>`;
+          } else {
+            tooltipEl.innerHTML = propEntries.map(([k,v]) => {
+              const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
+              return `<div class="property-row"><span class="property-name">${k}</span><span class="property-value">${val}</span></div>`;
+            }).join('');
+          }
+        }
+
+        // Press-to-show behavior for touch and mouse
+        const btn = slot.querySelector('.slot-props-btn');
+        let pressTimer = null;
+        const showTooltip = (show) => {
+          if (tooltipEl) {
+            tooltipEl.classList.toggle('active', show);
+            tooltipEl.setAttribute('aria-hidden', !show);
+          }
+        };
+
+        if (btn) {
+          // mouse interactions
+          btn.addEventListener('mousedown', (ev) => {
+            ev.stopPropagation();
+            showTooltip(true);
+          });
+          document.addEventListener('mouseup', () => showTooltip(false));
+
+          // touch interactions (press and hold)
+          btn.addEventListener('touchstart', (ev) => {
+            ev.stopPropagation();
+            showTooltip(true);
+          }, { passive: true });
+          btn.addEventListener('touchend', (ev) => {
+            ev.stopPropagation();
+            showTooltip(false);
+          });
+          btn.addEventListener('mouseleave', () => showTooltip(false));
+        }
       } else {
         // simple symbol placeholder "O"
         slot.innerHTML = `<span class="spell-slot-placeholder">O</span>`;
