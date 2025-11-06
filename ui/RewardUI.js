@@ -78,7 +78,7 @@ export class RewardUI {
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
       <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
-      <div class="reward-card-small-desc">Use Mana Essence to power up spell slots — assign to slots to increase their firing speed.</div>
+      <div class="reward-card-small-desc">Use Mana Essence to power up spell slots.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>
       </div>
@@ -154,7 +154,7 @@ export class RewardUI {
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
       <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
-      <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate; if you have essence in your bank you can allocate it after choosing this.</div>
+      <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>
       </div>
