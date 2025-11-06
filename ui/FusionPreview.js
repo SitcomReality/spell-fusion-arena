@@ -22,23 +22,22 @@ export class FusionPreview {
       ? '<div class="properties-empty">No special properties</div>'
       : '<div class="properties-list">' + propEntries.map(([k, v]) =>
           `<div class="property-badge">
-             <span class="property-name">${k.replace(/_/g,' ')}</span>
-             <span class="property-value">${(Math.round(v * 100) / 100)}</span>
-           </div>`
+            <span class="property-name">${k.replace(/_/g, ' ')}</span>
+            <span class="property-value">${Math.round(v * 100) / 100}</span>
+          </div>`
         ).join('') + '</div>';
 
     this.container.innerHTML = `
-      <div class="fusion-preview">
-        <div class="element-summary">
-          <div class="element-summary-info">
-            <div class="spell-result-color element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-            <div class="element-summary-text spell-result-info">
-              <div class="element-details-name">${spell.name}</div>
-              <div class="element-details-desc">${spell.elements.map(e=>e.name).join(' + ')}</div>
+      <div class="spell-result">
+        <div class="spell-summary">
+          <div class="spell-summary-info">
+            <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
+            <div class="spell-summary-text">
+              <h3>${spell.name}</h3>
             </div>
           </div>
 
-          <div class="element-summary-stats spell-result-stats">
+          <div class="spell-summary-stats">
             <div class="key-stat">
               <div class="key-stat-value">${Math.round(spell.traits.damage)}</div>
               <div class="key-stat-label">Damage</div>

@@ -1,24 +1,357 @@
-.fusion-preview {
--  background: #0a0a0a;
--  border: 1px solid #333;
--  padding: 15px;
--  min-height: 80px;
--  display: flex;
--  align-items: center;
--  justify-content: center;
-+  background: #0a0a0a;
-+  border: 1px solid #333;
-+  padding: 15px;
-+  min-height: 80px;
-+  display: flex;
-+  flex-direction: column;
-+  align-items: stretch;
-+  justify-content: flex-start;
- }
- 
- .spell-result {
-   display: flex;
-   gap: 15px;
-   width: 100%;
- }
+/* Fusion Builder & Fusion Preview */
+.fusion-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
+.fusion-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.fusion-slot {
+  aspect-ratio: 1;
+  background: #0a0a0a;
+  border: 2px dashed #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fusion-slot-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  padding: 10px;
+  text-align: center;
+}
+
+.fusion-slot-content span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fusion-slot-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.fusion-slot-remove:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.fusion-slot-placeholder {
+  font-size: 28px;
+  color: #555;
+  font-weight: 300;
+}
+
+/* Wrapper for each equipped slot to place essence below */
+.spell-slot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.spell-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spell-slot-placeholder {
+  font-size: 20px;
+  color: #222; /* slightly darker than slot border (#333) */
+  font-weight: 500;
+}
+
+.spell-slot-essence {
+  font-size: 11px;
+  background: transparent;
+  color: #aaeaff;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.spell-slot-essence.inactive {
+  color: #777;
+}
+
+.fusion-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fusion-controls button {
+  padding: 10px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.fusion-controls button:hover:not(:disabled) {
+  border-color: #666;
+  background: #2a2a2a;
+}
+
+.fusion-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Fusion Preview */
+.fusion-preview {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  padding: 15px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spell-result {
+  width: 100%;
+}
+
+.spell-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.spell-summary-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.spell-summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.spell-summary-text h3 {
+  font-size: 16px;
+  font-weight: 500;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.spell-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.spell-result-color {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border: 1px solid #333;
+}
+
+.properties-section {
+  margin-top: 10px;
+}
+
+.properties-title {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.property-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0d0d0d;
+  border: 1px solid #222;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.property-name {
+  color: #ddd;
+  text-transform: capitalize;
+}
+
+.property-value {
+  color: #fff;
+  font-weight: 600;
+}
+
+.properties-empty {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .spell-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .spell-summary-info {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .spell-summary-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  
+  .spell-result-color {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .spell-summary-text h3 {
+    font-size: 14px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .spell-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  
+  .spell-summary-stats {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+  }
+}
+
+/* Tablet: 5 columns still fits but smaller */
+@media (max-width: 1024px) {
+  .spell-slots {
+    gap: 8px;
+  }
+
+  .spell-slot-name {
+    font-size: 10px;
+  }
+
+  .spell-slot-essence {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-unequip {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Mobile: responsive grid */
+@media (max-width: 768px) {
+  .spell-slots {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .spell-slot {
+    aspect-ratio: 1;
+    min-height: 60px;
+  }
+
+  .spell-slot-content {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .spell-slot-name {
+    font-size: 9px;
+  }
+
+  .spell-slot-essence {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 8px;
+  }
+
+  .spell-slot-unequip {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    top: -10px;
+  }
+}
+
+/* Small mobile: stack or 3-2 layout */
+@media (max-width: 480px) {
+  .spell-slots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .spell-slot {
+    min-height: 50px;
+  }
+}
