@@ -154,7 +154,7 @@
   }
 }
 
-/* Element Details Panel - refactored layout */
+/* Element Details Panel */
 .element-details-panel {
   background: #0a0a0a;
   border: 1px solid #333;
@@ -170,7 +170,7 @@
 .element-details-header {
   display: flex;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   align-items: center;
 }
 
@@ -189,73 +189,60 @@
 .element-details-desc {
   font-size: 12px;
   color: #aaa;
-  margin-top: 2px;
-}
-
-/* Main stats - damage and speed highlighted */
-.element-details-main-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
   margin-bottom: 10px;
 }
 
-.element-details-stat-item {
+/* New compact stats row */
+.element-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.key-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: #1a1a1a;
   border: 1px solid #2a2a2a;
   padding: 8px;
-  text-align: center;
-  border-radius: 3px;
+  min-height: 52px;
 }
 
-.stat-item-label {
-  font-size: 11px;
-  color: #888;
+.key-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.key-stat-label {
+  font-size: 10px;
+  color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  margin-top: 4px;
 }
 
-.stat-item-value {
-  font-size: 20px;
-  font-weight: 600;
-  color: #fff;
-}
-
-/* Type display */
-.element-details-type {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.type-pill {
   font-size: 12px;
-  margin-bottom: 10px;
-  padding: 6px 8px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border: 1px solid #2a2a2a;
   background: #0d0d0d;
-  border: 1px solid #222;
-  border-radius: 3px;
-}
-
-.type-label {
-  color: #666;
-  font-weight: 500;
-}
-
-.type-value {
-  color: #ccc;
-  font-weight: 500;
-  text-transform: capitalize;
+  border-radius: 12px;
 }
 
 /* Properties section */
-.element-details-properties {
+.properties-section {
   margin-top: 10px;
 }
 
-.properties-label {
-  font-size: 10px;
-  color: #666;
+.properties-title {
+  font-size: 11px;
+  color: #777;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   margin-bottom: 6px;
 }
 
@@ -265,21 +252,20 @@
   gap: 6px;
 }
 
-.property-item {
+.property-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  padding: 4px 8px;
-  border-radius: 3px;
-  color: #ddd;
+  gap: 6px;
+  background: #0d0d0d;
+  border: 1px solid #222;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 .property-name {
+  color: #ddd;
   text-transform: capitalize;
-  color: #aaa;
 }
 
 .property-value {
@@ -288,68 +274,58 @@
 }
 
 .properties-empty {
-  font-size: 11px;
-  color: #666;
-  font-style: italic;
+  font-size: 12px;
+  color: #aaa;
 }
 
-/* Tablet adjustments */
-@media (max-width: 1024px) {
-  .element-details-name {
-    font-size: 14px;
-  }
-
-  .stat-item-value {
-    font-size: 18px;
-  }
-}
-
-/* Mobile adjustments */
+/* Mobile adjustments for details panel */
 @media (max-width: 768px) {
-  .element-details-header {
-    gap: 10px;
-    margin-bottom: 12px;
+  .element-details-panel {
+    padding: 10px;
   }
-
   .element-details-color {
     width: 50px;
     height: 50px;
   }
-
   .element-details-name {
     font-size: 14px;
   }
-
   .element-details-desc {
     font-size: 11px;
   }
-
-  .element-details-main-stats {
-    gap: 10px;
-    margin-bottom: 8px;
+  .element-stats-row {
+    gap: 6px;
   }
-
-  .stat-item-value {
-    font-size: 16px;
+  .key-stat {
+    padding: 6px;
+    min-height: 46px;
   }
-
-  .stat-item-label {
-    font-size: 10px;
+  .key-stat-value {
+    font-size: 14px;
   }
-
-  .element-details-type {
-    font-size: 11px;
-    padding: 5px 6px;
-    margin-bottom: 8px;
-  }
-
-  .properties-label {
+  .key-stat-label {
     font-size: 9px;
   }
+  .type-pill {
+    font-size: 11px;
+    padding: 3px 7px;
+  }
+  .property-badge {
+    font-size: 11px;
+    padding: 5px 7px;
+  }
+}
 
-  .property-item {
-    font-size: 10px;
-    padding: 3px 6px;
-    gap: 3px;
+/* Small mobile */
+@media (max-width: 480px) {
+  .element-stats-row {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .key-stat-value {
+    font-size: 13px;
+  }
+  .key-stat-label {
+    font-size: 8px;
   }
 }
