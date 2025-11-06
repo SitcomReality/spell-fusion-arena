@@ -131,24 +131,36 @@ export class Enemy {
     // Generate particles derived from the DoT effect color
     if (!color) return;
     
-    const count = type === 'burning' ? 1 : 1;
-    const speed = 10 + Math.random() * 20;
-    const particleType = type === 'burning' ? 'spark' : 'smoke';
-    const size = type === 'burning' ? 1.5 : 2;
+    // Make DoT effects visibly more profuse:
+    // - burning: many small energetic sparks
+    // - poison (or other non-burning DoT): more smoke/acid puffs
+    const isBurn = type === 'burning';
+    const minCount = isBurn ? 3 : 2;
+    const maxCount = isBurn ? 6 : 4;
+    const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1));
     
-    for(let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
+      const speed = (isBurn ? 20 : 8) + Math.random() * (isBurn ? 40 : 16);
+      const particleType = isBurn ? 'spark' : 'smoke';
+      const size = isBurn ? (1 + Math.random() * 1.5) : (1.5 + Math.random() * 1.5);
+      const life = (isBurn ? 0.25 : 0.35) + Math.random() * (isBurn ? 0.35 : 0.45);
+      
+      // Spread particles across a slightly larger area so DoT looks more active
+      const spreadX = (Math.random() - 0.5) * this.type.width * (isBurn ? 0.5 : 0.7);
+      const spreadY = (Math.random() - 0.5) * this.type.height * (isBurn ? 0.5 : 0.7);
+      
       this.particleRequests.push({
-        x: this.x + (Math.random() - 0.5) * this.type.width * 0.3,
-        y: this.y + (Math.random() - 0.5) * this.type.height * 0.3,
+        x: this.x + spreadX,
+        y: this.y + spreadY,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
+        vy: Math.sin(angle) * speed - (isBurn ? Math.random() * 10 : 0),
         color: color,
-        life: 0.2 + Math.random() * 0.2,
-        maxLife: 0.4,
+        life: life,
+        maxLife: life,
         size: size,
         type: particleType,
-        opacity: 0.8
+        opacity: isBurn ? 0.95 : 0.85
       });
     }
   }
