@@ -36,16 +36,14 @@ export class SpellSlotsUI {
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
         const color = spell.color;
-        const dmg = Math.round(spell.properties.damage);
-        const spd = Math.round(spell.properties.speed);
-        // build properties markup (small badges)
+        // build properties markup (small badges) including damage and speed
         const propEntries = Object.entries(spell.properties || {});
         const propsHtml = propEntries.length === 0
           ? ''
           : '<div class="spell-slot-properties">' + propEntries
-            .filter(([k,v]) => k !== 'damage' && k !== 'speed') // Don't show core stats as badges
             .map(([k,v]) => {
-              const val = (typeof v === 'number') ? (Math.round(v * 100) / 100) : v;
+              // format numeric values
+              const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
               return `<div class="property-badge" data-property="${k}">
                         <span class="property-icon"></span>
                         <span class="property-value">${val}</span>
@@ -54,10 +52,6 @@ export class SpellSlotsUI {
 
         slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
-            <div class="spell-slot-stats">
-              <span class="stat-item">DMG:${dmg}</span>
-              <span class="stat-item">SPD:${spd}</span>
-            </div>
             <span class="spell-slot-name">${spell.name}</span>
             ${propsHtml}
             <span class="spell-slot-number">${i + 1}</span>
