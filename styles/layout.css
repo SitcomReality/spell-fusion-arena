@@ -185,7 +185,7 @@
     transform: none;
     z-index: auto;
     height: auto;
-    overflow: hidden;
+    /* overflow: hidden; */ /* removed to allow tooltips to extend outside */
     
     /* Ensure internal flex direction is column (inherited from desktop) */
     display: flex;

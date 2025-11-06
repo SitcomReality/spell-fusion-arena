@@ -230,8 +230,8 @@
 
   .slot-props-tooltip {
     position: absolute;
-    left: 36px;
-    top: 4px;
+    left: -150px;
+    top: -2px;
     min-width: 140px;
     max-width: 220px;
     background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
