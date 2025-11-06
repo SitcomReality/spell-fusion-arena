@@ -241,7 +241,12 @@
 }
 
 .properties-section {
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
 .properties-title {
@@ -503,8 +508,9 @@
 /* Allow properties section and controls to sit on same row where width allows */
 .properties-section {
   display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
