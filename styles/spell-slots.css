@@ -180,6 +180,19 @@
   opacity: 0.9;
 }
 
+/* Make property badges inside spell slots darker/opaque for better contrast */
+.spell-slot .property-badge {
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(30, 30, 30, 0.75);
+  color: #e8f6ff;
+}
+
+/* Ensure icons stay fully visible on dark badge */
+.spell-slot .property-badge .property-icon {
+  filter: none;
+  opacity: 1;
+}
+
 /* Responsive and mobile variations for spell slots */
 @media (max-width: 768px) {
   .spell-slots {
