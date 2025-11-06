@@ -148,30 +148,49 @@
     max-width: 100%;
   }
 
-  /* HUD: make it float above canvas at the bottom center on small screens */
-  #hud {
-    position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.85);
-    padding: 10px;
-    margin: 0;
-    min-width: auto;
-    font-size: 11px;
-    width: auto;
-    max-width: calc(100% - 32px);
-    z-index: 1001;
-    opacity: 0.7;
-    transition: opacity 180ms ease, transform 160ms ease;
-    pointer-events: auto;
-    border-radius: 6px;
+  /* Allow the fusion UI to expand naturally on small screens so the page scrolls instead of the panel */
+  #fusion-ui {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow: visible;
+    padding: 12px;
+    border: 2px solid #333;
   }
 
+  /* HUD overlay on top of canvas: centered, semi-transparent, increase to full opacity on hover/touch */
+  #hud {
+    position: absolute; /* overlay */
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 500px;
+    z-index: 120;
+    background: rgba(0, 0, 0, 0.7); /* default semi-transparent */
+    padding: 10px;
+    border: 1px solid #333;
+    opacity: 0.95; /* keep text readable while using rgba background */
+    transition: background 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
+    border-radius: 6px;
+    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Increase opacity (and slightly lift) when hovered, active (touch) or focused */
   #hud:hover,
   #hud:active,
-  #hud.touch-active {
+  #hud:focus-within {
+    background: rgba(0, 0, 0, 1);
     opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  #hud {
+    font-size: 11px;
   }
 
   .hud-item {
@@ -182,7 +201,7 @@
   }
 }
 
-/* Small mobile (< 480px) */
+/* Small mobile (< 480px) keep overlay behavior but slightly adjust sizing */
 @media (max-width: 480px) {
   #game-container {
     padding: 8px;
@@ -197,6 +216,19 @@
     max-height: none;
     overflow: visible;
     padding: 10px;
+  }
+
+  #hud {
+    top: 8px;
+    width: calc(100% - 24px);
+    max-width: 420px;
+    padding: 8px;
+  }
+
+  #hud:hover,
+  #hud:active,
+  #hud:focus-within {
+    transform: translateX(-50%) translateY(-1px);
   }
 
   #hud {

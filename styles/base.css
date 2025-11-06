@@ -15,7 +15,6 @@ body {
   min-height: 100vh;
   /* Allow natural scrolling on small devices */
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Utility classes used across components */
