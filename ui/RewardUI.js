@@ -79,9 +79,6 @@ export class RewardUI {
       <h3>Mana Essence</h3>
       <!-- description removed; stats/properties convey function -->
       <div class="reward-card-small-desc">Use Mana Essence to power up spell slots.</div>
-      <div class="reward-card-stats">
-        <span>Essence: ${this.essenceOffer}</span>
-      </div>
     `;
     essenceCard.addEventListener('click', () => this.selectEssence());
     choicesContainer.appendChild(essenceCard);
@@ -125,10 +122,6 @@ export class RewardUI {
         <div class="reward-card-color"></div>
         <h3>${elem.name}</h3>
         <!-- description removed; name, stats and properties are shown below -->
-        <div class="reward-card-stats">
-          <span>Damage: ${elem.propertyGenes.damage}</span>
-          <span>Speed: ${Math.round(elem.propertyGenes.speed)}</span>
-        </div>
         ${propertiesHtml}
       `;
       
@@ -155,9 +148,6 @@ export class RewardUI {
       <h3>Mana Essence</h3>
       <!-- description removed; stats convey amount -->
       <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate.</div>
-      <div class="reward-card-stats">
-        <span>Essence: ${this.essenceOffer}</span>
-      </div>
     `;
     essenceCard.addEventListener('click', () => this.selectEssence());
     choicesContainer.appendChild(essenceCard);

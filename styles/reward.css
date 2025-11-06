@@ -116,21 +116,6 @@
   letter-spacing: 0.8px;
 }
 
-.reward-card-stats {
-  display: flex;
-  justify-content: space-around;
-  font-size: 12px;
-  color: #7a8aff;
-  border-top: 1px solid #4a2a7f;
-  padding-top: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.reward-card-stats span {
-  display: block;
-}
-
 /* Responsive tweaks for the reward modal */
 @media (max-width: 1024px) {
   .reward-modal { padding: 30px; max-width: 700px; }
@@ -138,7 +123,6 @@
   .reward-choices { gap: 15px; }
   .reward-card { padding: 15px; }
   .reward-card h3 { font-size: 18px; }
-  .reward-card-stats { font-size: 11px; }
 }
 
 @media (max-width: 768px) {
@@ -149,7 +133,6 @@
   .reward-card { padding: 12px; }
   .reward-card h3 { font-size: 16px; margin-bottom: 8px; }
   .reward-card-color { height: 50px; margin-bottom: 12px; }
-  .reward-card-stats { font-size: 10px; padding-top: 8px; }
 }
 
 @media (max-width: 480px) {
