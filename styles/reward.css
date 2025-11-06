@@ -44,11 +44,8 @@
 
 .reward-choices {
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  /* Desktop: two flexible columns for element choices and a fixed column for Essence */
-  grid-template-columns: 1fr 1fr 220px;
-  align-items: center;
-  justify-items: center;
   margin-top: 20px;
 }
 
@@ -162,31 +159,31 @@
   letter-spacing: 0.8px;
 }
 
-/* New rule: place essence card into the right column and make it span the rows */
-.reward-choices .essence-card {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  width: 100%;
-}
-
 /* Responsive tweaks for the reward modal */
 @media (max-width: 1024px) {
   .reward-modal { padding: 30px; max-width: 700px; }
   .reward-modal h2 { font-size: 26px; }
-  .reward-choices { grid-template-columns: repeat(3, 1fr); gap: 15px; }
+  .reward-choices { gap: 15px; }
   .reward-card { padding: 15px; }
   .reward-card h3 { font-size: 18px; }
-  .reward-card-color { height: 50px; margin-bottom: 12px; }
 }
 
 @media (max-width: 768px) {
   #reward-overlay { padding: 10px; }
   .reward-modal { padding: 20px; max-width: 100%; width: 100%; }
   .reward-modal h2 { font-size: 22px; margin-bottom: 8px; }
-  .reward-choices { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .reward-choices { 
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for elements side-by-side */
+    gap: 12px; 
+  }
   .reward-card { padding: 12px; }
   .reward-card h3 { font-size: 16px; margin-bottom: 8px; }
   .reward-card-color { height: 50px; margin-bottom: 12px; }
+  
+  /* ME card spans full width (2 columns) on mobile */
+  .reward-choices .essence-card {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 480px) {
@@ -195,10 +192,7 @@
   .reward-card { padding: 10px; }
   .reward-card h3 { font-size: 14px; }
   .reward-card-color { height: 40px; }
-  /* Ensure the essence card (which is appended after a full-width spacer) spans both columns */
-  .reward-choices .essence-card {
-    grid-column: 1 / -1;
-  }
+  /* The rule .reward-choices .essence-card is now handled by the 768px media query */
 
   /* Added spacing adjustments for very small screens */
   .reward-choices {

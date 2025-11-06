@@ -140,13 +140,6 @@ export class RewardUI {
     });
 
     // Essence choice card - visually separated with small spacer and explanation
-    const spacer = document.createElement('div');
-    spacer.style.width = '100%';
-    spacer.style.gridColumn = '1 / -1';
-    spacer.style.height = '1px';
-    spacer.style.background = 'transparent';
-    choicesContainer.appendChild(spacer);
-
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
