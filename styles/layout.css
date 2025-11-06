@@ -134,40 +134,47 @@
     padding: 10px;
     max-width: 100%;
   }
-
+  
+  /* Keep HUD, canvas and equipped-spells together as a fixed top block */
   #canvas-and-spells {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  #canvas-wrapper {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    max-width: 500px;
-    height: auto;
     position: fixed;
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 110;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    pointer-events: auto;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
   }
-
+  
+  #canvas-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-width: 500px;
+    height: auto;
+    position: relative;
+  }
+  
   #game-canvas,
   #fx-canvas {
     width: 100% !important;
     height: 100% !important;
   }
-
+  
   #equipped-spells {
     width: 100%;
     max-width: 100%;
     padding: 4px;
   }
-
+  
   #hud {
     position: fixed;
-    top: calc(12px + 8px);
+    top: 12px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -177,7 +184,7 @@
     opacity: 0.7;
     transition: opacity 0.2s, background 0.2s;
   }
-
+  
   #hud:hover,
   #hud:active,
   #hud:focus-within {
@@ -185,24 +192,30 @@
     opacity: 1;
     transform: translateX(-50%) translateY(-2px);
   }
-
+  
+  /* Reserve space for the fixed top block so the rest of the layout starts beneath it */
   body {
-    padding-top: calc(min(500px, 100vw * 0.75) + 56px);
+    padding-top: calc(min(500px, 100vw * 0.75) + 96px);
   }
-
+  
+  /* Make fusion UI the only scrollable area under the fixed top block */
   #fusion-ui {
     width: 100%;
-    max-width: 100%;
-    max-height: none;
-    overflow: visible;
-    padding: 4px;
+    max-width: 500px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    height: calc(100vh - (min(500px, 100vw * 0.75) + 96px));
+    overflow-y: auto;
+    padding: 8px;
     border: 2px solid #4a9eff;
+    background-clip: padding-box;
+    z-index: 100;
   }
-
+  
   #hud {
     font-size: 11px;
   }
-
+  
   .hud-item {
     display: inline-block;
     margin-bottom: 0;
