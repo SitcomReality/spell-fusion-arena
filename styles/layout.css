@@ -190,7 +190,8 @@
   }
 
   #fusion-ui {
-    max-height: 50vh;
+    max-height: none;
+    overflow: visible;
     padding: 10px;
   }
 
