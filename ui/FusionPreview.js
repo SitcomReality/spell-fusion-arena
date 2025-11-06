@@ -54,14 +54,16 @@ export class FusionPreview {
           </div>
         </div>
 
-        <div class="properties-section">
-          <div class="properties-title">Projectile Properties</div>
-          ${propertiesHtml}
-        </div>
+        <div class="properties-row">
+          <div class="properties-section">
+            <div class="properties-title">Projectile Properties</div>
+            ${propertiesHtml}
+          </div>
 
-        <div class="fusion-preview-controls">
-          <button class="fusion-preview-clear">Clear</button>
-          <button class="fusion-preview-equip">Equip</button>
+          <div class="fusion-preview-controls">
+            <button class="fusion-preview-clear">Clear</button>
+            <button class="fusion-preview-equip">Equip</button>
+          </div>
         </div>
       </div>
     `;
@@ -80,4 +82,3 @@ export class FusionPreview {
     this.onClear = callback;
   }
 }
-

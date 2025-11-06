@@ -51,13 +51,15 @@ export class ElementDetailsPanel {
         </div>
       </div>
 
-      <div class="properties-section">
-        <div class="properties-title">Projectile Properties</div>
-        ${propertiesHtml}
-      </div>
+      <div class="properties-row">
+        <div class="properties-section">
+          <div class="properties-title">Projectile Properties</div>
+          ${propertiesHtml}
+        </div>
 
-      <div class="element-details-controls">
-        <button class="element-add-btn">Add</button>
+        <div class="element-details-controls">
+          <button class="element-add-btn">Add</button>
+        </div>
       </div>
     `;
 
@@ -67,4 +69,3 @@ export class ElementDetailsPanel {
     });
   }
 }
-

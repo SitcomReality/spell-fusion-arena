@@ -291,6 +291,28 @@
   color: #aaa;
 }
 
+/* New helper to keep properties + controls on one row when space allows */
+.properties-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.properties-row .properties-section {
+  flex: 1 1 auto;
+  min-width: 0; /* allow proper shrinking for long content */
+}
+
+.properties-row .fusion-preview-controls,
+.properties-row .element-details-controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .spell-summary {
@@ -503,14 +525,4 @@
 .element-add-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* Allow properties section and controls to sit on same row where width allows */
-.properties-section {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-wrap: wrap;
 }
