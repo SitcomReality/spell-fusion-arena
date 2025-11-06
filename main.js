@@ -43,7 +43,32 @@ class Game {
     this.lastTime = 0;
     this.running = true;
     
+    this.setupMobileLayoutObserver();
+    
     this.start();
+  }
+  
+  setupMobileLayoutObserver() {
+    this.headerContainer = document.getElementById('canvas-and-spells');
+    this.fusionUIContainer = document.getElementById('fusion-ui');
+    
+    // Use ResizeObserver to detect the dynamic height of the fixed header region
+    // The height changes because the canvas aspect ratio is now square and width is responsive
+    this.layoutObserver = new ResizeObserver(entries => {
+      // Check if we are in mobile layout (viewport width check)
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        const entry = entries[0];
+        const height = entry.contentRect.height;
+        document.documentElement.style.setProperty('--fixed-header-height', `${height}px`);
+      } else {
+        // Reset if we are in desktop view
+        document.documentElement.style.setProperty('--fixed-header-height', `0px`);
+      }
+    });
+
+    if (this.headerContainer) {
+      this.layoutObserver.observe(this.headerContainer);
+    }
   }
   
   start() {

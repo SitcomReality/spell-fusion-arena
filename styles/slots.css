@@ -462,6 +462,8 @@
   /* Reduce gap between equipped spell wrappers on small screens */
   .spell-slot-wrapper {
     gap: 2px;
+    flex: 1 1 0; /* Added: allow stretching */
+    justify-content: center; /* Added: vertical centering */
   }
   
   .spell-summary-info {
@@ -533,13 +535,18 @@
 /* Mobile: responsive grid */
 @media (max-width: 768px) {
   .spell-slots {
-    grid-template-columns: repeat(4, 1fr);
+    display: flex; /* Override grid behavior */
+    flex-direction: column; /* Stack vertically */
     gap: 6px;
+    height: 100%; /* Fill the height of #equipped-spells */
+    justify-content: space-between;
   }
 
   .spell-slot {
     aspect-ratio: 1;
-    min-height: 60px;
+    width: 100%; /* Fill wrapper width (fixed to 62px in layout.css) */
+    max-width: 100%;
+    min-height: auto;
   }
 
   .spell-slot-content {
