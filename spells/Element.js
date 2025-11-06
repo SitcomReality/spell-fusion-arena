@@ -64,7 +64,8 @@ export const ELEMENTS = {
     damage: 19,
     chaining: 7,
     piercing: 3,
-    knockback: 3
+    knockback: 3,
+    spiral: 4
   }, {
     trail: true,
     trailType: 'spark',
@@ -158,7 +159,7 @@ export const ELEMENTS = {
     damage: 22,
     chaining: 5,
     aoe: 4,
-    piercing: 3
+    spiral: 3
   }, {
     trail: true,
     trailType: 'swirl',
@@ -177,7 +178,8 @@ export const ELEMENTS = {
     damage: 15,
     slowing: 8,
     dot: 3,
-    aoe: 4
+    aoe: 4,
+    wave: 2
   }, {
     trail: true,
     trailType: 'aura',
@@ -232,7 +234,8 @@ export const ELEMENTS = {
     speed: 210,
     damage: 19,
     piercing: 4,
-    aoe: 4
+    aoe: 4,
+    splitting: 3
   }, {
     trail: true,
     trailType: 'spark',
@@ -251,7 +254,8 @@ export const ELEMENTS = {
     damage: 24,
     chaining: 4,
     dot: 4,
-    knockback: 4
+    knockback: 4,
+    repulsion: 2
   }, {
     trail: true,
     trailType: 'spark',
@@ -270,7 +274,8 @@ export const ELEMENTS = {
     speed: 140,
     damage: 35,
     knockback: 10,
-    aoe: 8
+    aoe: 8,
+    repulsion: 3
   }, {
     trail: true,
     trailType: 'smoke',
@@ -288,7 +293,8 @@ export const ELEMENTS = {
     damage: 14,
     knockback: 5,
     piercing: 4,
-    chaining: 2
+    chaining: 2,
+    spiral: 5
   }, {
     trail: true,
     trailType: 'swirl',
@@ -307,17 +313,8 @@ export const ELEMENTS = {
     damage: 26,
     piercing: 6,
     chaining: 4,
-    knockback: 2
-  }, {
-    trail: true,
-    trailType: 'trail',
-    trailDensity: 5,
-    trailSize: 2,
-    aura: false,
-    impactParticles: 20,
-    impactType: 'spark',
-    metallic: true,
-    sparks: true
+    knockback: 2,
+    splitting: 2
   })
 };
 

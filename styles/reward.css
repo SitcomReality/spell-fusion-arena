@@ -138,10 +138,12 @@
 .reward-card-property-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
 .reward-card-property-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
 .reward-card-property-icon[data-property="lifesteal"] { background-image: url('/img/lifesteal.png'); }
-.reward-card-property-icon[data-property="chaining"] { background-image: url('/img/splitting.png'); }
-.reward-card-property-icon[data-property="vortex"] { background-image: url('/img/spiral.png'); }
-.reward-card-property-icon[data-property="shield"] { background-image: url('/img/repulsion.png'); }
+.reward-card-property-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
+.reward-card-property-icon[data-property="vortex"] { background-image: url('/img/attraction.png'); }
+.reward-card-property-icon[data-property="repulsion"] { background-image: url('/img/repulsion.png'); }
+.reward-card-property-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
 .reward-card-property-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
+.reward-card-property-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
 
 .reward-card-property-name {
   text-transform: capitalize;

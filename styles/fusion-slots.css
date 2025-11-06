@@ -89,10 +89,12 @@
 .property-badge[data-property="homing"] .property-icon { background-image: url('/img/homing.png'); }
 .property-badge[data-property="slowing"] .property-icon { background-image: url('/img/slowing.png'); }
 .property-badge[data-property="lifesteal"] .property-icon { background-image: url('/img/lifesteal.png'); }
-.property-badge[data-property="chaining"] .property-icon { background-image: url('/img/splitting.png'); }
-.property-badge[data-property="vortex"] .property-icon { background-image: url('/img/spiral.png'); }
-.property-badge[data-property="shield"] .property-icon { background-image: url('/img/repulsion.png'); }
+.property-badge[data-property="chaining"] .property-icon { background-image: url('/img/chaining.png'); }
+.property-badge[data-property="vortex"] .property-icon { background-image: url('/img/attraction.png'); }
+.property-badge[data-property="repulsion"] .property-icon { background-image: url('/img/repulsion.png'); }
+.property-badge[data-property="splitting"] .property-icon { background-image: url('/img/splitting.png'); }
 .property-badge[data-property="wave"] .property-icon { background-image: url('/img/wave.png'); }
+.property-badge[data-property="spiral"] .property-icon { background-image: url('/img/spiral.png'); }
 
 .property-name {
   color: #9db4ff;
