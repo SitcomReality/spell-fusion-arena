@@ -112,6 +112,45 @@
   box-shadow: 0 0 15px rgba(100, 200, 255, 0.3);
 }
 
+.spell-slot-stats {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(230,230,255,0.9);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.spell-slot-stats .stat-item {
+  background: rgba(0,0,0,0.25);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.04);
+  font-weight: 600;
+  color: #dff6ff;
+}
+
+.spell-slot-properties {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.prop-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(10,10,15,0.4);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #bfe9ff;
+  text-transform: lowercase;
+  font-weight: 600;
+}
+
 /* Reward modal and cards */
 #reward-overlay {
   position: fixed;
