@@ -113,6 +113,23 @@ export class FusionUI {
     this.selectedElements.push(element);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
+
+    // On small screens, scroll the fusion UI down to the "Create Spell" section
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+        const fusionContainer = this.container; // #fusion-ui
+        const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
+        // The second fusion-section contains the builder/preview by render layout
+        const targetSection = fusionSections[1] || fusionSections[0];
+        if (targetSection) {
+          // Scroll the fusion-ui container so the target section is visible
+          const offsetTop = targetSection.offsetTop;
+          fusionContainer.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });
+        }
+      }
+    } catch (e) {
+      // silent fallback on any error
+    }
   }
 
   removeElement(index) {
