@@ -1,125 +1,3 @@
-/* Layout and containers */
-#game-container {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  width: 100%;
-  padding: 20px;
-  max-width: 1400px;
-  flex-wrap: wrap;
-}
-
-/* New wrapper for canvas + equipped spells */
-#canvas-and-spells {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-/* Canvas wrapper for layering */
-#canvas-wrapper {
-  position: relative;
-  width: 800px;
-  height: 600px;
-  flex-shrink: 0;
-}
-
-/* HUD with sci-fi aesthetic */
-#hud {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 15, 46, 0.95) 100%);
-  padding: 15px;
-  border: 1px solid #4a9eff;
-  min-width: 150px;
-  z-index: 100;
-  font-size: 12px;
-  box-shadow: 0 0 15px rgba(74, 158, 255, 0.25), inset 0 0 10px rgba(74, 158, 255, 0.05);
-  font-family: 'Space Mono', monospace;
-  letter-spacing: 0.5px;
-}
-
-.hud-item {
-  margin-bottom: 8px;
-  font-size: 12px;
-  color: #64c8ff;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-/* Fusion UI panel */
-#fusion-ui {
-  flex: 1;
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
-  border: 2px solid #4a9eff;
-  padding: 20px;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  min-width: 300px;
-  box-shadow: 0 0 20px rgba(74, 158, 255, 0.2), inset 0 0 20px rgba(74, 158, 255, 0.05);
-}
-
-/* Equipped spells container */
-#equipped-spells {
-  width: 100%;
-  max-width: 800px;
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
-  border: 2px solid #4a9eff;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: stretch;
-  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15);
-}
-
-.equipped-title {
-  font-size: 14px;
-  color: #64c8ff;
-  margin-bottom: 6px;
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Tablet layout (768px - 1024px) */
-@media (max-width: 1024px) {
-  #game-container {
-    gap: 15px;
-    padding: 15px;
-  }
-
-  #canvas-wrapper {
-    width: 600px;
-    height: 450px;
-  }
-
-  #game-canvas,
-  #fx-canvas {
-    width: 600px !important;
-    height: 450px !important;
-  }
-
-  #fusion-ui {
-    max-width: 500px;
-    padding: 15px;
-  }
-
-  #hud {
-    padding: 12px;
-    min-width: 120px;
-    font-size: 11px;
-  }
-
-  .hud-item {
-    font-size: 11px;
-  }
-}
-
 /* Mobile layout (< 768px) */
 @media (max-width: 768px) {
   body {
@@ -130,28 +8,39 @@
 
   #game-container {
     flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 10px;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
     max-width: 100%;
   }
 
   #canvas-and-spells {
     width: 100%;
     max-width: 100%;
+    flex-direction: row;
+    gap: 0;
+    align-items: flex-start;
+    position: fixed;
+    top: 4px;
+    left: 0;
+    right: 0;
+    padding: 0;
+    z-index: 110;
+    justify-content: center;
   }
 
   #canvas-wrapper {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    max-width: 500px;
+    width: 50vw;
+    max-width: 300px;
+    aspect-ratio: 1;
     height: auto;
-    position: fixed;
-    top: 4px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
     z-index: 110;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    flex-shrink: 0;
   }
 
   #game-canvas,
@@ -161,23 +50,27 @@
   }
 
   #equipped-spells {
-    width: 100%;
-    max-width: 100%;
+    width: auto;
+    max-width: none;
     padding: 4px;
-    position: fixed;
-    /* 4px top gap + canvas height (min(...) ) + 4px gap */
-    top: calc(4px + min(500px, 100vw * 0.75) + 4px);
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 500px;
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    max-width: none;
     z-index: 120;
-    height: 120px;
-    overflow: hidden;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+    flex-shrink: 0;
   }
 
   #hud {
     position: fixed;
-    top: calc(4px + 8px);
+    top: 4px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -202,14 +95,13 @@
     padding: 4px;
     border: 2px solid #4a9eff;
     position: fixed;
-    /* stack: canvas top (4px) + canvas height + small gap (4px) + equipped height (120px) + gap (4px) */
-    top: calc(4px + min(500px, 100vw * 0.75) + 4px + 120px + 4px);
+    top: calc(4px + 50vw + 8px);
+    max-width: 50vw;
     left: 50%;
     transform: translateX(-50%);
-    max-width: 500px;
     bottom: 0;
     overflow-y: auto;
-    min-height: 220px;
+    min-height: 150px;
   }
 
   .hud-item {
@@ -220,67 +112,3 @@
   }
 }
 
-/* Small mobile (< 480px) */
-@media (max-width: 480px) {
-  #game-container {
-    padding: 8px;
-    gap: 10px;
-  }
-
-  #canvas-wrapper {
-    max-width: 100%;
-  }
-
-  #fusion-ui {
-    max-height: none;
-    overflow-y: scroll;
-    padding: 4px;
-    min-height: 150px;
-  }
-
-  #hud {
-    top: 8px;
-    width: calc(100% - 24px);
-    max-width: 420px;
-    padding: 8px;
-  }
-
-  #hud:hover,
-  #hud:active,
-  #hud:focus-within {
-    transform: translateX(-50%) translateY(-1px);
-  }
-}
-
-/* Scrollbar styling for Fusion UI elements (Moved from reward.css) */
-#fusion-ui::-webkit-scrollbar {
-  width: 8px;
-}
-
-#fusion-ui::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-
-#fusion-ui::-webkit-scrollbar-thumb {
-  background: #333;
-}
-
-#fusion-ui::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-.elements-library::-webkit-scrollbar {
-  width: 6px;
-}
-
-.elements-library::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.elements-library::-webkit-scrollbar-thumb {
-  background: #333;
-}
-
-.elements-library::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
