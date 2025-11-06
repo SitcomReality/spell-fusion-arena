@@ -1,0 +1,197 @@
+styles/layout.css
+```css
+/* Mobile layout (< 768px) */
+@media (max-width: 768px) {
+  body {
+    min-height: auto;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  #canvas-and-spells {
+    width: 100%;
+    max-width: 100%;
+    flex-direction: row;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  #canvas-wrapper {
+    width: calc(100% - 80px);
+    aspect-ratio: 1;
+    max-width: 500px;
+    height: auto;
+    position: relative;
+    top: 4px;
+    left: auto;
+    transform: none;
+    z-index: 110;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  }
+
+  #game-canvas,
+  #fx-canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #equipped-spells {
+    width: 70px;
+    max-width: 70px;
+    padding: 4px;
+    position: relative;
+    top: 4px;
+    left: auto;
+    transform: none;
+    max-width: none;
+    z-index: 120;
+    height: auto;
+    overflow: visible;
+  }
+
+  #hud {
+    position: fixed;
+    top: calc(4px + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 500px;
+    z-index: 130;
+    background: linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(26, 15, 46, 0.7) 100%);
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+  }
+
+  #hud:hover,
+  #hud:active,
+  #hud:focus-within {
+    background: linear-gradient(135deg, rgba(10, 10, 15, 1) 0%, rgba(26, 15, 46, 1) 100%);
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  #fusion-ui {
+    width: 100%;
+    max-width: 100%;
+    padding: 4px;
+    border: 2px solid #4a9eff;
+    position: fixed;
+    top: calc(4px + min(500px, calc(100vw - 80px) * 0.75) + 4px + 120px + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    bottom: 0;
+    overflow-y: auto;
+    min-height: 220px;
+  }
+
+  .hud-item {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 12px;
+    font-size: 10px;
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  #game-container {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  #canvas-wrapper {
+    width: calc(100% - 70px);
+    max-width: 100%;
+  }
+
+  #equipped-spells {
+    width: 60px;
+    max-width: 60px;
+  }
+
+  #fusion-ui {
+    max-height: none;
+    overflow-y: scroll;
+    padding: 4px;
+    min-height: 150px;
+  }
+
+  #hud {
+    top: 8px;
+    width: calc(100% - 24px);
+    max-width: 420px;
+    padding: 8px;
+  }
+
+  #hud:hover,
+  #hud:active,
+  #hud:focus-within {
+    transform: translateX(-50%) translateY(-1px);
+  }
+}
+
+/* Mobile spell slots adjustments */
+@media (max-width: 768px) {
+  .spell-slots {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .spell-slot {
+    min-height: 50px;
+    aspect-ratio: auto;
+    height: calc(min(500px, calc(100vw - 80px) * 0.75) / 4 - 3px);
+  }
+
+  .spell-slot-wrapper {
+    gap: 2px;
+  }
+
+  .spell-slot-content {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .spell-slot-name {
+    font-size: 9px;
+  }
+
+  .spell-slot-essence {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 8px;
+  }
+
+  .spell-slot-unequip {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    top: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .spell-slot {
+    min-height: 40px;
+    height: calc(min(420px, calc(100vw - 70px) * 0.75) / 4 - 2px);
+  }
+}
+
