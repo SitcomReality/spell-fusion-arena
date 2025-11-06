@@ -30,8 +30,8 @@ export const ELEMENTS = {
     damage: 20,
     projectileType: 'straight'
   }, {
-    dot: 10,
-    knockback: 2
+    dot: 8,
+    chaining: 4
   }, {
     trail: true,
     trailType: 'spark',
