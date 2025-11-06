@@ -26,54 +26,64 @@
   flex-shrink: 0;
 }
 
-/* HUD */
+/* HUD with sci-fi aesthetic */
 #hud {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(0, 0, 0, 0.9);
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 15, 46, 0.95) 100%);
   padding: 15px;
-  border: 1px solid #333;
+  border: 1px solid #4a9eff;
   min-width: 150px;
   z-index: 100;
   font-size: 12px;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.25), inset 0 0 10px rgba(74, 158, 255, 0.05);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.5px;
 }
 
 .hud-item {
   margin-bottom: 8px;
   font-size: 12px;
+  color: #64c8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 /* Fusion UI panel */
 #fusion-ui {
   flex: 1;
-  background: #111;
-  border: 2px solid #333;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
   padding: 20px;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   min-width: 300px;
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.2), inset 0 0 20px rgba(74, 158, 255, 0.05);
 }
 
 /* Equipped spells container */
 #equipped-spells {
   width: 100%;
   max-width: 800px;
-  background: #111;
-  border: 2px solid #333;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: stretch;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15);
 }
 
 .equipped-title {
   font-size: 14px;
-  color: #fff;
+  color: #64c8ff;
   margin-bottom: 6px;
   text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Tablet layout (768px - 1024px) */
@@ -135,13 +145,12 @@
     aspect-ratio: 4 / 3;
     max-width: 500px;
     height: auto;
-    /* Keep the canvas fixed at the top so the rest of the UI scrolls underneath */
     position: fixed;
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 110;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
   }
 
   #game-canvas,
@@ -155,44 +164,38 @@
     max-width: 100%;
   }
 
-  /* Ensure HUD is fixed and sits in front of the fixed canvas */
   #hud {
     position: fixed;
-    top: calc(12px + 8px); /* slightly inset from the top of the fixed canvas */
+    top: calc(12px + 8px);
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
     max-width: 500px;
     z-index: 130;
-    background: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(26, 15, 46, 0.7) 100%);
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
   }
 
-  /* Reserve space at the top of the page equal to the fixed canvas + some gap,
-     so the rest of the UI starts below the fixed canvas and HUD and can scroll. */
+  #hud:hover,
+  #hud:active,
+  #hud:focus-within {
+    background: linear-gradient(135deg, rgba(10, 10, 15, 1) 0%, rgba(26, 15, 46, 1) 100%);
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+  }
+
   body {
     padding-top: calc(min(500px, 100vw * 0.75) + 56px);
   }
 
-  /* Allow the fusion UI to expand naturally on small screens so the page scrolls instead of the panel */
   #fusion-ui {
     width: 100%;
     max-width: 100%;
     max-height: none;
     overflow: visible;
     padding: 4px;
-    border: 2px solid #333;
-  }
-
-  /* HUD overlay on top of canvas: centered, semi-transparent, increase to full opacity on hover/touch */
-  /* (fixed HUD handled above) */
-
-  /* Increase opacity (and slightly lift) when hovered, active (touch) or focused */
-  #hud:hover,
-  #hud:active,
-  #hud:focus-within {
-    background: rgba(0, 0, 0, 1);
-    opacity: 1;
-    transform: translateX(-50%) translateY(-2px);
+    border: 2px solid #4a9eff;
   }
 
   #hud {
@@ -207,7 +210,7 @@
   }
 }
 
-/* Small mobile (< 480px) keep overlay behavior but slightly adjust sizing */
+/* Small mobile (< 480px) */
 @media (max-width: 480px) {
   #game-container {
     padding: 8px;
@@ -235,9 +238,5 @@
   #hud:active,
   #hud:focus-within {
     transform: translateX(-50%) translateY(-1px);
-  }
-
-  #hud {
-    padding: 8px;
   }
 }

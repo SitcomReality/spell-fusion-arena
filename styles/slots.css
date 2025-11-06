@@ -13,18 +13,25 @@
 
 .fusion-slot {
   aspect-ratio: 1;
-  background: #0a0a0a;
-  border: 2px dashed #333;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+  border: 2px solid #4a2a7f;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.1), inset 0 0 8px rgba(138, 43, 226, 0.05);
+}
+
+.fusion-slot:hover {
+  border-color: #7a5aaf;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
 }
 
 .fusion-slot.locked {
-  position: relative;
-  background: linear-gradient(180deg, #0a0a0a 0%, #090909 100%);
-  border: 2px dashed #2a2a2a;
-  color: #999;
+  background: linear-gradient(135deg, #0a0a0f 0%, #15080f 100%);
+  border: 2px dashed #4a2a7f;
+  color: #888;
+  opacity: 0.6;
 }
 
 /* Locked overlay inside the slot */
@@ -48,16 +55,18 @@
 .fusion-slot-unlock {
   padding:6px 8px;
   font-size:12px;
-  border:1px solid #333;
-  background:#1a1a1a;
-  color:#fff;
+  border:1px solid #4a2a7f;
+  background: rgba(74, 42, 127, 0.1);
+  color: #b0d4ff;
   cursor:pointer;
   border-radius:4px;
+  transition:all 0.2s ease;
 }
 
 .fusion-slot-unlock:hover {
-  border-color:#666;
-  background:#2a2a2a;
+  border-color:#7a5aaf;
+  background:rgba(138, 43, 226, 0.15);
+  box-shadow:0 0 10px rgba(138, 43, 226, 0.2);
 }
 
 .fusion-slot-locked-hint {
@@ -176,13 +185,14 @@
 
 /* Fusion Preview */
 .fusion-preview {
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+  border: 1px solid #4a9eff;
   padding: 15px;
   min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15), inset 0 0 10px rgba(74, 158, 255, 0.05);
 }
 
 .spell-result {
@@ -424,20 +434,23 @@
 .fusion-preview-clear,
 .fusion-preview-equip {
   padding: 8px 16px;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #fff;
+  border: 1px solid #4a9eff;
+  background: rgba(74, 158, 255, 0.08);
+  color: #b0d4ff;
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .fusion-preview-clear:hover,
 .fusion-preview-equip:hover:not(:disabled) {
-  border-color: #666;
-  background: #2a2a2a;
+  border-color: #64c8ff;
+  background: rgba(100, 200, 255, 0.15);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
 }
 
 .fusion-preview-equip:disabled {
@@ -449,24 +462,27 @@
 .element-details-controls {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #4a2a7f;
 }
 
 .element-add-btn {
   width: 100%;
   padding: 8px 16px;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #fff;
+  border: 1px solid #4a9eff;
+  background: rgba(74, 158, 255, 0.08);
+  color: #b0d4ff;
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .element-add-btn:hover:not(:disabled) {
-  border-color: #666;
-  background: #2a2a2a;
+  border-color: #64c8ff;
+  background: rgba(100, 200, 255, 0.15);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
 }
 
 .element-add-btn:disabled {

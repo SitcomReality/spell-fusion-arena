@@ -12,9 +12,11 @@
 }
 
 .fusion-section h2 {
-  font-size: 16px;
-  font-weight: 500;
-  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64c8ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Elements Library */
@@ -33,26 +35,28 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px;
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 1px solid #4a2a7f;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   align-items: center;
   text-align: center;
-  /* let cards size to their content but not get too small */
   flex: 0 0 auto;
   min-width: 50px;
   max-width: 160px;
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.1);
 }
 
 .element-card:hover {
-  border-color: #666;
-  background: #1a1a1a;
+  border-color: #7a5aaf;
+  background: linear-gradient(135deg, #1a0f2e 0%, #2a1a4e 100%);
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
 }
 
 .element-card.selected {
-  border-color: #999;
-  background: #2a2a2a;
+  border-color: #64c8ff;
+  background: linear-gradient(135deg, #1a2a3a 0%, #2a1a4e 100%);
+  box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
 }
 
 .element-card-color {
@@ -156,11 +160,12 @@
 
 /* Element Details Panel */
 .element-details-panel {
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+  border: 1px solid #4a9eff;
   padding: 12px;
   margin-top: 8px;
   display: none;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15), inset 0 0 10px rgba(74, 158, 255, 0.05);
 }
 
 .element-details-panel.active {
@@ -248,9 +253,9 @@
 
 .properties-title {
   font-size: 11px;
-  color: #777;
+  color: #64c8ff;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   margin-bottom: 6px;
 }
 
@@ -264,20 +269,26 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #0d0d0d;
-  border: 1px solid #222;
+  background: rgba(138, 43, 226, 0.1);
+  border: 1px solid #4a2a7f;
   padding: 6px 8px;
   border-radius: 4px;
   font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.property-badge:hover {
+  border-color: #7a5aaf;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
 }
 
 .property-name {
-  color: #ddd;
+  color: #9db4ff;
   text-transform: capitalize;
 }
 
 .property-value {
-  color: #fff;
+  color: #64c8ff;
   font-weight: 600;
 }
 

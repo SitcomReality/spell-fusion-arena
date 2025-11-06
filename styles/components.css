@@ -1,7 +1,7 @@
 /* Canvas and canvas layers */
 #game-canvas,
 #fx-canvas {
-  border: 2px solid #333;
+  border: 2px solid #4a9eff;
   background: #0a0a0a;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -10,29 +10,61 @@
   left: 0;
   width: 800px;
   height: 600px;
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.3), inset 0 0 20px rgba(74, 158, 255, 0.05);
 }
 
 #fx-canvas {
   pointer-events: none;
   background: transparent;
   border: none;
+  box-shadow: none;
 }
 
-/* Generic card and panel styling */
+/* Cards and panels with sci-fi aesthetic */
 .reward-card,
 .element-card,
 .element-details-panel,
 .fusion-preview,
 .spell-slot,
 .fusion-slot {
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 1px solid #4a2a7f;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.1);
 }
 
-/* Buttons */
+.element-card:hover,
+.reward-card:hover {
+  border-color: #7a5aaf;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+}
+
+.element-card.selected {
+  border-color: #64c8ff;
+  box-shadow: 0 0 25px rgba(100, 200, 255, 0.3);
+}
+
+/* Buttons with neon accent */
 button {
   font-family: inherit;
   touch-action: manipulation;
+  transition: all 0.2s ease;
+}
+
+button:not(:disabled) {
+  border-color: #4a9eff;
+  background: rgba(74, 158, 255, 0.08);
+  color: #b0d4ff;
+}
+
+button:hover:not(:disabled) {
+  border-color: #64c8ff;
+  background: rgba(100, 200, 255, 0.15);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Touch-friendly button sizes on mobile */
