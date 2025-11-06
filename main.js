@@ -24,8 +24,6 @@ class Game {
     this.fusionUI = new FusionUI((spells, essence) => {
       this.gameState.player.equipSpells(spells, essence);
     });
-    // ensure HUD can read the fusion UI's essence bank for accurate display
-    this.hud.setFusionUI(this.fusionUI);
 
     this.rewardUI = new RewardUI((reward) => {
       // Handle chosen reward
@@ -103,5 +101,8 @@ class Game {
 
 // Start game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  new Game();
+  const game = new Game();
+  // Expose for UI components (HUD) to read dynamic values like essenceBank
+  window.gameInstance = game;
 });
+
