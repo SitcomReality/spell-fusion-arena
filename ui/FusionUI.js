@@ -193,19 +193,6 @@ export class FusionUI {
       slot.dataset.slot = i;
       const essence = this.spellSlotEssence[i];
 
-      // Optional plus button above slot when bank > 0
-      if (this.essenceBank > 0) {
-        const addBtn = document.createElement('button');
-        addBtn.className = 'slot-add-essence';
-        addBtn.textContent = '+';
-        addBtn.title = 'Assign 1 Mana Essence to this slot';
-        addBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.allocateEssenceToSlot(i);
-        });
-        slot.appendChild(addBtn);
-      }
-
       if (this.equippedSpells[i]) {
         const spell = this.equippedSpells[i];
         const color = spell.color;
@@ -224,6 +211,19 @@ export class FusionUI {
         });
       } else {
         slot.innerHTML += `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
+      }
+
+      // Optional plus button above slot when bank > 0 — add AFTER innerHTML so it isn't removed
+      if (this.essenceBank > 0) {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'slot-add-essence';
+        addBtn.textContent = '+';
+        addBtn.title = 'Assign 1 Mana Essence to this slot';
+        addBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.allocateEssenceToSlot(i);
+        });
+        slot.appendChild(addBtn);
       }
 
       grid.appendChild(slot);
