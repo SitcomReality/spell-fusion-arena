@@ -1,151 +1,21 @@
-import { Player } from '../entities/Player.js';
-import { WaveManager } from './WaveManager.js';
 import { Projectile } from '../spells/Projectile.js';
-import { CONFIG } from '../config.js';
-import { CollisionHandler } from './CollisionHandler.js';
-import { ParticleManager } from './ParticleManager.js';
 
-export class GameState {
-  constructor(canvasWidth, canvasHeight) {
-    this.width = canvasWidth;
-    this.height = canvasHeight;
-    this.centerX = canvasWidth / 2;
-    this.centerY = canvasHeight / 2;
-
-    this.player = new Player(this.centerX, this.centerY, CONFIG.player.radius);
-    // Initial setup for player spells and essence
-    this.player.equipSpells([], [5, 0, 0, 0]);
-
-    this.waveManager = new WaveManager(this.centerX, this.centerY);
-    this.enemies = [];
-    this.projectiles = [];
-    this.particles = [];
-
-    this.score = 0;
-    this.paused = false;
-
-    // New: handlers for collision and particles
-    this.collisionHandler = new CollisionHandler(this);
-    this.particleManager = new ParticleManager(this);
-  }
-
-  update(dt) {
-    if (this.paused) return;
-
-    // Update wave manager
-    this.waveManager.update(dt);
-
-    // Spawn new wave if needed
-    if (this.waveManager.waveActive && this.enemies.length === 0) {
-      this.enemies = this.waveManager.spawnWave();
-    }
-
-    // Update player and check for casting
-    const readySlots = this.player.update(dt);
-    if (readySlots) {
-      for (const slotIndex of readySlots) {
-        this.castSpell(slotIndex);
-      }
-    }
-
-    // Update knockback on enemies
-    for (const enemy of this.enemies) {
-      if (enemy.knockbackTimer && enemy.knockbackTimer > 0) {
-        enemy.knockbackTimer -= dt;
-        enemy.x += enemy.knockbackVx * dt;
-        enemy.y += enemy.knockbackVy * dt;
-        
-        // Apply friction
-        enemy.knockbackVx *= 0.85;
-        enemy.knockbackVy *= 0.85;
-      }
-    }
-
-    // Update enemies
-    for (const enemy of this.enemies) {
-      enemy.update(dt, this.centerX, this.centerY);
-    }
-
-    // Update projectiles and collect trail particles
-    for (const projectile of this.projectiles) {
-      const trailParticles = projectile.update(dt, this.enemies, this.width, this.height);
-      if (trailParticles) {
-        this.particles.push(...trailParticles);
-      }
-    }
-
-    // Check collisions (delegated)
-    this.collisionHandler.checkCollisions();
-
-    // Remove dead entities
-    this.projectiles = this.projectiles.filter(p => p.alive);
-    this.enemies = this.enemies.filter(e => {
-      if (!e.alive) {
-        this.waveManager.enemyDefeated();
-        this.score += 10;
-        return false;
-      }
-      return true;
-    });
-  }
-
-  castSpell(slotIndex) {
-    if (!this.player.equippedSpells[slotIndex]) return;
-
-    const spell = this.player.equippedSpells[slotIndex];
-
-    // Find nearest enemy or shoot forward
-    let targetX = this.centerX;
-    let targetY = this.centerY - 100;
-
-    if (this.enemies.length > 0) {
-      const nearest = this.findNearestEnemy();
-      if (nearest) {
-        targetX = nearest.x;
-        targetY = nearest.y;
-      }
-    }
-
-    const projectile = new Projectile(
-      this.player.x,
-      this.player.y,
-      spell,
-      targetX,
-      targetY
-    );
-
-    this.projectiles.push(projectile);
-  }
-
-  findNearestEnemy() {
-    let nearest = null;
-    let minDist = Infinity;
-
-    for (const enemy of this.enemies) {
-      if (!enemy.alive) continue;
-      const dx = enemy.x - this.player.x;
-      const dy = enemy.y - this.player.y;
-      const dist = dx * dx + dy * dy;
-      if (dist < minDist) {
-        minDist = dist;
-        nearest = enemy;
-      }
-    }
-
-    return nearest;
+export class CollisionHandler {
+  constructor(gameState) {
+    this.game = gameState;
   }
 
   checkCollisions() {
-    for (const projectile of this.projectiles) {
+    const game = this.game;
+    for (const projectile of game.projectiles) {
       if (!projectile.alive) continue;
 
       // For chaining, check if we've already hit this enemy
       const chainedEnemies = projectile.chainedEnemies || [];
 
-      for (const enemy of this.enemies) {
+      for (const enemy of game.enemies) {
         if (!enemy.alive) continue;
 
-        // For chaining, check if we've already hit this enemy
         if (chainedEnemies.includes(enemy)) continue;
 
         const dx = projectile.x - enemy.x;
@@ -153,7 +23,7 @@ export class GameState {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         let hitRadius = projectile.radius + enemy.type.width / 2;
-        
+
         // AOE expands hit radius
         if (projectile.properties.aoe && projectile.properties.aoe > 0) {
           hitRadius += projectile.properties.aoe * 15;
@@ -164,22 +34,22 @@ export class GameState {
           if (hit) {
             // Apply projectile properties to hit enemy
             projectile.applyProjectileProperties(enemy);
-            
+
             // Create impact particles
             const impactParticles = projectile.createImpactParticles();
-            this.particles.push(...impactParticles);
-            
+            game.particles.push(...impactParticles);
+
             // Handle AoE damage to nearby enemies
             const aoeIntensity = projectile.properties.aoe || 0;
             if (aoeIntensity > 0) {
               this.handleAoEDamage(projectile, enemy, aoeIntensity);
             }
-            
+
             // Handle piercing
             const pierceIntensity = projectile.properties.piercing || 0;
             const maxPierces = Math.floor(pierceIntensity) + 1;
             const pierceCount = (projectile.pierceCount || 0);
-            
+
             let shouldDie = false;
             if (pierceCount >= maxPierces) {
               shouldDie = true;
@@ -199,7 +69,7 @@ export class GameState {
               const chainedEnemies = projectile.chainedEnemies || [];
               chainedEnemies.push(enemy);
               projectile.chainedEnemies = chainedEnemies;
-              
+
               // Try to find another enemy to chain to
               const nextTarget = this.findChainTarget(projectile, chainedEnemies);
               if (nextTarget) {
@@ -224,33 +94,34 @@ export class GameState {
   }
 
   handleAoEDamage(projectile, centerEnemy, aoeIntensity) {
+    const game = this.game;
     const aoeRadius = 50 + aoeIntensity * 30; // Base 50px, scales with intensity
-    
-    for (const enemy of this.enemies) {
+
+    for (const enemy of game.enemies) {
       if (!enemy.alive || enemy === centerEnemy) continue;
-      
+
       const dx = enemy.x - centerEnemy.x;
       const dy = enemy.y - centerEnemy.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      
+
       if (dist < aoeRadius) {
         // Damage falls off with distance
         const falloff = 1 - (dist / aoeRadius);
         const damageMultiplier = falloff * (0.5 + aoeIntensity * 0.1); // Scales with intensity
-        
+
         // Deal damage to this enemy
         const baseDamage = projectile.spell.properties.damage || 10;
         const damage = baseDamage * damageMultiplier;
-        
+
         // Create a temporary projectile-like object to use takeDamage
         const aoeDamageProj = {
           x: centerEnemy.x,
           y: centerEnemy.y,
           radius: projectile.radius
         };
-        
+
         enemy.takeDamage(aoeDamageProj);
-        
+
         // Apply DoT properties from projectile
         const dotIntensity = projectile.properties.dot || 0;
         if (dotIntensity > 0) {
@@ -258,7 +129,7 @@ export class GameState {
           const damagePerTick = Math.max(1, damage * dotIntensity * 0.12);
           enemy.applyBurning(duration, damagePerTick);
         }
-        
+
         // Apply slowing from AoE
         const slowIntensity = projectile.properties.slowing || 0;
         if (slowIntensity > 0) {
@@ -271,11 +142,12 @@ export class GameState {
   }
 
   handleSplitting(parentProjectile, collisionEnemy) {
+    const game = this.game;
     const splittingPotency = (parentProjectile.properties.splitting || 0) * parentProjectile.potencyMultiplier;
-    
+
     // Determine number of child projectiles based on splitting potency
     const numChildren = Math.max(1, Math.floor(splittingPotency / 3));
-    
+
     for (let i = 0; i < numChildren; i++) {
       // Create new projectile with weakened properties
       const childProjectile = new Projectile(
@@ -286,31 +158,32 @@ export class GameState {
         collisionEnemy.x + (Math.random() - 0.5) * 200,
         collisionEnemy.y + (Math.random() - 0.5) * 200
       );
-      
+
       // Inherit generation and degrade potency
       childProjectile.generation = parentProjectile.generation + 1;
       childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.7;
-      
+
       // Create weakened spell with reduced properties
       childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
       childProjectile.properties = childProjectile.spell.properties;
-      
-      this.projectiles.push(childProjectile);
+
+      game.projectiles.push(childProjectile);
     }
   }
 
   findChainTarget(currentProjectile, chainedEnemies) {
+    const game = this.game;
     const chainRange = 150; // How far to search for next target
     let nearest = null;
     let minDist = chainRange;
 
-    for (const enemy of this.enemies) {
+    for (const enemy of game.enemies) {
       if (!enemy.alive || chainedEnemies.includes(enemy)) continue;
-      
+
       const dx = enemy.x - currentProjectile.x;
       const dy = enemy.y - currentProjectile.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      
+
       if (dist < minDist) {
         minDist = dist;
         nearest = enemy;
@@ -325,7 +198,7 @@ export class GameState {
     const dy = targetEnemy.y - projectile.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const speed = projectile.spell.properties.speed;
-    
+
     if (dist > 0) {
       projectile.vx = (dx / dist) * speed;
       projectile.vy = (dy / dist) * speed;
@@ -349,21 +222,5 @@ export class GameState {
     }
 
     return weakenedSpell;
-  }
-
-  createParticles(x, y, color) {
-    this.particleManager.createParticles(x, y, color);
-  }
-
-  updateParticles(dt) {
-    this.particleManager.updateParticles(dt);
-  }
-
-  pause() {
-    this.paused = true;
-  }
-
-  resume() {
-    this.paused = false;
   }
 }
