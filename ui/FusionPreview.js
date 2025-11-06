@@ -1,53 +1,33 @@
+import { DetailPanel } from './DetailPanel.js';
+
 export class FusionPreview {
   constructor() {
-    this.container = null;
+    this.panel = new DetailPanel();
     this.onClear = null;
   }
 
   mount(container) {
-    this.container = container;
-    // Render the full preview layout in a visually disabled state
-    this.container.innerHTML = `
-      <div class="spell-result panel disabled">
-        <div class="spell-summary">
-          <div class="spell-summary-info">
-            <div class="spell-result-color" style="background: #111"></div>
-            <div class="spell-summary-text">
-              <h3>No spell</h3>
-            </div>
-          </div>
-          <div class="fusion-preview-controls">
-            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
-          </div>
-        </div>
-
-        <div class="spell-details-body"> 
-          <div class="properties-empty">Add elements to create a spell</div>
-        </div>
-      </div>
-    `;
+    this.panel.mount(container);
+    this.panel.renderEmpty();
   }
 
   showMessage(msg) {
-    if (!this.container) return;
-    // Update to disabled layout with provided message in the properties area
-    this.container.innerHTML = `
-      <div class="spell-result panel disabled">
-        <div class="spell-summary">
-          <div class="spell-summary-info">
-            <div class="spell-result-color" style="background: #111"></div>
-            <div class="spell-summary-text">
+    if (!this.panel.container) return;
+    this.panel.container.innerHTML = `
+      <div class="detail-panel panel disabled">
+        <div class="panel-summary">
+          <div class="panel-summary-info">
+            <div class="panel-color" style="background: #111"></div>
+            <div class="panel-summary-text">
               <h3>No spell</h3>
             </div>
           </div>
-          <div class="fusion-preview-controls">
+          <div class="panel-controls">
             <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
             <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
           </div>
         </div>
-
-        <div class="spell-details-body">
+        <div class="panel-body">
           <div class="properties-empty">${msg}</div>
         </div>
       </div>
@@ -55,57 +35,39 @@ export class FusionPreview {
   }
 
   showSpell(spell, onEquip) {
-    if (!this.container) return;
+    if (!this.panel.container) return;
     const color = spell.color;
     const props = spell.properties || {};
-    const propEntries = Object.entries(props);
-    const propertiesHtml = propEntries.length === 0
-      ? '<div class="properties-empty">No special properties</div>'
-      : '<div class="properties-list">' + propEntries.map(([k, v]) =>
-          `<div class="property-badge" data-property="${k}">
-            <span class="property-icon"></span>
-            <span class="property-value">${Math.round(v * 100) / 100}</span>
-          </div>`
-        ).join('') + '</div>';
+    const propEntries = Object.entries(props).map(([k, v]) => ({
+      key: k,
+      value: Math.round(v * 100) / 100
+    }));
 
-    this.container.innerHTML = `
-      <div class="spell-result panel">
-        <div class="spell-summary">
-          <div class="spell-summary-info">
-            <div class="spell-result-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-            <div class="spell-summary-text">
-              <h3>${spell.name}</h3>
-            </div>
-          </div>
-          <div class="fusion-preview-controls">
-            <button class="fusion-preview-clear">Clear</button>
-            <button class="fusion-preview-equip">Equip</button>
-          </div>
-        </div>
-
-        <div class="spell-details-body">
-          ${propertiesHtml}
-        </div>
-      </div>
-    `;
-
-    // Add event listeners for the integrated controls
-    const clearBtn = this.container.querySelector('.fusion-preview-clear');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        if (this.onClear) this.onClear();
-      });
-    }
-
-    const equipBtn = this.container.querySelector('.fusion-preview-equip');
-    if (equipBtn) {
-      equipBtn.addEventListener('click', () => {
-        if (onEquip) onEquip();
-      });
-    }
+    this.panel.render(
+      spell.name,
+      color,
+      propEntries,
+      [
+        {
+          className: 'fusion-preview-clear',
+          label: 'Clear',
+          onClick: () => {
+            if (this.onClear) this.onClear();
+          }
+        },
+        {
+          className: 'fusion-preview-equip',
+          label: 'Equip',
+          onClick: () => {
+            if (onEquip) onEquip();
+          }
+        }
+      ]
+    );
   }
 
   setOnClear(callback) {
     this.onClear = callback;
   }
 }
+

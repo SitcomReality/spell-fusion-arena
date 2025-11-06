@@ -1,83 +1,57 @@
-/* Fusion Preview */
-.fusion-preview {
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
-  border: 1px solid #4a9eff;
-  padding: 15px;
-  min-height: 80px;
+/* Unified detail panel styles */
+.panel-summary,
+.panel-summary-info {
   display: flex;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15), inset 0 0 10px rgba(74, 158, 255, 0.05);
-}
-
-.spell-result {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
-/* Ensure summary row places title on left and controls on the right */
-.spell-summary,
-.element-summary {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+.panel-summary {
   justify-content: space-between;
   margin-bottom: 0;
-  width: 100%;
 }
 
-.spell-summary-info,
-.element-summary-info {
-  display: flex;
+.panel-summary-info {
   gap: 10px;
   align-items: flex-start;
   min-width: 0;
 }
 
-.spell-summary-text,
-.element-summary-text {
+.panel-summary-text {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.spell-summary-text h3 {
+.panel-summary-text h3 {
   font-size: 16px;
   font-weight: 500;
   white-space: normal;
   word-break: break-word;
 }
 
-.spell-result-color,
-.element-details-color {
+.panel-color {
   width: 50px;
   height: 50px;
   border: 1px solid #333;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
-/* New element for property grouping */
-.spell-details-body,
-.element-details-body {
-    flex: 1 1 auto;
+.panel-body {
+  flex: 1 1 auto;
 }
 
-/* Move controls styling to be compact when placed in summary */
-.fusion-preview-controls,
-.element-details-controls {
+.panel-controls {
   display: flex;
   gap: 8px;
-  margin: 0;
-  padding: 0;
   align-items: center;
   flex-shrink: 0;
 }
 
-.fusion-preview-controls button,
-.element-details-controls button {
+.panel-controls button {
   padding: 6px 10px;
   border: 1px solid #4a9eff;
   background: rgba(74, 158, 255, 0.08);
@@ -86,49 +60,42 @@
   font-family: inherit;
   font-size: 12px;
   transition: all 0.15s ease;
-  flex: none;
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
 
-.fusion-preview-controls button:hover,
-.element-details-controls button:hover:not(:disabled) {
+.panel-controls button:hover:not(:disabled) {
   border-color: #64c8ff;
   background: rgba(100, 200, 255, 0.15);
   box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
 }
 
-.fusion-preview-equip:disabled,
-.element-add-btn:disabled {
+.panel-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
-  .spell-summary, .element-summary {
-    display: flex;
+  .panel-summary {
     flex-wrap: wrap;
     gap: 8px;
-    align-items: flex-start;
     justify-content: flex-start;
+    align-items: flex-start;
   }
 
-  .spell-result-color,
-  .element-details-color {
+  .panel-color {
     width: 40px;
     height: 40px;
   }
 
-  .spell-summary-text h3 {
+  .panel-summary-text h3 {
     font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .spell-summary {
-    display: flex;
-    flex-wrap: wrap;
+  .panel-summary {
     gap: 6px;
   }
 }
