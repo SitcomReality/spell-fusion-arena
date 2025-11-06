@@ -77,7 +77,7 @@ export class RewardUI {
     essenceCard.innerHTML = `
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
-      <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
+      <!-- description removed; stats/properties convey function -->
       <div class="reward-card-small-desc">Use Mana Essence to power up spell slots.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>
@@ -124,7 +124,7 @@ export class RewardUI {
       card.innerHTML = `
         <div class="reward-card-color"></div>
         <h3>${elem.name}</h3>
-        <p class="reward-card-desc">${elem.description}</p>
+        <!-- description removed; name, stats and properties are shown below -->
         <div class="reward-card-stats">
           <span>Damage: ${elem.traits.damage}</span>
           <span>Speed: ${Math.round(elem.traits.speed)}</span>
@@ -153,7 +153,7 @@ export class RewardUI {
     essenceCard.innerHTML = `
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
-      <p class="reward-card-desc">Gain ${this.essenceOffer} Mana Essence</p>
+      <!-- description removed; stats convey amount -->
       <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate.</div>
       <div class="reward-card-stats">
         <span>Essence: ${this.essenceOffer}</span>

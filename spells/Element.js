@@ -1,10 +1,9 @@
 export class Element {
-  constructor(name, color, traits, description, propertyGenes, visualEffects, locked = true) {
+  constructor(name, color, traits, propertyGenes, visualEffects, locked = true) {
     this.name = name;
     this.color = color;
     this.traits = traits;
-    this.description = description;
-    this.propertyGenes = propertyGenes; // New: property contribution system
+    this.propertyGenes = propertyGenes || {}; // property contribution system
     this.visualEffects = visualEffects;
     this.locked = locked;
   }
@@ -31,7 +30,7 @@ export const ELEMENTS = {
     speed: 280,
     damage: 20,
     projectileType: 'straight'
-  }, 'Burning elemental', {
+  }, {
     burning: 6,
     poison: 4,
     knockback: 2
@@ -51,7 +50,7 @@ export const ELEMENTS = {
     speed: 240,
     damage: 18,
     projectileType: 'straight'
-  }, 'Piercing and slowing', {
+  }, {
     slowing: 7,
     piercing: 5,
     aoe: 2
@@ -71,7 +70,7 @@ export const ELEMENTS = {
     speed: 320,
     damage: 19,
     projectileType: 'straight'
-  }, 'Chains between enemies', {
+  }, {
     chaining: 7,
     piercing: 3,
     knockback: 3
@@ -92,7 +91,7 @@ export const ELEMENTS = {
     speed: 160,
     damage: 32,
     projectileType: 'straight'
-  }, 'Heavy and devastating', {
+  }, {
     knockback: 8,
     aoe: 5,
     piercing: 2
@@ -112,7 +111,7 @@ export const ELEMENTS = {
     speed: 260,
     damage: 16,
     projectileType: 'straight'
-  }, 'Virulent toxin', {
+  }, {
     poison: 8,
     slowing: 3,
     aoe: 2
@@ -133,7 +132,7 @@ export const ELEMENTS = {
     speed: 360,
     damage: 17,
     projectileType: 'straight'
-  }, 'Pure piercing rays', {
+  }, {
     piercing: 8,
     chaining: 2,
     aoe: 3
@@ -154,7 +153,7 @@ export const ELEMENTS = {
     speed: 300,
     damage: 21,
     projectileType: 'straight'
-  }, 'Homing life drain', {
+  }, {
     homing: 6,
     lifesteal: 5,
     piercing: 2
@@ -175,7 +174,7 @@ export const ELEMENTS = {
     speed: 270,
     damage: 22,
     projectileType: 'straight'
-  }, 'Chaotic magic', {
+  }, {
     chaining: 5,
     aoe: 4,
     piercing: 3
@@ -196,7 +195,7 @@ export const ELEMENTS = {
     speed: 220,
     damage: 15,
     projectileType: 'straight'
-  }, 'Entangling growth', {
+  }, {
     slowing: 8,
     poison: 3,
     aoe: 4
@@ -217,7 +216,7 @@ export const ELEMENTS = {
     speed: 250,
     damage: 23,
     projectileType: 'straight'
-  }, 'Sustaining strike', {
+  }, {
     lifesteal: 7,
     knockback: 3,
     burning: 2
@@ -236,7 +235,7 @@ export const ELEMENTS = {
     speed: 200,
     damage: 28,
     projectileType: 'straight'
-  }, 'Consuming singularity', {
+  }, {
     vortex: 7,
     aoe: 6,
     piercing: 2
@@ -258,7 +257,7 @@ export const ELEMENTS = {
     speed: 210,
     damage: 19,
     projectileType: 'straight'
-  }, 'Defensive barrier', {
+  }, {
     piercing: 4,
     aoe: 4
   }, {
@@ -278,7 +277,7 @@ export const ELEMENTS = {
     speed: 290,
     damage: 24,
     projectileType: 'straight'
-  }, 'Unpredictable destruction', {
+  }, {
     chaining: 4,
     burning: 4,
     knockback: 4
@@ -300,7 +299,7 @@ export const ELEMENTS = {
     speed: 140,
     damage: 35,
     projectileType: 'straight'
-  }, 'Massive impact', {
+  }, {
     knockback: 10,
     aoe: 8
   }, {
@@ -319,7 +318,7 @@ export const ELEMENTS = {
     speed: 380,
     damage: 14,
     projectileType: 'straight'
-  }, 'Swift and light', {
+  }, {
     knockback: 5,
     piercing: 4,
     chaining: 2
@@ -340,7 +339,7 @@ export const ELEMENTS = {
     speed: 270,
     damage: 26,
     projectileType: 'straight'
-  }, 'Bouncing blades', {
+  }, {
     piercing: 6,
     chaining: 4,
     knockback: 2

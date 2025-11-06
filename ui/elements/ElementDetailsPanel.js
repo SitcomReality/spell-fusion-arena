@@ -15,7 +15,7 @@ export class ElementDetailsPanel {
           <div class="element-details-color" style="background: #111"></div>
           <div class="element-summary-text">
             <div class="element-details-name">No element selected</div>
-            <div class="element-details-desc">Select an element to view details and add it to the fusion builder.</div>
+            <!-- description removed: name, stats and properties convey behavior -->
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export class ElementDetailsPanel {
           <div class="element-details-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
           <div class="element-summary-text">
             <div class="element-details-name">${element.name}</div>
-            <div class="element-details-desc">${element.description}</div>
+            <!-- description removed: using name, stats and properties only -->
           </div>
         </div>
 
