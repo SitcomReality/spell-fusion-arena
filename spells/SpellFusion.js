@@ -45,25 +45,24 @@ export class SpellFusion {
     const propertyScores = {};
     const numElements = elements.length;
     
-    // Core stats that are averaged, not thresholded
+    // Core stats (damage, speed) are handled separately for clarity
     let totalDamage = 0;
     let totalSpeed = 0;
 
-    // Base threshold: harder to get properties with fewer elements
-    const baseThreshold = numElements === 1 ? 4 : numElements === 2 ? 6 : 5;
-    
-    // Sum up property contributions in order
+    // 1. Sum up property contributions from all elements
+    // The first element has the most impact, subsequent ones have diminishing contributions
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i];
-      const positionMultiplier = 1 - (i * 0.1); // Earlier elements contribute more
-      
+      // Earlier elements have a higher weight. 1st: 1.0, 2nd: 0.75, 3rd: 0.6, 4th: 0.5
+      const positionMultiplier = 1.0 / (1 + i * 0.35);
+
       for (const [property, value] of Object.entries(element.propertyGenes || {})) {
         if (property === 'damage') {
-          totalDamage += value;
+          totalDamage += value * (i === 0 ? 1 : 0.6); // Base damage is mostly from the first element
           continue;
         }
         if (property === 'speed') {
-          totalSpeed += value;
+          totalSpeed += value; // Speed is averaged later
           continue;
         }
 
@@ -74,28 +73,26 @@ export class SpellFusion {
       }
     }
     
-    // Determine which properties activate based on thresholds
-    // First property has lower threshold, subsequent ones need more
-    const activeProperties = {
-      damage: totalDamage / numElements,
+    // 2. Calculate final property values without a binary threshold
+    const finalProperties = {
+      // Base damage is the average, with a boost from the sum of genes
+      damage: (totalDamage / numElements) + (elements.reduce((s, e) => s + (e.propertyGenes.damage || 0), 0) * 0.1),
       speed: totalSpeed / numElements,
     };
-
-    const sortedProperties = Object.entries(propertyScores)
-      .sort((a, b) => b[1] - a[1]); // Sort by score descending
     
-    for (let i = 0; i < sortedProperties.length; i++) {
-      const [property, score] = sortedProperties[i];
-      // Threshold increases for each additional property
-      const threshold = baseThreshold + (i * 1.5);
-      
-      if (score >= threshold) {
-        // Normalize score to intensity (0-1)
-        activeProperties[property] = Math.min(1, score / (threshold + 5));
+    for (const [property, score] of Object.entries(propertyScores)) {
+      if (score > 0) {
+        // The "potency" of a property is its calculated score divided by a balancing factor.
+        // This yields values typically between 0.1 and 1.5, representing weak to strong effects.
+        // A divisor of 12 provides a good range for current gene values (which are ~1-10).
+        // This allows projectile mechanics to use this value as a multiplier for things like
+        // knockback force, slow duration, AOE radius, or chance to split.
+        const potency = score / 12;
+        finalProperties[property] = Math.round(potency * 100) / 100; // round to 2 decimal places
       }
     }
     
-    return activeProperties;
+    return finalProperties;
   }
 
   static fuseVisualEffects(...visuals) {
