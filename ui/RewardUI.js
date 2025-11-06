@@ -79,7 +79,13 @@ export class RewardUI {
       <h3>Mana Essence</h3>
       <!-- description removed; stats/properties convey function -->
       <div class="reward-card-small-desc">Use Mana Essence to power up spell slots.</div>
+      <div class="reward-card-essence-amount">Amount: <span class="essence-amt"></span> ME</div>
     `;
+    // Set amount text and intensity variable for styling (interpolate 0.2 -> 1.0)
+    essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
+    const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 2) / (10 - 2))); // 0..1 where 0 = 2 ME, 1 = 10 ME
+    essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity * 0.8}`); // range 0.2..1.0
+
     essenceCard.addEventListener('click', () => this.selectEssence());
     choicesContainer.appendChild(essenceCard);
   }
@@ -148,8 +154,13 @@ export class RewardUI {
       <h3>Mana Essence</h3>
       <!-- description removed; stats convey amount -->
       <div class="reward-card-small-desc">Assign Mana Essence to spell slots to increase their firing rate.</div>
+      <div class="reward-card-essence-amount">Amount: <span class="essence-amt"></span> ME</div>
     `;
     essenceCard.addEventListener('click', () => this.selectEssence());
+    // Set amount text and intensity variable for styling
+    essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
+    const intensity2 = Math.min(1, Math.max(0, (this.essenceOffer - 2) / (10 - 2)));
+    essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity2 * 0.8}`);
     choicesContainer.appendChild(essenceCard);
   }
 

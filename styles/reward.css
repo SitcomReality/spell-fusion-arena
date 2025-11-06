@@ -58,6 +58,12 @@
   box-shadow: 0 0 15px rgba(74, 158, 255, 0.15);
 }
 
+/* New: essence-card specific visuals that scale with offered amount */
+.reward-card.essence-card {
+  /* base look; intensity controlled by --essence-intensity (0.2 - 1.0) */
+  --essence-intensity: 0.2;
+}
+
 .reward-card:hover {
   border-color: #64c8ff;
   transform: translateY(-5px);
@@ -75,6 +81,17 @@
 
 .reward-card-color.default-bg {
   background: #222;
+}
+
+.reward-card.essence-card {
+  /* subtle color shift and stronger glow when intensity grows */
+  background: linear-gradient(135deg,
+    rgba(30, 10, 25, calc(0.8 * var(--essence-intensity))) 0%,
+    rgba(40, 12, 48, calc(0.9 * var(--essence-intensity))) 100%);
+  border-color: rgba(100, 158, 255, calc(0.9 * var(--essence-intensity)));
+  box-shadow:
+    0 0 calc(12px * var(--essence-intensity)) rgba(100, 200, 255, calc(0.18 * var(--essence-intensity))),
+    inset 0 0 calc(18px * var(--essence-intensity)) rgba(100, 200, 255, calc(0.06 * var(--essence-intensity)));
 }
 
 .reward-card-small-desc {
@@ -105,6 +122,18 @@
 .reward-card-property-value {
   font-weight: 600;
   color: #fff;
+}
+
+.reward-card-essence-amount {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #eaf8ff;
+}
+
+.reward-card-essence-amount .essence-amt {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(100,200,255, calc(0.6 * var(--essence-intensity)));
 }
 
 .reward-card h3 {
