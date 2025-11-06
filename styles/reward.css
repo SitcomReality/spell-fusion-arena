@@ -119,8 +119,8 @@
 .reward-card-desc {
   font-size: 13px;
   color: #9db4ff;
-  margin-bottom: 15px;
-  min-height: 40px;
+  margin-bottom: 5px;
+  min-height: 20px;
 }
 
 .reward-card-stats {
@@ -145,7 +145,7 @@
   .reward-choices { gap: 15px; }
   .reward-card { padding: 15px; }
   .reward-card h3 { font-size: 18px; }
-  .reward-card-desc { font-size: 12px; min-height: 35px; }
+  .reward-card-desc { font-size: 12px; }
   .reward-card-stats { font-size: 11px; }
 }
 
@@ -157,7 +157,7 @@
   .reward-card { padding: 12px; }
   .reward-card h3 { font-size: 16px; margin-bottom: 8px; }
   .reward-card-color { height: 50px; margin-bottom: 12px; }
-  .reward-card-desc { font-size: 11px; min-height: 30px; margin-bottom: 10px; }
+  .reward-card-desc { font-size: 11px; }
   .reward-card-stats { font-size: 10px; padding-top: 8px; }
 }
 
