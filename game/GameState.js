@@ -4,6 +4,7 @@ import { Projectile } from '../spells/Projectile.js';
 import { CONFIG } from '../config.js';
 import { CollisionHandler } from './CollisionHandler.js';
 import { ParticleManager } from './ParticleManager.js';
+import { castSpell } from './GameActions.js';
 
 export class GameState {
   constructor(canvasWidth, canvasHeight) {
@@ -44,7 +45,7 @@ export class GameState {
     const readySlots = this.player.update(dt);
     if (readySlots) {
       for (const slotIndex of readySlots) {
-        this.castSpell(slotIndex);
+        castSpell(this, slotIndex);
       }
     }
 
@@ -87,52 +88,6 @@ export class GameState {
       }
       return true;
     });
-  }
-
-  castSpell(slotIndex) {
-    if (!this.player.equippedSpells[slotIndex]) return;
-
-    const spell = this.player.equippedSpells[slotIndex];
-
-    // Find nearest enemy or shoot forward
-    let targetX = this.centerX;
-    let targetY = this.centerY - 100;
-
-    if (this.enemies.length > 0) {
-      const nearest = this.findNearestEnemy();
-      if (nearest) {
-        targetX = nearest.x;
-        targetY = nearest.y;
-      }
-    }
-
-    const projectile = new Projectile(
-      this.player.x,
-      this.player.y,
-      spell,
-      targetX,
-      targetY
-    );
-
-    this.projectiles.push(projectile);
-  }
-
-  findNearestEnemy() {
-    let nearest = null;
-    let minDist = Infinity;
-
-    for (const enemy of this.enemies) {
-      if (!enemy.alive) continue;
-      const dx = enemy.x - this.player.x;
-      const dy = enemy.y - this.player.y;
-      const dist = dx * dx + dy * dy;
-      if (dist < minDist) {
-        minDist = dist;
-        nearest = enemy;
-      }
-    }
-
-    return nearest;
   }
 
   checkCollisions() {
