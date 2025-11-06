@@ -114,17 +114,20 @@ export class FusionUI {
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
 
-    // On small screens, scroll the fusion UI down to the "Create Spell" section
+    // On small screens, only scroll the fusion UI down to the "Create Spell" section
+    // when the add action resulted in all unlocked fusion slots being occupied.
     try {
       if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        const fusionContainer = this.container; // #fusion-ui
-        const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
-        // The second fusion-section contains the builder/preview by render layout
-        const targetSection = fusionSections[1] || fusionSections[0];
-        if (targetSection) {
-          // Scroll the fusion-ui container so the target section is visible
-          const offsetTop = targetSection.offsetTop;
-          fusionContainer.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });
+        // Only auto-scroll when we've just filled all unlocked slots
+        if (this.selectedElements.length === this.unlockedFusionSlots) {
+          const fusionContainer = this.container; // #fusion-ui
+          const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
+          // The second fusion-section contains the builder/preview by render layout
+          const targetSection = fusionSections[1] || fusionSections[0];
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop;
+            fusionContainer.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });
+          }
         }
       }
     } catch (e) {
