@@ -281,6 +281,11 @@
     gap: 8px;
   }
   
+  /* Reduce gap between equipped spell wrappers on small screens */
+  .spell-slot-wrapper {
+    gap: 2px;
+  }
+  
   .spell-summary-info {
     display: flex;
     gap: 10px;
@@ -399,6 +404,11 @@
 
   .spell-slot {
     min-height: 50px;
+  }
+  
+  /* Even on very small screens ensure tighter spacing for spell slot wrappers */
+  .spell-slot-wrapper {
+    gap: 2px;
   }
 }
 

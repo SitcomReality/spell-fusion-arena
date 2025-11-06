@@ -244,7 +244,12 @@
     font-size: 22px;
     margin-bottom: 8px;
   }
-
+  
+  /* Reduce padding for equipped spells container on small screens */
+  #equipped-spells {
+    padding: 4px;
+  }
+  
   .reward-subtitle {
     font-size: 13px;
     margin-bottom: 20px;
@@ -306,6 +311,11 @@
 
   .reward-card-desc {
     font-size: 10px;
+  }
+
+  /* Further reduce equipped spells padding on very small screens */
+  #equipped-spells {
+    padding: 4px;
   }
 }
 
