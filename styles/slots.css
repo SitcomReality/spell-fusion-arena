@@ -131,3 +131,96 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 }
+
+.spell-slots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+/* Tablet: 5 columns still fits but smaller */
+@media (max-width: 1024px) {
+  .spell-slots {
+    gap: 8px;
+  }
+
+  .spell-slot-name {
+    font-size: 10px;
+  }
+
+  .spell-slot-essence {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .spell-slot-unequip {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Mobile: responsive grid */
+@media (max-width: 768px) {
+  .spell-slots {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .spell-slot {
+    aspect-ratio: 1;
+    min-height: 60px;
+  }
+
+  .spell-slot-content {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .spell-slot-name {
+    font-size: 9px;
+  }
+
+  .spell-slot-essence {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .spell-slot-number {
+    font-size: 8px;
+  }
+
+  .spell-slot-unequip {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .slot-add-essence {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    top: -10px;
+  }
+}
+
+/* Small mobile: stack or 3-2 layout */
+@media (max-width: 480px) {
+  .spell-slots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .spell-slot {
+    min-height: 50px;
+  }
+}

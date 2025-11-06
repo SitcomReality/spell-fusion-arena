@@ -32,4 +32,22 @@
 /* Buttons */
 button {
   font-family: inherit;
+  touch-action: manipulation;
+}
+
+/* Touch-friendly button sizes on mobile */
+@media (max-width: 768px) {
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .slot-add-essence,
+  .fusion-slot-remove,
+  .spell-slot-unequip {
+    min-width: 40px;
+    min-height: 40px;
+  }
 }

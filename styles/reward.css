@@ -111,6 +111,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .reward-modal {
@@ -119,6 +120,8 @@
   padding: 40px;
   max-width: 800px;
   text-align: center;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .reward-modal h2 {
@@ -184,6 +187,126 @@
 
 .reward-card-stats span {
   display: block;
+}
+
+/* Tablet: still 3 columns but smaller */
+@media (max-width: 1024px) {
+  .reward-modal {
+    padding: 30px;
+    max-width: 700px;
+  }
+
+  .reward-modal h2 {
+    font-size: 26px;
+  }
+
+  .reward-subtitle {
+    font-size: 14px;
+  }
+
+  .reward-choices {
+    gap: 15px;
+  }
+
+  .reward-card {
+    padding: 15px;
+  }
+
+  .reward-card h3 {
+    font-size: 18px;
+  }
+
+  .reward-card-desc {
+    font-size: 12px;
+    min-height: 35px;
+  }
+
+  .reward-card-stats {
+    font-size: 11px;
+  }
+}
+
+/* Mobile: 2 columns or stacked */
+@media (max-width: 768px) {
+  #reward-overlay {
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .reward-modal {
+    padding: 20px;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .reward-modal h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .reward-subtitle {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .reward-choices {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .reward-card {
+    padding: 12px;
+  }
+
+  .reward-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .reward-card-color {
+    height: 50px;
+    margin-bottom: 12px;
+  }
+
+  .reward-card-desc {
+    font-size: 11px;
+    min-height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .reward-card-stats {
+    font-size: 10px;
+    padding-top: 8px;
+  }
+
+  .reward-card-properties {
+    margin-top: 6px;
+  }
+}
+
+/* Small mobile: single column */
+@media (max-width: 480px) {
+  .reward-choices {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .reward-card {
+    padding: 10px;
+  }
+
+  .reward-card h3 {
+    font-size: 14px;
+  }
+
+  .reward-card-color {
+    height: 40px;
+  }
+
+  .reward-card-desc {
+    font-size: 10px;
+  }
 }
 
 /* Scrollbar styling */

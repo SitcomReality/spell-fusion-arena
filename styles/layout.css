@@ -6,6 +6,7 @@
   width: 100%;
   padding: 20px;
   max-width: 1400px;
+  flex-wrap: wrap;
 }
 
 /* New wrapper for canvas + equipped spells */
@@ -35,11 +36,12 @@
   border: 1px solid #333;
   min-width: 150px;
   z-index: 100;
+  font-size: 12px;
 }
 
 .hud-item {
   margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* Fusion UI panel */
@@ -51,4 +53,144 @@
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+  min-width: 300px;
+}
+
+/* Equipped spells container */
+#equipped-spells {
+  width: 100%;
+  max-width: 800px;
+  background: #111;
+  border: 2px solid #333;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.equipped-title {
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+/* Tablet layout (768px - 1024px) */
+@media (max-width: 1024px) {
+  #game-container {
+    gap: 15px;
+    padding: 15px;
+  }
+
+  #canvas-wrapper {
+    width: 600px;
+    height: 450px;
+  }
+
+  #game-canvas,
+  #fx-canvas {
+    width: 600px !important;
+    height: 450px !important;
+  }
+
+  #fusion-ui {
+    max-width: 500px;
+    padding: 15px;
+  }
+
+  #hud {
+    padding: 12px;
+    min-width: 120px;
+    font-size: 11px;
+  }
+
+  .hud-item {
+    font-size: 11px;
+  }
+}
+
+/* Mobile layout (< 768px) */
+@media (max-width: 768px) {
+  body {
+    min-height: auto;
+    padding: 0;
+  }
+
+  #game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  #canvas-and-spells {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #canvas-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-width: 500px;
+    height: auto;
+  }
+
+  #game-canvas,
+  #fx-canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #equipped-spells {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #fusion-ui {
+    width: 100%;
+    max-width: 100%;
+    max-height: 60vh;
+    padding: 12px;
+    border: 2px solid #333;
+  }
+
+  #hud {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    min-width: auto;
+    font-size: 11px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hud-item {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  #game-container {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  #canvas-wrapper {
+    max-width: 100%;
+  }
+
+  #fusion-ui {
+    max-height: 50vh;
+    padding: 10px;
+  }
+
+  #hud {
+    padding: 8px;
+  }
 }
