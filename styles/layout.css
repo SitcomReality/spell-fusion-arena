@@ -233,7 +233,7 @@
 
   #fusion-ui {
     max-height: none;
-    overflow: visible;
+    overflow-y: scroll;
     padding: 4px;
   }
 
