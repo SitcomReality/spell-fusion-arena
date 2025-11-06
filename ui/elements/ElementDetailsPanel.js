@@ -57,7 +57,7 @@ export class ElementDetailsPanel {
       </div>
 
       <div class="element-details-controls">
-        <button class="element-add-btn">Add to Fusion</button>
+        <button class="element-add-btn">Add</button>
       </div>
     `;
 

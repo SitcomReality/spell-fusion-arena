@@ -256,6 +256,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  flex: 1 1 auto;
+  min-width: 160px;
 }
 
 .property-badge {
@@ -425,25 +427,28 @@
 /* Fusion Preview Controls */
 .fusion-preview-controls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #333;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .fusion-preview-clear,
 .fusion-preview-equip {
-  padding: 8px 16px;
+  padding: 6px 10px;
   border: 1px solid #4a9eff;
   background: rgba(74, 158, 255, 0.08);
   color: #b0d4ff;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  flex: 1;
+  font-size: 12px;
+  transition: all 0.15s ease;
+  flex: none;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .fusion-preview-clear:hover,
@@ -463,20 +468,25 @@
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #4a2a7f;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .element-add-btn {
-  width: 100%;
-  padding: 8px 16px;
+  padding: 6px 10px;
   border: 1px solid #4a9eff;
   background: rgba(74, 158, 255, 0.08);
   color: #b0d4ff;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
-  transition: all 0.2s ease;
+  font-size: 12px;
+  transition: all 0.15s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  width: auto;
 }
 
 .element-add-btn:hover:not(:disabled) {
@@ -488,4 +498,13 @@
 .element-add-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Allow properties section and controls to sit on same row where width allows */
+.properties-section {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }

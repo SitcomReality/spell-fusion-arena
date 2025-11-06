@@ -61,7 +61,7 @@ export class FusionPreview {
 
         <div class="fusion-preview-controls">
           <button class="fusion-preview-clear">Clear</button>
-          <button class="fusion-preview-equip">Equip Spell</button>
+          <button class="fusion-preview-equip">Equip</button>
         </div>
       </div>
     `;
