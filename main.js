@@ -21,8 +21,8 @@ class Game {
     this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height);
     this.hud = new HUD();
     
-    this.fusionUI = new FusionUI((spells) => {
-      this.gameState.player.equipSpells(spells);
+    this.fusionUI = new FusionUI((spells, essence) => {
+      this.gameState.player.equipSpells(spells, essence);
     });
 
     this.rewardUI = new RewardUI(() => {
@@ -99,4 +99,3 @@ class Game {
 document.addEventListener('DOMContentLoaded', () => {
   new Game();
 });
-

@@ -9,6 +9,7 @@ export class FusionUI {
     this.selectedElements = [];
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null, null];
+    this.spellSlotEssence = [5, 0, 0, 0, 0]; // Mana Essence per slot
     this.maxFusionSlots = 2;
     this.selectedElementForDetails = null;
 
@@ -173,6 +174,7 @@ export class FusionUI {
       const slot = document.createElement('div');
       slot.className = 'spell-slot';
       slot.dataset.slot = i;
+      const essence = this.spellSlotEssence[i];
 
       if (this.equippedSpells[i]) {
         const spell = this.equippedSpells[i];
@@ -180,6 +182,7 @@ export class FusionUI {
         slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
             <span class="spell-slot-name">${spell.name}</span>
+            <div class="spell-slot-essence">ME: ${essence}</div>
             <span class="spell-slot-number">${i + 1}</span>
             <button class="spell-slot-unequip">−</button>
           </div>
@@ -190,7 +193,7 @@ export class FusionUI {
           this.unequipSpell(i);
         });
       } else {
-        slot.innerHTML = `<span class="spell-slot-placeholder">Empty</span>`;
+        slot.innerHTML = `<span class="spell-slot-placeholder">Empty</span><div class="spell-slot-essence inactive">ME: ${essence}</div>`;
       }
 
       grid.appendChild(slot);
@@ -292,14 +295,16 @@ export class FusionUI {
     
     if (emptyIndex !== -1) {
       this.equippedSpells[emptyIndex] = spell;
-      this.onSpellEquipped(this.equippedSpells.filter(s => s !== null));
+      this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
       this.renderSpellSlots();
     }
   }
 
   unequipSpell(index) {
     this.equippedSpells[index] = null;
-    this.onSpellEquipped(this.equippedSpells.filter(s => s !== null));
+    // Penalty: lose 25% of essence on unequip
+    this.spellSlotEssence[index] = Math.floor(this.spellSlotEssence[index] * 0.75);
+    this.onSpellEquipped(this.equippedSpells.filter(s => s !== null), this.spellSlotEssence);
     this.renderSpellSlots();
   }
 

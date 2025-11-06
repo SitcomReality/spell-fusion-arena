@@ -4,8 +4,8 @@ export const CONFIG = {
     height: 600
   },
   player: {
-    radius: 12,
-    castInterval: 500 // ms between auto-casts
+    radius: 12
+    // castInterval is now calculated per spell slot based on Mana Essence
   },
   enemy: {
     baseSpeed: 30,
@@ -25,4 +25,3 @@ export const COLORS = {
   ui: '#ffffff',
   uiAccent: '#333333'
 };
-

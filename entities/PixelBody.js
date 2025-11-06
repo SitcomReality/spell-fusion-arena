@@ -78,4 +78,3 @@ export class PixelBody {
     return this.pixels.filter(p => p.alive);
   }
 }
-

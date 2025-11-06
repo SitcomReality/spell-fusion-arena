@@ -72,4 +72,3 @@ export class WaveManager {
     this.waveCompleteCallback = callback;
   }
 }
-
