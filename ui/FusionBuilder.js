@@ -1,11 +1,10 @@
 export class FusionBuilder {
   constructor(options = {}) {
     this.container = null;
-    this.maxFusionSlots = options.maxFusionSlots || 2;
+    this.maxFusionSlots = options.maxFusionSlots || 1;
     this.selectedElements = [];
-    this.onClear = options.onClear || (() => {});
-    this.onCreate = options.onCreate || (() => {});
-    this.onRequestPlaceElement = null;
+    this.onSlotRemove = options.onSlotRemove || (() => {});
+    this.onUnlockSlot = options.onUnlockSlot || (() => {});
   }
 
   mount(container) {
@@ -20,6 +19,11 @@ export class FusionBuilder {
     this.refresh();
   }
 
+  setMaxSlots(max) {
+    this.maxFusionSlots = max;
+    this.refresh();
+  }
+
   setSelectedElements(arr) {
     this.selectedElements = [...arr];
     this.refresh();
@@ -28,6 +32,8 @@ export class FusionBuilder {
   refresh() {
     if (!this.slotsContainer) return;
     this.slotsContainer.innerHTML = '';
+    
+    // Show unlocked slots
     for (let i = 0; i < this.maxFusionSlots; i++) {
       const slot = document.createElement('div');
       slot.className = 'fusion-slot';
@@ -43,15 +49,10 @@ export class FusionBuilder {
         `;
         slot.querySelector('.fusion-slot-remove').addEventListener('click', (e) => {
           e.stopPropagation();
-          this.selectedElements.splice(i, 1);
-          this.refresh();
+          this.onSlotRemove(i);
         });
       } else {
         slot.innerHTML = '<span class="fusion-slot-placeholder">+</span>';
-        slot.addEventListener('click', () => {
-          // Request placing an element - handled by FusionUI via onRequestPlaceElement
-          if (this.onRequestPlaceElement) this.onRequestPlaceElement();
-        });
       }
 
       this.slotsContainer.appendChild(slot);

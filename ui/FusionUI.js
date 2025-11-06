@@ -16,7 +16,8 @@ export class FusionUI {
     this.equippedSpells = [null, null, null, null, null];
     this.spellSlotEssence = [5, 0, 0, 0, 0];
     this.essenceBank = 0;
-    this.maxFusionSlots = 2;
+    this.maxFusionSlots = 4; // Can unlock up to 4
+    this.unlockedFusionSlots = 1; // Start with 1 unlocked
 
     // Create subcomponents
     this.elementsLibrary = new ElementsLibrary((key, element, cardEl) => {
@@ -26,9 +27,9 @@ export class FusionUI {
     this.detailsPanel = new ElementDetailsPanel();
 
     this.fusionBuilder = new FusionBuilder({
-      maxFusionSlots: this.maxFusionSlots,
-      onClear: () => this.clearFusion(),
-      onCreate: () => this.createSpellFromSelection()
+      maxFusionSlots: this.unlockedFusionSlots,
+      onSlotRemove: (idx) => this.removeElement(idx),
+      onUnlockSlot: () => this.unlockFusionSlot()
     });
 
     this.fusionPreview = new FusionPreview();
@@ -46,6 +47,17 @@ export class FusionUI {
 
   addEssenceToBank(amount) {
     this.essenceBank += amount;
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+  }
+
+  unlockFusionSlot() {
+    if (this.unlockedFusionSlots >= this.maxFusionSlots) return;
+    if (this.essenceBank < 1) return;
+
+    this.unlockedFusionSlots += 1;
+    this.essenceBank -= 1;
+
+    this.fusionBuilder.setMaxSlots(this.unlockedFusionSlots);
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
@@ -69,10 +81,7 @@ export class FusionUI {
     // mount subcomponents into DOM
     this.elementsLibrary.mount(document.getElementById('elements-library'));
     this.detailsPanel.mount(document.getElementById('element-details-panel'));
-    this.fusionBuilder.mount(document.getElementById('fusion-builder'), {
-      onSlotRemove: (idx) => this.removeElement(idx),
-      onSlotAddPlaceholderClick: () => {} // handled by element clicks
-    });
+    this.fusionBuilder.mount(document.getElementById('fusion-builder'));
     this.fusionPreview.mount(document.getElementById('fusion-preview'));
     this.spellSlotsUI.mount();
 
@@ -80,17 +89,11 @@ export class FusionUI {
     this.elementsLibrary.refresh();
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
 
-    // wire builder's request to place element into fusion slots
-    this.fusionBuilder.onRequestPlaceElement = (element) => {
-      this.addElementToFusion(element);
-    };
+    // Set up preview clear callback
+    this.fusionPreview.setOnClear(() => this.clearFusion());
   }
 
   renderSpellSlots() {
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
-  }
-
-  renderEssenceBankHeader() {
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
   }
 
@@ -101,7 +104,7 @@ export class FusionUI {
   }
 
   addElementToFusion(element) {
-    if (this.selectedElements.length >= this.maxFusionSlots) return;
+    if (this.selectedElements.length >= this.unlockedFusionSlots) return;
     this.selectedElements.push(element);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
@@ -121,8 +124,8 @@ export class FusionUI {
   }
 
   updateFusionPreview(forceEmpty = false) {
-    if (forceEmpty || this.selectedElements.length < this.maxFusionSlots) {
-      this.fusionPreview.showMessage(`Select ${this.maxFusionSlots - this.selectedElements.length} more element(s)`);
+    if (forceEmpty || this.selectedElements.length === 0) {
+      this.fusionPreview.showMessage(`Add an element to create a spell`);
       return;
     }
 

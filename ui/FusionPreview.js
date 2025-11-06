@@ -1,11 +1,12 @@
 export class FusionPreview {
   constructor() {
     this.container = null;
+    this.onClear = null;
   }
 
   mount(container) {
     this.container = container;
-    this.container.innerHTML = `<p>Select elements to create a spell</p>`;
+    this.container.innerHTML = `<p>Add an element to create a spell</p>`;
   }
 
   showMessage(msg) {
@@ -67,17 +68,12 @@ export class FusionPreview {
 
     // Add event listeners for the integrated controls
     this.container.querySelector('.fusion-preview-clear').addEventListener('click', () => {
-      this.clearFusion();
+      if (this.onClear) this.onClear();
     });
 
     this.container.querySelector('.fusion-preview-equip').addEventListener('click', () => {
       if (onEquip) onEquip();
     });
-  }
-
-  clearFusion() {
-    // This will be set by the parent component
-    if (this.onClear) this.onClear();
   }
 
   setOnClear(callback) {
