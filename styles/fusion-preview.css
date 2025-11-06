@@ -78,7 +78,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .panel-summary {
-    flex-wrap: wrap;
+    /* Removed flex-wrap to keep controls on the same row with summary */
     gap: 8px;
     justify-content: flex-start;
     align-items: flex-start;
@@ -91,6 +91,19 @@
 
   .panel-summary-text h3 {
     font-size: 14px;
+  }
+
+  /* Ensure panel-controls prefer stacking vertically on mobile so multiple buttons
+     don't force the summary to reflow horizontally. */
+  .panel-controls {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .panel-controls button {
+    width: auto;
+    white-space: nowrap;
   }
 }
 
