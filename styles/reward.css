@@ -116,13 +116,6 @@
   letter-spacing: 0.8px;
 }
 
-.reward-card-desc {
-  font-size: 13px;
-  color: #9db4ff;
-  margin-bottom: 5px;
-  min-height: 20px;
-}
-
 .reward-card-stats {
   display: flex;
   justify-content: space-around;
@@ -145,7 +138,6 @@
   .reward-choices { gap: 15px; }
   .reward-card { padding: 15px; }
   .reward-card h3 { font-size: 18px; }
-  .reward-card-desc { font-size: 12px; }
   .reward-card-stats { font-size: 11px; }
 }
 
@@ -157,7 +149,6 @@
   .reward-card { padding: 12px; }
   .reward-card h3 { font-size: 16px; margin-bottom: 8px; }
   .reward-card-color { height: 50px; margin-bottom: 12px; }
-  .reward-card-desc { font-size: 11px; }
   .reward-card-stats { font-size: 10px; padding-top: 8px; }
 }
 
@@ -167,7 +158,6 @@
   .reward-card { padding: 10px; }
   .reward-card h3 { font-size: 14px; }
   .reward-card-color { height: 40px; }
-  .reward-card-desc { font-size: 10px; }
   /* Ensure the essence card (which is appended after a full-width spacer) spans both columns */
   .reward-choices .essence-card {
     grid-column: 1 / -1;
