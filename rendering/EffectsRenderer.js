@@ -185,10 +185,12 @@ export class EffectsRenderer {
     if (!visualEffects || !visualEffects.aura) return;
     
     const color = spell.color;
+    const accentColor = spell.accentColor;
     let auraSize = visualEffects.auraSize || 20;
     auraSize = Math.max(0.1, auraSize); // Ensure minimum size
     const auraIntensity = visualEffects.auraIntensity || 0.3;
     
+    // Main aura with primary color
     const gradient = this.ctx.createRadialGradient(
       projectile.x, projectile.y, projectile.radius,
       projectile.x, projectile.y, auraSize
@@ -200,6 +202,21 @@ export class EffectsRenderer {
     this.ctx.beginPath();
     this.ctx.arc(projectile.x, projectile.y, auraSize, 0, Math.PI * 2);
     this.ctx.fill();
+    
+    // Add accent color outer ring if available
+    if (accentColor) {
+      const accentGradient = this.ctx.createRadialGradient(
+        projectile.x, projectile.y, auraSize * 0.7,
+        projectile.x, projectile.y, auraSize * 1.2
+      );
+      accentGradient.addColorStop(0, `rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, ${auraIntensity * 0.3})`);
+      accentGradient.addColorStop(1, `rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, 0)`);
+      
+      this.ctx.fillStyle = accentGradient;
+      this.ctx.beginPath();
+      this.ctx.arc(projectile.x, projectile.y, auraSize * 1.2, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
   }
 
   renderAoECircle(aoe) {

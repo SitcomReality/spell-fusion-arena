@@ -13,13 +13,18 @@ export class ParticleEmitter {
     const particles = [];
     const density = visuals.trailDensity || 1;
     
+    // Use accent or secondary color for some trail particles
+    const primaryColor = projectile.spell.color;
+    const accentColor = projectile.spell.accentColor || primaryColor;
+    const useAccent = projectile.spell.accentColor && Math.random() > 0.5;
+    
     for (let i = 0; i < density; i++) {
       const particle = {
         x: projectile.x + (Math.random() - 0.5) * 3,
         y: projectile.y + (Math.random() - 0.5) * 3,
         vx: -projectile.vx * 0.1 + (Math.random() - 0.5) * 20,
         vy: -projectile.vy * 0.1 + (Math.random() - 0.5) * 20,
-        color: projectile.spell.color,
+        color: useAccent && i % 2 === 0 ? accentColor : primaryColor,
         life: 0.3 + Math.random() * 0.3,
         maxLife: 0.3 + Math.random() * 0.3,
         size: visuals.trailSize || 3,
@@ -62,16 +67,28 @@ export class ParticleEmitter {
     if (projectile.properties.aoe && projectile.properties.aoe > 0) particleMultiplier += 0.5;
     if (projectile.properties.knockback && projectile.properties.knockback > 0) particleMultiplier += 0.3;
     
+    const primaryColor = projectile.spell.color;
+    const accentColor = projectile.spell.accentColor;
+    const secondaryColor = projectile.spell.secondaryColor || accentColor || primaryColor;
+    
     for (let i = 0; i < count * particleMultiplier; i++) {
       const angle = (Math.PI * 2 * i) / (count * particleMultiplier) + (Math.random() - 0.5) * 0.5;
       const speed = 50 + Math.random() * 100;
+      
+      // Alternate between colors for visual variety
+      let particleColor = primaryColor;
+      if (accentColor && i % 3 === 0) {
+        particleColor = accentColor;
+      } else if (secondaryColor && i % 3 === 1) {
+        particleColor = secondaryColor;
+      }
       
       const particle = {
         x: projectile.x,
         y: projectile.y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        color: projectile.spell.color,
+        color: particleColor,
         life: 0.4 + Math.random() * 0.4,
         maxLife: 0.4 + Math.random() * 0.4,
         size: (visuals.trailSize || 3) * 1.5,

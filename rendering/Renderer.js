@@ -33,12 +33,56 @@ export class Renderer {
   
   renderProjectile(projectile) {
     const color = projectile.spell.color;
-    this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
-    this.ctx.beginPath();
-    this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
-    this.ctx.fill();
+    const accentColor = projectile.spell.accentColor;
+    const shapeVariant = projectile.spell.visualEffects?.shapeVariant || 'round';
     
-    // Trail effect
+    // Main projectile body
+    this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
+    
+    if (shapeVariant === 'elongated') {
+      // Draw elongated shape for beam-like projectiles
+      this.ctx.save();
+      this.ctx.translate(projectile.x, projectile.y);
+      const angle = Math.atan2(projectile.vy, projectile.vx);
+      this.ctx.rotate(angle);
+      this.ctx.fillRect(-projectile.radius * 1.5, -projectile.radius * 0.5, projectile.radius * 3, projectile.radius);
+      this.ctx.restore();
+    } else if (shapeVariant === 'swirling') {
+      // Draw with slight rotation effect
+      this.ctx.beginPath();
+      this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+      this.ctx.fill();
+      
+      // Add swirl accents if accent color exists
+      if (accentColor) {
+        this.ctx.fillStyle = `rgb(${accentColor.r}, ${accentColor.g}, ${accentColor.b})`;
+        const swirlOffset = Date.now() * 0.01;
+        for (let i = 0; i < 3; i++) {
+          const angle = (i / 3) * Math.PI * 2 + swirlOffset;
+          const x = projectile.x + Math.cos(angle) * projectile.radius * 0.6;
+          const y = projectile.y + Math.sin(angle) * projectile.radius * 0.6;
+          this.ctx.beginPath();
+          this.ctx.arc(x, y, projectile.radius * 0.3, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+      }
+    } else {
+      // Round projectile
+      this.ctx.beginPath();
+      this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+      this.ctx.fill();
+      
+      // Add accent core if accent color exists
+      if (accentColor) {
+        this.ctx.fillStyle = `rgb(${accentColor.r}, ${accentColor.g}, ${accentColor.b})`;
+        this.ctx.beginPath();
+        this.ctx.arc(projectile.x, projectile.y, projectile.radius * 0.5, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+    
+    // Trail effect with primary color
+    this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     this.ctx.globalAlpha = 0.3;
     this.ctx.beginPath();
     this.ctx.arc(projectile.x - projectile.vx * 0.02, projectile.y - projectile.vy * 0.02, projectile.radius * 0.7, 0, Math.PI * 2);

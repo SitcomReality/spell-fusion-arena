@@ -9,7 +9,11 @@ export class Projectile {
     this.spell = spell;
     this.vx = 0;
     this.vy = 0;
-    this.radius = 8;
+    
+    // Apply size modifier from visual effects
+    const sizeModifier = spell.visualEffects?.sizeModifier || 1.0;
+    this.radius = 8 * sizeModifier;
+    
     this.lifetime = 5000;
     this.alive = true;
     this.bounces = 0;

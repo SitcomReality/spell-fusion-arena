@@ -41,7 +41,8 @@ export const ELEMENTS = {
     auraSize: 15,
     auraIntensity: 0.4,
     impactParticles: 20,
-    impactType: 'spark'
+    impactType: 'spark',
+    sizeMultiplier: 1.0
   }, false),
   
   frost: new Element('Frost', { r: 100, g: 200, b: 255 }, {
@@ -59,7 +60,8 @@ export const ELEMENTS = {
     impactParticles: 15,
     impactType: 'spark',
     ambientParticles: true,
-    ambientType: 'glow'
+    ambientType: 'glow',
+    sizeMultiplier: 0.95
   }, false),
   
   storm: new Element('Storm', { r: 200, g: 150, b: 255 }, {
@@ -79,7 +81,8 @@ export const ELEMENTS = {
     auraIntensity: 0.5,
     impactParticles: 25,
     impactType: 'spark',
-    crackle: true
+    crackle: true,
+    sizeMultiplier: 0.9
   }, false),
   
   stone: new Element('Stone', { r: 120, g: 100, b: 80 }, {
@@ -96,7 +99,8 @@ export const ELEMENTS = {
     aura: false,
     impactParticles: 30,
     impactType: 'smoke',
-    shake: true
+    shake: true,
+    sizeMultiplier: 1.3
   }, false),
 
   // Unlockable elements
@@ -116,7 +120,8 @@ export const ELEMENTS = {
     auraIntensity: 0.3,
     impactParticles: 18,
     impactType: 'smoke',
-    drip: true
+    drip: true,
+    sizeMultiplier: 0.95
   }),
 
   light: new Element('Light', { r: 255, g: 255, b: 200 }, {
@@ -135,7 +140,8 @@ export const ELEMENTS = {
     auraIntensity: 0.6,
     impactParticles: 12,
     impactType: 'spark',
-    beam: true
+    beam: true,
+    sizeMultiplier: 0.85
   }),
 
   shadow: new Element('Shadow', { r: 80, g: 60, b: 120 }, {
@@ -154,7 +160,8 @@ export const ELEMENTS = {
     auraIntensity: 0.5,
     impactParticles: 15,
     impactType: 'swirl',
-    wispy: true
+    wispy: true,
+    sizeMultiplier: 1.05
   }),
 
   arcane: new Element('Arcane', { r: 180, g: 100, b: 255 }, {
@@ -173,7 +180,8 @@ export const ELEMENTS = {
     auraIntensity: 0.7,
     impactParticles: 25,
     impactType: 'swirl',
-    swirl: true
+    swirl: true,
+    sizeMultiplier: 1.0
   }),
 
   nature: new Element('Nature', { r: 80, g: 200, b: 100 }, {
@@ -193,7 +201,8 @@ export const ELEMENTS = {
     auraIntensity: 0.4,
     impactParticles: 20,
     impactType: 'aura',
-    growth: true
+    growth: true,
+    sizeMultiplier: 1.1
   }),
 
   blood: new Element('Blood', { r: 200, g: 20, b: 50 }, {
@@ -210,7 +219,8 @@ export const ELEMENTS = {
     aura: false,
     impactParticles: 18,
     impactType: 'spark',
-    drip: true
+    drip: true,
+    sizeMultiplier: 0.9
   }),
 
   void: new Element('Void', { r: 40, g: 20, b: 60 }, {
@@ -230,7 +240,8 @@ export const ELEMENTS = {
     impactParticles: 30,
     impactType: 'swirl',
     vortex: true,
-    pullParticles: true
+    pullParticles: true,
+    sizeMultiplier: 1.15
   }),
 
   crystal: new Element('Crystal', { r: 150, g: 220, b: 255 }, {
@@ -249,7 +260,8 @@ export const ELEMENTS = {
     auraIntensity: 0.5,
     impactParticles: 22,
     impactType: 'spark',
-    shimmer: true
+    shimmer: true,
+    sizeMultiplier: 0.95
   }, false),
 
   chaos: new Element('Chaos', { r: 255, g: 100, b: 200 }, {
@@ -271,7 +283,8 @@ export const ELEMENTS = {
     impactParticles: 35,
     impactType: 'spark',
     chaotic: true,
-    randomColors: true
+    randomColors: true,
+    sizeMultiplier: 1.05
   }),
 
   earth: new Element('Earth', { r: 140, g: 100, b: 60 }, {
@@ -289,7 +302,8 @@ export const ELEMENTS = {
     impactParticles: 40,
     impactType: 'smoke',
     shake: true,
-    rocks: true
+    rocks: true,
+    sizeMultiplier: 1.4
   }),
 
   wind: new Element('Wind', { r: 200, g: 240, b: 255 }, {
@@ -309,7 +323,8 @@ export const ELEMENTS = {
     auraIntensity: 0.3,
     impactParticles: 16,
     impactType: 'swirl',
-    wispy: true
+    wispy: true,
+    sizeMultiplier: 0.85
   }),
 
   metal: new Element('Metal', { r: 180, g: 180, b: 200 }, {
@@ -319,6 +334,15 @@ export const ELEMENTS = {
     chaining: 4,
     knockback: 2,
     splitting: 2
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 5,
+    trailSize: 3,
+    aura: false,
+    impactParticles: 20,
+    impactType: 'spark',
+    sizeMultiplier: 1.0
   })
 };
 
