@@ -44,22 +44,34 @@ export class EffectsRenderer {
   }
 
   renderTrailParticle(particle, alpha) {
-    let size = particle.size * (1 - (1 - alpha) * 0.5);
-    size = Math.max(0.1, size); // Ensure minimum size
-    const color = particle.color;
-    
-    const gradient = this.ctx.createRadialGradient(
-      particle.x, particle.y, 0,
-      particle.x, particle.y, size
-    );
-    gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
-    gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
-    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-    
-    this.ctx.fillStyle = gradient;
-    this.ctx.beginPath();
-    this.ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
-    this.ctx.fill();
+    // Sanitize particle coordinates and size to avoid canvas API errors
+    const color = particle.color || { r: 200, g: 200, b: 200 };
+
+    const safeX = Number.isFinite(particle.x) ? particle.x : 0;
+    const safeY = Number.isFinite(particle.y) ? particle.y : 0;
+    const rawSize = Number.isFinite(particle.size) ? particle.size : 1;
+    let size = rawSize * (1 - (1 - alpha) * 0.5);
+    size = Number.isFinite(size) ? Math.max(0.1, size) : 0.1; // ensure numeric positive radius
+
+    // protect against createRadialGradient receiving non-finite values
+    try {
+      const gradient = this.ctx.createRadialGradient(
+        safeX, safeY, 0,
+        safeX, safeY, size
+      );
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
+      gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+      
+      this.ctx.fillStyle = gradient;
+      this.ctx.beginPath();
+      this.ctx.arc(safeX, safeY, size, 0, Math.PI * 2);
+      this.ctx.fill();
+    } catch (e) {
+      // Fallback: render a simple solid square/pixel if gradients fail
+      this.ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+      this.ctx.fillRect(Math.round(safeX) - 1, Math.round(safeY) - 1, 2, 2);
+    }
   }
 
   renderAuraParticle(particle, alpha) {
