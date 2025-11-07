@@ -80,7 +80,7 @@ class Game {
       this.fusionUI.refresh();
       // After reward, show next wave start button
       this.showNextWaveButton();
-    }, this.rng);
+    }, this.rng, this.gameState);
 
     // Wave start button
     this.waveStartButton = new WaveStartButton(document.getElementById('canvas-wrapper'));
