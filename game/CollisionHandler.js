@@ -148,31 +148,53 @@ export class CollisionHandler {
 
   handleSplitting(parentProjectile, collisionEnemy) {
     const game = this.game;
+    // Probabilistic splitting:
+    // - splittingPotency controls both how many independent spawn-rolls occur
+    //   and the chance of success for each roll.
+    // - This allows high splitting to sometimes produce multiple children, sometimes none.
     const splittingPotency = (parentProjectile.properties.splitting || 0) * parentProjectile.potencyMultiplier;
 
-    // Determine number of child projectiles based on splitting potency
-    const numChildren = Math.max(1, Math.floor(splittingPotency / 3));
+    if (splittingPotency <= 0) return;
 
-    for (let i = 0; i < numChildren; i++) {
-      // Create new projectile with weakened properties
-      const childProjectile = new Projectile(
-        collisionEnemy.x,
-        collisionEnemy.y,
-        parentProjectile.spell,
-        // Target a random direction or nearby enemy
-        collisionEnemy.x + (Math.random() - 0.5) * 200,
-        collisionEnemy.y + (Math.random() - 0.5) * 200
-      );
+    // Determine number of independent attempts (rolls). Use potency to allow fractional influence:
+    // e.g. potency 3.6 => 4 possible rolls, potency 1.1 => 2 rolls (ceil).
+    const maxRolls = Math.max(1, Math.ceil(splittingPotency));
 
-      // Inherit generation and degrade potency
-      childProjectile.generation = parentProjectile.generation + 1;
-      childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.7;
+    // Base chance per roll increases with potency but is clamped.
+    // This formula yields modest chances at low potency and strong chances at high potency.
+    const baseChance = Math.min(0.9, 0.12 + (splittingPotency * 0.12));
 
-      // Create weakened spell with reduced properties
-      childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
-      childProjectile.properties = childProjectile.spell.properties;
+    for (let r = 0; r < maxRolls; r++) {
+      // Slightly bias later rolls to be a bit less likely to avoid runaway spawns:
+      const rollModifier = 1 - (r / Math.max(1, maxRolls)) * 0.25;
+      const rollChance = Math.max(0.02, Math.min(0.95, baseChance * rollModifier));
 
-      game.projectiles.push(childProjectile);
+      if (Math.random() <= rollChance) {
+        // Spawn a child projectile in a semi-random direction near the collision point.
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 6 + Math.random() * 12;
+        const targetX = collisionEnemy.x + Math.cos(angle) * distance + (Math.random() - 0.5) * 40;
+        const targetY = collisionEnemy.y + Math.sin(angle) * distance + (Math.random() - 0.5) * 40;
+
+        const childProjectile = new Projectile(
+          collisionEnemy.x,
+          collisionEnemy.y,
+          parentProjectile.spell,
+          targetX,
+          targetY
+        );
+
+        // Inherit generation and degrade potency (weaker children)
+        childProjectile.generation = parentProjectile.generation + 1;
+        childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.6;
+
+        // Create weakened spell with reduced properties according to the child's potency
+        childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
+        childProjectile.properties = childProjectile.spell.properties;
+
+        game.projectiles.push(childProjectile);
+      }
+      // If the roll fails, no child is spawned for that attempt; next roll may still succeed.
     }
   }
 
