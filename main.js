@@ -41,6 +41,13 @@ class Game {
     // Set up wave complete callback
     this.gameState.waveManager.onWaveComplete((waveNumber) => {
       this.gameState.pause();
+      // Automatic rewards on wave completion: always 1 Focus and 1-3 Essence
+      const autoFocus = 1;
+      const autoEssence = 1 + Math.floor(Math.random() * 3); // 1..3
+      try {
+        this.fusionUI.addFocusToBank(autoFocus);
+        this.fusionUI.addEssenceToBank(autoEssence);
+      } catch (e) { /* silent fallback */ }
       this.rewardUI.show(waveNumber);
     });
     
@@ -165,4 +172,3 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', () => document.querySelectorAll('.property-badge.active').forEach(e => e.classList.remove('active')));
   })();
 });
-

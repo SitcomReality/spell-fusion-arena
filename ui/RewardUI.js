@@ -9,11 +9,15 @@ export class RewardUI {
   }
 
   show(waveNumber) {
+    // Note: automatic rewards (1 Focus + 1-3 Essence) are granted by the Game when this is invoked.
     const lockedElements = getLockedElements();
     const elementKeys = Object.keys(lockedElements);
     
     // Determine offered Mana Essence (biased distribution 2-10)
     this.essenceOffer = this.rollEssenceOffer();
+
+    // Provide a short summary line to remind player of automatic awards (will be inserted into modal)
+    this.autoRewardSummary = `You received: 1 Focus and ${Math.max(1, Math.min(3, this.essenceOffer <= 10 ? 1 : 1))} Essence`;
 
     if (elementKeys.length === 0) {
       // All elements unlocked; offer essence only
@@ -39,23 +43,21 @@ export class RewardUI {
   }
 
   rollEssenceOffer() {
+    // Updated distribution: offer between 5-10 for the choice card (biased)
     const weighted = [
-      { amt: 2, w: 40 },
-      { amt: 3, w: 20 },
-      { amt: 4, w: 12 },
-      { amt: 5, w: 8 },
-      { amt: 6, w: 6 },
-      { amt: 7, w: 5 },
-      { amt: 8, w: 4 },
-      { amt: 9, w: 3 },
-      { amt: 10, w: 2 }
+      { amt: 5, w: 30 },
+      { amt: 6, w: 20 },
+      { amt: 7, w: 15 },
+      { amt: 8, w: 12 },
+      { amt: 9, w: 10 },
+      { amt: 10, w: 8 }
     ];
     const total = weighted.reduce((s, x) => s + x.w, 0);
     let r = Math.random() * total;
     for (const x of weighted) {
       if ((r -= x.w) <= 0) return x.amt;
     }
-    return 2;
+    return 5;
   }
 
   renderEssenceOnly(waveNumber) {
@@ -64,6 +66,7 @@ export class RewardUI {
     this.container.innerHTML = `
       <div class="reward-modal">
         <h2>Wave ${waveNumber} Complete!</h2>
+        <p class="reward-subtitle">You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} Essence</p>
         <p class="reward-subtitle">Take your reward</p>
         <div class="reward-choices" id="reward-choices"></div>
       </div>
@@ -80,7 +83,7 @@ export class RewardUI {
       <div class="reward-card-essence-amount">Amount: <span class="essence-amt"></span> ME</div>
     `;
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
-    const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 2) / (10 - 2)));
+    const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));
     essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity * 0.8}`);
 
     essenceCard.addEventListener('click', () => this.selectEssence());
@@ -93,6 +96,7 @@ export class RewardUI {
     this.container.innerHTML = `
       <div class="reward-modal">
         <h2>Wave ${waveNumber} Complete!</h2>
+        <p class="reward-subtitle">You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} Essence</p>
         <p class="reward-subtitle">Choose an element to unlock, or take Mana Essence</p>
         <div class="reward-choices" id="reward-choices"></div>
       </div>
@@ -143,7 +147,7 @@ export class RewardUI {
     `;
     essenceCard.addEventListener('click', () => this.selectEssence());
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
-    const intensity2 = Math.min(1, Math.max(0, (this.essenceOffer - 2) / (10 - 2)));
+    const intensity2 = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));
     essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity2 * 0.8}`);
     choicesContainer.appendChild(essenceCard);
   }
