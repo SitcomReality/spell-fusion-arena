@@ -16,7 +16,7 @@ export class FusionUI {
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null];
     this.spellSlotFocus = [1, 0, 0, 0]; // Focus starts at 1 for slot 1, 0 for others
-    this.essenceBank = 0; // Mana Essence for spell equipping
+    this.essenceBank = 1; // Mana Essence for spell equipping (start with 1)
     this.focusBank = 0;   // Focus for upgrading slots
     this.maxFusionSlots = 4;
     this.unlockedFusionSlots = 4; // All slots unlocked from start
