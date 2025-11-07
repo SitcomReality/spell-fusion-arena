@@ -24,7 +24,6 @@ export class FusionPreview {
             </div>
           </div>
           <div class="panel-controls">
-            <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
             <button class="fusion-preview-create" disabled aria-disabled="true">Create</button>
           </div>
         </div>
@@ -58,13 +57,6 @@ export class FusionPreview {
       propEntries,
       [
         {
-          className: 'fusion-preview-clear',
-          label: 'Clear',
-          onClick: () => {
-            if (this.onClear) this.onClear();
-          }
-        },
-        {
           className: 'fusion-preview-create',
           label: createLabel,
           onClick: () => {
@@ -79,4 +71,3 @@ export class FusionPreview {
     this.onClear = callback;
   }
 }
-

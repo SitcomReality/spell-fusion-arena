@@ -77,7 +77,10 @@ export class FusionUI {
         </div>
         
         <div class="fusion-section">
-          <h2>Create Spell</h2>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <h2 style="margin:0;">Create Spell</h2>
+            <button class="fusion-clear-btn" title="Clear selected elements" style="border:1px solid #4a9eff; background:rgba(74,158,255,0.06); color:#b0d4ff; padding:6px 10px; cursor:pointer;">Clear</button>
+          </div>
           <div class="fusion-layout-wrapper">
             <div class="fusion-builder" id="fusion-builder"></div>
             <div id="fusion-panel"></div>
@@ -92,6 +95,12 @@ export class FusionUI {
     this.fusionBuilder.mount(document.getElementById('fusion-builder'));
     this.fusionPreview.mount(document.getElementById('fusion-panel'));
     this.spellSlotsUI.mount();
+
+    // Wire the external Clear button to clear fusion selection
+    const clearBtn = this.container.querySelector('.fusion-clear-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearFusion());
+    }
 
     // initial updates
     this.elementsLibrary.refresh();
