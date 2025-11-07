@@ -8,6 +8,7 @@ import { RewardUI } from './ui/RewardUI.js';
 import { IntroScreen } from './ui/IntroScreen.js';
 import { WaveStartButton } from './ui/WaveStartButton.js';
 import { SeededRandom } from './game/SeededRandom.js';
+import { ELEMENTS } from './spells/Element.js';
 
 class Game {
   constructor() {
@@ -48,10 +49,9 @@ class Game {
     // Create seeded RNG for this game session
     this.rng = new SeededRandom(seed);
 
-    // Create game state with seed and starting unlocked elements
+    // Derive starting element keys by matching against the known ELEMENTS map
     const startingElementKeys = startingElements.map(elem => {
-      // Find the key for this element in ELEMENTS
-      for (const [key, el] of Object.entries(window.ELEMENTS_EXPORT || {})) {
+      for (const [key, el] of Object.entries(ELEMENTS)) {
         if (el === elem) return key;
       }
       return null;
@@ -63,10 +63,10 @@ class Game {
     const startingSpells = startingElements.slice(0, 4);
     this.gameState.player.equipSpells(startingSpells, [1, 0, 0, 0]);
 
-    // Create UI components with seeded RNG
+    // Pass the gameState into FusionUI so it can access unlockedElementKeys for the library
     this.fusionUI = new FusionUI((spells, focus) => {
       this.gameState.player.equipSpells(spells, focus);
-    });
+    }, this.gameState);
 
     this.rewardUI = new RewardUI((reward) => {
       // Handle chosen reward
