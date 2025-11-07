@@ -1,11 +1,12 @@
 import { getLockedElements, unlockElement } from '../spells/Element.js';
 
 export class RewardUI {
-  constructor(onRewardChosen) {
+  constructor(onRewardChosen, rng = null) {
     this.onRewardChosen = onRewardChosen;
     this.container = null;
     this.choices = [];
     this.essenceOffer = 0; // Mana Essence offered
+    this.rng = rng; // Use provided seeded RNG or null for random
   }
 
   show(waveNumber) {
@@ -13,7 +14,7 @@ export class RewardUI {
     const lockedElements = getLockedElements();
     const elementKeys = Object.keys(lockedElements);
     
-    // Determine offered Mana Essence (biased distribution 2-10)
+    // Determine offered Mana Essence (biased distribution 5-10)
     this.essenceOffer = this.rollEssenceOffer();
 
     // Provide a short summary line to remind player of automatic awards (will be inserted into modal)
@@ -36,7 +37,8 @@ export class RewardUI {
     }
     const picked = new Set();
     while (this.choices.length < 2 && pool.length > 0) {
-      const key = pool[Math.floor(Math.random() * pool.length)];
+      const idx = this.rng ? this.rng.nextInt(0, pool.length) : Math.floor(Math.random() * pool.length);
+      const key = pool[idx];
       if (!picked.has(key)) {
         picked.add(key);
         this.choices.push({ key, element: lockedElements[key] });
@@ -59,7 +61,7 @@ export class RewardUI {
       { amt: 10, w: 8 }
     ];
     const total = weighted.reduce((s, x) => s + x.w, 0);
-    let r = Math.random() * total;
+    let r = (this.rng ? this.rng.next() : Math.random()) * total;
     for (const x of weighted) {
       if ((r -= x.w) <= 0) return x.amt;
     }

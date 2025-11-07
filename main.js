@@ -5,6 +5,9 @@ import { EffectsRenderer } from './rendering/EffectsRenderer.js';
 import { FusionUI } from './ui/FusionUI.js';
 import { HUD } from './ui/HUD.js';
 import { RewardUI } from './ui/RewardUI.js';
+import { IntroScreen } from './ui/IntroScreen.js';
+import { WaveStartButton } from './ui/WaveStartButton.js';
+import { SeededRandom } from './game/SeededRandom.js';
 
 class Game {
   constructor() {
@@ -18,10 +21,41 @@ class Game {
     
     this.renderer = new Renderer(this.canvas);
     this.fxRenderer = new EffectsRenderer(this.fxCanvas);
-    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height);
+    this.gameState = null;
     this.hud = new HUD();
+    this.fusionUI = null;
+    this.rewardUI = null;
+    this.waveStartButton = null;
+    this.rng = null; // Seeded RNG for this game session
     
-    // Create UI and wire its callbacks to game state
+    this.lastTime = 0;
+    this.running = true;
+    
+    this.setupMobileLayoutObserver();
+    
+    // Show intro screen
+    this.showIntroScreen();
+  }
+
+  showIntroScreen() {
+    const introScreen = new IntroScreen((config) => {
+      this.startGameWithLoadout(config.startingElements, config.seed);
+    });
+    introScreen.show();
+  }
+
+  startGameWithLoadout(startingElements, seed) {
+    // Create seeded RNG for this game session
+    this.rng = new SeededRandom(seed);
+
+    // Create game state with seed
+    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height, seed);
+    
+    // Set starting spells from selection
+    const startingSpells = startingElements.slice(0, 4);
+    this.gameState.player.equipSpells(startingSpells, [1, 0, 0, 0]);
+
+    // Create UI components with seeded RNG
     this.fusionUI = new FusionUI((spells, focus) => {
       this.gameState.player.equipSpells(spells, focus);
     });
@@ -31,32 +65,43 @@ class Game {
       if (reward.type === 'essence') {
         this.fusionUI.addEssenceToBank(reward.amount);
       } else if (reward.type === 'element') {
-        // If element unlock handling needs triggering in UI, refresh elements library
         this.fusionUI.refresh();
       }
       this.gameState.resume();
       this.fusionUI.refresh();
-    });
+      // After reward, show next wave start button
+      this.showNextWaveButton();
+    }, this.rng);
+
+    // Wave start button
+    this.waveStartButton = new WaveStartButton(document.getElementById('canvas-wrapper'));
 
     // Set up wave complete callback
     this.gameState.waveManager.onWaveComplete((waveNumber) => {
       this.gameState.pause();
-      // Automatic rewards on wave completion: always 1 Focus and 1-3 Essence
+      // Automatic rewards: 1 Focus and 1-3 Essence
       const autoFocus = 1;
-      const autoEssence = 1 + Math.floor(Math.random() * 3); // 1..3
+      const autoEssence = 1 + Math.floor(this.rng.next() * 3); // 1..3 using seeded RNG
       try {
         this.fusionUI.addFocusToBank(autoFocus);
         this.fusionUI.addEssenceToBank(autoEssence);
       } catch (e) { /* silent fallback */ }
       this.rewardUI.show(waveNumber);
     });
-    
-    this.lastTime = 0;
-    this.running = true;
-    
-    this.setupMobileLayoutObserver();
+
+    // Show the first wave start button
+    this.showNextWaveButton();
     
     this.start();
+  }
+
+  showNextWaveButton() {
+    const nextWaveNumber = this.gameState.waveManager.currentWave + 1;
+    this.gameState.showWaveStart();
+    this.waveStartButton.show(nextWaveNumber, () => {
+      this.gameState.waveManager.startNextWave();
+      this.gameState.startWave();
+    });
   }
   
   setupMobileLayoutObserver() {

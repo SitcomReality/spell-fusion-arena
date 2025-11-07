@@ -1,8 +1,9 @@
 import { Enemy, ENEMY_TYPES } from '../entities/Enemy.js';
 import { CONFIG } from '../config.js';
+import { SeededRandom } from './SeededRandom.js';
 
 export class WaveManager {
-  constructor(centerX, centerY) {
+  constructor(centerX, centerY, seed = null) {
     this.centerX = centerX;
     this.centerY = centerY;
     this.currentWave = 0;
@@ -10,6 +11,9 @@ export class WaveManager {
     this.timeSinceWave = 0;
     this.enemiesRemaining = 0;
     this.waveCompleteCallback = null;
+    
+    // NEW: Support seeded RNG for deterministic enemy spawning
+    this.rng = new SeededRandom(seed);
   }
   
   update(dt) {
@@ -19,7 +23,9 @@ export class WaveManager {
       const delay = this.currentWave === 0 ? CONFIG.wave.initialDelay : CONFIG.wave.betweenWaveDelay;
       
       if (this.timeSinceWave >= delay) {
-        this.startNextWave();
+        // Instead of starting immediately, signal that we're ready to show start button
+        // The game will handle showing the UI and calling startNextWave() when player clicks
+        // For now, just mark that we should transition
       }
     }
   }
@@ -35,7 +41,7 @@ export class WaveManager {
     const baseCount = 5 + this.currentWave * 2;
     
     for (let i = 0; i < baseCount; i++) {
-      const angle = (Math.PI * 2 * i) / baseCount + Math.random() * 0.5;
+      const angle = (Math.PI * 2 * i) / baseCount + (this.rng.next() - 0.5) * 0.5;
       const x = this.centerX + Math.cos(angle) * CONFIG.enemy.spawnRadius;
       const y = this.centerY + Math.sin(angle) * CONFIG.enemy.spawnRadius;
       
@@ -43,9 +49,9 @@ export class WaveManager {
       if (this.currentWave === 1) {
         type = ENEMY_TYPES.grunt;
       } else if (this.currentWave === 2) {
-        type = Math.random() > 0.5 ? ENEMY_TYPES.grunt : ENEMY_TYPES.runner;
+        type = this.rng.next() > 0.5 ? ENEMY_TYPES.grunt : ENEMY_TYPES.runner;
       } else {
-        const rand = Math.random();
+        const rand = this.rng.next();
         if (rand < 0.5) type = ENEMY_TYPES.grunt;
         else if (rand < 0.85) type = ENEMY_TYPES.runner;
         else type = ENEMY_TYPES.tank;

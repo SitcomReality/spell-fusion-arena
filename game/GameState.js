@@ -7,7 +7,7 @@ import { ParticleManager } from './ParticleManager.js';
 import { castSpell } from './GameActions.js';
 
 export class GameState {
-  constructor(canvasWidth, canvasHeight) {
+  constructor(canvasWidth, canvasHeight, seed = null) {
     this.width = canvasWidth;
     this.height = canvasHeight;
     this.centerX = canvasWidth / 2;
@@ -17,7 +17,7 @@ export class GameState {
     // Initial setup for player spells and essence
     this.player.equipSpells([], [5, 0, 0, 0]);
 
-    this.waveManager = new WaveManager(this.centerX, this.centerY);
+    this.waveManager = new WaveManager(this.centerX, this.centerY, seed);
     this.enemies = [];
     this.projectiles = [];
     this.particles = [];
@@ -25,15 +25,19 @@ export class GameState {
 
     this.score = 0;
     this.paused = false;
+    this.waveStartPending = false; // NEW: True when waiting for player to start wave
 
     // New: handlers for collision and particles
     this.collisionHandler = new CollisionHandler(this);
     this.particleManager = new ParticleManager(this);
     this.lastFocusReward = 0; // Track focus rewarded this wave
+
+    this.seed = seed;
   }
 
   update(dt) {
-    if (this.paused) return;
+    if (this.paused || this.waveStartPending) return;
+    
     this.updateAoEs(dt);
     
     // Update wave manager
@@ -96,10 +100,17 @@ export class GameState {
       }
       return true;
     });
+  }
 
-    // NOTE: Wave completion automatic rewards (1 Focus and 1-3 Essence) are now handled
-    // centrally by the Game (main.js) via WaveManager.onWaveComplete. Remove duplicate
-    // awarding logic from here to avoid double-granting.
+  // NEW: Signal that the player is ready to start the current wave
+  startWave() {
+    this.waveStartPending = false;
+    this.waveManager.waveActive = true;
+  }
+
+  // NEW: Prepare to show wave start button (pause wave spawning)
+  showWaveStart() {
+    this.waveStartPending = true;
   }
 
   createParticles(x, y, color) {
