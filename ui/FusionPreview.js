@@ -34,7 +34,7 @@ export class FusionPreview {
     `;
   }
 
-  showSpell(spell, onCreate, cost = null) {
+  showSpell(spell, onCreate) {
     if (!this.panel.container) return;
     const color = spell.color;
     const props = spell.properties || {};
@@ -43,18 +43,21 @@ export class FusionPreview {
       value: Math.round(v * 100) / 100
     }));
 
-    // Prepare create button label with optional cost display
-    const createLabel = cost ? `Create (${cost} ME)` : 'Create';
-
     this.panel.render(
       spell.name,
       color,
       propEntries,
       [
-        // Clear button removed from preview controls; header handles clear now.
+        {
+          className: 'fusion-preview-clear',
+          label: 'Clear',
+          onClick: () => {
+            if (this.onClear) this.onClear();
+          }
+        },
         {
           className: 'fusion-preview-create',
-          label: createLabel,
+          label: 'Create',
           onClick: () => {
             if (onCreate) onCreate();
           }
@@ -67,3 +70,4 @@ export class FusionPreview {
     this.onClear = callback;
   }
 }
+
