@@ -194,7 +194,9 @@ export class EffectsRenderer {
     const visualEffects = spell.visualEffects || {};
     const auraSizeRaw = visualEffects.auraSize || 20;
     const auraSize = Number.isFinite(auraSizeRaw) ? Math.max(0.1, auraSizeRaw) : 20;
-    const auraIntensity = Number.isFinite(visualEffects.auraIntensity || 0.3) ? visualEffects.auraIntensity : 0.3;
+    // Ensure auraIntensity uses the raw value when finite, otherwise default to 0.3
+    const rawAuraIntensity = visualEffects.auraIntensity;
+    const auraIntensity = Number.isFinite(rawAuraIntensity) ? rawAuraIntensity : 0.3;
     const color = spell.color || { r: 200, g: 120, b: 40 };
     const accentColor = spell.accentColor;
 
