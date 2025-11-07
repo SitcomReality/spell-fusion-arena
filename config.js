@@ -14,7 +14,7 @@ export const CONFIG = {
   wave: {
     initialDelay: 3000,
     betweenWaveDelay: 5000,
-    focusRewardPerWave: 3
+    focusRewardPerWave: 1
   },
   particles: {
     maxParticles: 500

@@ -97,18 +97,9 @@ export class GameState {
       return true;
     });
 
-    // Check if wave just completed and award focus
-    if (this.waveManager.waveActive === false && this.waveManager.enemiesRemaining === 0 && this.lastFocusReward < this.waveManager.currentWave) {
-      this.lastFocusReward = this.waveManager.currentWave;
-      const focusReward = CONFIG.wave.focusRewardPerWave || 3;
-      try {
-        if (window.gameInstance && window.gameInstance.fusionUI) {
-          window.gameInstance.fusionUI.addFocusToBank(focusReward);
-        }
-      } catch (e) {
-        // silent
-      }
-    }
+    // NOTE: Wave completion automatic rewards (1 Focus and 1-3 Essence) are now handled
+    // centrally by the Game (main.js) via WaveManager.onWaveComplete. Remove duplicate
+    // awarding logic from here to avoid double-granting.
   }
 
   createParticles(x, y, color) {
