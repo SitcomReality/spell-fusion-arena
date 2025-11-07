@@ -1,3 +1,5 @@
+import { Icons } from './Icons.js';
+
 export class FusionBuilder {
   constructor(options = {}) {
     this.container = null;
@@ -39,6 +41,9 @@ export class FusionBuilder {
     if (!this.slotsContainer) return;
     this.slotsContainer.innerHTML = '';
     
+    // Placeholder costs per fusion slot (1..4)
+    const COSTS = [1, 5, 10, 20];
+    
     // Always render total slots, show locked overlay for locked ones
     for (let i = 0; i < this.totalSlots; i++) {
       const slot = document.createElement('div');
@@ -60,7 +65,12 @@ export class FusionBuilder {
             this.onSlotRemove(i);
           });
         } else {
-          slot.innerHTML = '<span class="fusion-slot-placeholder">+</span>';
+          // Show faded mana essence icon + cost for empty fusion slot
+          const cost = COSTS[i] || 0;
+          slot.innerHTML = `<div class="fusion-slot-placeholder" style="display:flex;gap:6px;align-items:center;color:rgba(200,200,200,0.6);font-weight:500;">
+            <span style="opacity:0.55;filter:grayscale(60%);display:inline-flex;align-items:center;">${Icons.manaEssenceSVG(14)}</span>
+            <span style="font-size:14px;color:rgba(220,220,220,0.65);"> ${cost}</span>
+          </div>`;
         }
       } else {
         // locked slot with unlock CTA
