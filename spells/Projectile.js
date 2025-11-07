@@ -33,14 +33,38 @@ export class Projectile {
       this.spiralOriginX = x;
       this.spiralOriginY = y;
       this.spiralAngle = Math.atan2(targetY - y, targetX - x);
-      // Start slightly tighter than before so initial orbit is compact
-      this.spiralRadius = Math.max(1, this.radius * 0.6);
-      this.spiralDirection = Math.random() < 0.5 ? 1 : -1;
-      // Reduce outward expansion so projectiles stay in orbit longer, but increase rotation for more revolutions
+      
+      // Spiral radius varies with Spiral value and Speed:
+      // - At 0.5 Spiral: looser/larger orbit (faster growth)
+      // - Higher Spiral values: tighter/smaller orbit (slower growth)
+      // - Higher Speed: slightly larger radius
       const baseSpeed = this.properties.speed || 150;
-      this.spiralOutwardSpeed = baseSpeed * 0.22; // much slower radial growth
-      // Make rotation noticeably faster (more radians/sec) scaled by spiral gene
-      this.spiralRotationSpeed = 4 + spiral * 2.5; // Rad/s
+      const speedFactor = 1 + (baseSpeed - 150) / 800; // Higher speed = larger radius
+      const spiralCompactness = 1 - Math.max(0, (spiral - 0.5) * 0.6); // 0.5->1.0, higher->tighter
+      this.spiralRadius = Math.max(1, this.radius * 1.0 * spiralCompactness * speedFactor);
+      
+      this.spiralDirection = Math.random() < 0.5 ? 1 : -1;
+      
+      // Outward expansion inversely related to Spiral value
+      const outwardMultiplier = 1 - Math.max(0, (spiral - 0.5) * 0.5); // 0.5->1.0, higher->slower
+      this.spiralOutwardSpeed = baseSpeed * 0.25 * outwardMultiplier;
+      
+      // Rotation speed
+      this.spiralRotationSpeed = 4 + spiral * 2.5;
+      
+      // Spiral can wobble if it has Wave property
+      if (wave > 0) {
+        this.spiralWaveEnabled = true;
+        this.spiralWavePhase = 0;
+        this.spiralWaveAmplitude = 6 + wave * 8;
+        this.spiralWaveFrequency = 2 + wave * 1.5;
+      }
+      
+      // Spiral can be influenced by Homing
+      if (homing > 0) {
+        this.spiralHomingEnabled = true;
+        this.spiralHomingStrength = homing * 0.3;
+      }
     }
 
     // Wave properties
