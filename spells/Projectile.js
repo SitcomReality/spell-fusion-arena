@@ -41,13 +41,13 @@ export class Projectile {
       this.spiralOutwardSpeed = baseSpeed * 0.22; // much slower radial growth
       // Make rotation noticeably faster (more radians/sec) scaled by spiral gene
       this.spiralRotationSpeed = 4 + spiral * 2.5; // Rad/s
-    } else {
-      // Wave properties
-      if (wave > 0) {
-        this.waveAngle = 0;
-        this.waveAmplitude = 15 + wave * 80;
-        this.waveFrequency = 5 + wave * 5;
-      }
+    }
+
+    // Wave properties
+    if (wave > 0) {
+      this.waveAngle = 0;
+      this.waveAmplitude = 15 + wave * 80;
+      this.waveFrequency = 5 + wave * 5;
     }
 
     this.initVelocity(targetX, targetY);
@@ -126,17 +126,17 @@ export class Projectile {
 
       this.x += this.vx * dt;
       this.y += this.vy * dt;
-
-      // Wave motion perpendicular to velocity
-      if (this.waveAmplitude) {
-        this.waveAngle += this.waveFrequency * dt;
-        const perpAngle = Math.atan2(this.vy, this.vx) + Math.PI / 2;
-        const waveOffset = Math.sin(this.waveAngle) * this.waveAmplitude;
-        this.x += Math.cos(perpAngle) * waveOffset * dt;
-        this.y += Math.sin(perpAngle) * waveOffset * dt;
-      }
     }
 
+    // Wave motion perpendicular to velocity (applies to both spiral and standard movement)
+    if (this.waveAmplitude) {
+      this.waveAngle += this.waveFrequency * dt;
+      const perpAngle = Math.atan2(this.vy, this.vx) + Math.PI / 2;
+      const waveOffset = Math.sin(this.waveAngle) * this.waveAmplitude;
+      this.x += Math.cos(perpAngle) * waveOffset * dt;
+      this.y += Math.sin(perpAngle) * waveOffset * dt;
+    }
+    
     // Bounce off walls
     if (this.properties.bouncing && this.bounces < this.maxBounces) {
       if (this.x < 0 || this.x > canvasWidth) {
