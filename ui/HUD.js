@@ -1,3 +1,5 @@
+import { Icons } from './Icons.js';
+
 export class HUD {
   constructor() {
     this.container = document.getElementById('hud');
@@ -20,9 +22,8 @@ export class HUD {
       <div class="hud-item">Wave: ${gameState.waveManager.currentWave}</div>
       <div class="hud-item">Score: ${gameState.score}</div>
       <div class="hud-item">Enemies: ${gameState.enemies.length}</div>
-      <div class="hud-item">Essence: ${essenceBank}</div>
-      <div class="hud-item">Focus: ${focusBank}</div>
+      <div class="hud-item">Essence: ${Icons.manaEssenceSVG(14)} ${essenceBank}</div>
+      <div class="hud-item">Focus: ${Icons.focusSVG(14)} ${focusBank}</div>
     `;
   }
 }
-
