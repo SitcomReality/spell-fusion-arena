@@ -86,6 +86,12 @@ export class FusionUI {
             <div id="fusion-panel"></div>
           </div>
         </div>
+        
+        <!-- Created spells list: player's spell inventory -->
+        <div class="fusion-section">
+          <h2>Created Spells</h2>
+          <div id="created-spells-list" class="created-spells-list" aria-live="polite"></div>
+        </div>
       </div>
     `;
 
@@ -106,12 +112,52 @@ export class FusionUI {
     this.elementsLibrary.refresh();
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
 
+    // render created spells list
+    this.renderCreatedSpells();
+
     // Set up preview clear callback
     this.fusionPreview.setOnClear(() => this.clearFusion());
   }
 
   renderSpellSlots() {
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
+  }
+
+  // Renders the player's created spells inventory as a vertical list.
+  renderCreatedSpells() {
+    const listEl = this.container && this.container.querySelector('#created-spells-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (!this.spellInventory || this.spellInventory.length === 0) {
+      listEl.innerHTML = `<div class="properties-empty">No created spells yet</div>`;
+      return;
+    }
+
+    // Each item: small color square (same height as text) + name and simple stats
+    this.spellInventory.forEach((spell, idx) => {
+      const item = document.createElement('div');
+      item.className = 'created-spell-item';
+      item.dataset.index = idx;
+
+      const color = spell.color || { r: 120, g: 120, b: 120 };
+      const dmg = Math.round((spell.properties?.damage || 0));
+      const spd = Math.round((spell.properties?.speed || 0));
+
+      item.innerHTML = `
+        <span class="created-spell-color" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></span>
+        <span class="created-spell-label">${spell.name} <span class="created-spell-meta">— D:${dmg} S:${spd}</span></span>
+      `;
+
+      // Allow clicking to equip from this list via a quick-equip action (optional UX)
+      item.addEventListener('click', () => {
+        // If user has no equipped slot empty, open a chooser by dispatching a simple event:
+        const event = new CustomEvent('fusionui:equip-from-created', { detail: { spell, index: idx } });
+        window.dispatchEvent(event);
+      });
+
+      listEl.appendChild(item);
+    });
   }
 
   onElementClicked(key, element, cardEl) {
@@ -187,6 +233,8 @@ export class FusionUI {
     // Clear fusion UI after successful creation
     this.clearFusion();
     this.renderSpellSlots();
+    // Update created spells list
+    this.renderCreatedSpells();
   }
 
   // NEW: Equip spell from inventory to a slot (free)
@@ -194,12 +242,14 @@ export class FusionUI {
     this.equippedSpells[slotIndex] = spell;
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
+    this.renderCreatedSpells();
   }
 
   unequipSpell(index) {
     this.equippedSpells[index] = null;
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
+    this.renderCreatedSpells();
   }
 
   allocateFocusToSlot(slotIndex) {
@@ -219,5 +269,6 @@ export class FusionUI {
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
+    this.renderCreatedSpells();
   }
 }
