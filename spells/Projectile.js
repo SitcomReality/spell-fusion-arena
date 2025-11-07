@@ -33,11 +33,14 @@ export class Projectile {
       this.spiralOriginX = x;
       this.spiralOriginY = y;
       this.spiralAngle = Math.atan2(targetY - y, targetX - x);
-      this.spiralRadius = this.radius * 0.5;
+      // Start slightly tighter than before so initial orbit is compact
+      this.spiralRadius = Math.max(1, this.radius * 0.6);
       this.spiralDirection = Math.random() < 0.5 ? 1 : -1;
-      // Use base speed for outward movement, spiral value for rotation speed
-      this.spiralOutwardSpeed = this.properties.speed || 150;
-      this.spiralRotationSpeed = 2 + spiral * 2; // Rad/s
+      // Reduce outward expansion so projectiles stay in orbit longer, but increase rotation for more revolutions
+      const baseSpeed = this.properties.speed || 150;
+      this.spiralOutwardSpeed = baseSpeed * 0.22; // much slower radial growth
+      // Make rotation noticeably faster (more radians/sec) scaled by spiral gene
+      this.spiralRotationSpeed = 4 + spiral * 2.5; // Rad/s
     } else {
       // Wave properties
       if (wave > 0) {
