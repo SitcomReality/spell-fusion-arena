@@ -24,13 +24,22 @@ export function castSpell(gameState, slotIndex) {
     }
   }
 
-  const projectile = new Projectile(
-    player.x,
-    player.y,
-    spell,
-    targetX,
-    targetY
-  );
+  // Apply a small damage boost based on Focus allocated to this slot.
+  // Each Focus provides a modest damage bonus (e.g. +3% per Focus) to slow projectile-count ramp while keeping player effectiveness.
+  const focusForSlot = (player.spellSlotFocus && player.spellSlotFocus[slotIndex]) || 0;
+  const damageBoostPerFocus = 0.03; // 3% damage per Focus
+  const damageMultiplier = 1 + focusForSlot * damageBoostPerFocus;
+
+  // Create a shallow copy of the spell and its numeric properties so the boost only affects this cast instance.
+  const spellInstance = {
+    ...spell,
+    properties: { ...(spell.properties || {}) }
+  };
+  if (typeof spellInstance.properties.damage === 'number') {
+    spellInstance.properties.damage = spellInstance.properties.damage * damageMultiplier;
+  }
+
+  const projectile = new Projectile(player.x, player.y, spellInstance, targetX, targetY);
 
   gameState.projectiles.push(projectile);
 }

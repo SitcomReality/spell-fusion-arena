@@ -24,8 +24,10 @@ export class Player {
         this.castIntervals[i] = Infinity;
       } else {
         // Base interval at 1 Focus is 2500ms. Speed increases from there.
-        // Reaches ~500ms at 13 Focus.
-        this.castIntervals[i] = 2500 / (1 + (focus - 1) / 3);
+        // Reduce how much each Focus decreases interval (slower ramp-up).
+        // Using divisor 5 makes slot firing speed increase more gradually.
+        // Reaches a faster rate much later than before.
+        this.castIntervals[i] = 2500 / (1 + (focus - 1) / 5);
       }
     }
   }
