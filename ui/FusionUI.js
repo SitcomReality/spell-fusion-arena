@@ -153,7 +153,12 @@ export class FusionUI {
     }
 
     this.currentSpell = SpellFusion.fuse(...this.selectedElements);
-    this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell));
+
+    // Compute the current mana essence cost based on how many elements are in the fusion slots
+    const cost = getSpellCost(this.selectedElements.length);
+
+    // Pass the computed cost into FusionPreview so the Create button shows it with the icon
+    this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell), cost);
   }
 
   // NEW: Add spell to inventory (costs Essence)

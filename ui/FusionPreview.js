@@ -1,4 +1,5 @@
 import { DetailPanel } from './DetailPanel.js';
+import { Icons } from './Icons.js';
 
 export class FusionPreview {
   constructor() {
@@ -34,7 +35,8 @@ export class FusionPreview {
     `;
   }
 
-  showSpell(spell, onCreate) {
+  // Accepts optional cost (number) which will be shown on the Create button using the Mana Essence icon.
+  showSpell(spell, onCreate, cost = null) {
     if (!this.panel.container) return;
     const color = spell.color;
     const props = spell.properties || {};
@@ -42,6 +44,13 @@ export class FusionPreview {
       key: k,
       value: Math.round(v * 100) / 100
     }));
+
+    // Prepare create button label: include mana essence icon and numeric cost when provided.
+    let createLabel = 'Create';
+    if (typeof cost === 'number') {
+      // Put icon before the numeric cost to keep it compact
+      createLabel = `Create ${Icons.manaEssenceSVG(14)} ${cost}`;
+    }
 
     this.panel.render(
       spell.name,
@@ -57,7 +66,7 @@ export class FusionPreview {
         },
         {
           className: 'fusion-preview-create',
-          label: 'Create',
+          label: createLabel,
           onClick: () => {
             if (onCreate) onCreate();
           }
