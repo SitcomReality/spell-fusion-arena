@@ -185,42 +185,44 @@ export class EffectsRenderer {
   }
 
   renderProjectileAura(projectile) {
+    // Guard against invalid projectile data to prevent createRadialGradient errors
+    if (!projectile || !projectile.spell) return;
+    const px = Number.isFinite(projectile.x) ? projectile.x : 0;
+    const py = Number.isFinite(projectile.y) ? projectile.y : 0;
+    const baseRadius = Number.isFinite(projectile.radius) ? Math.max(0.1, projectile.radius) : 1;
     const spell = projectile.spell;
-    const visualEffects = spell.visualEffects;
-    
-    if (!visualEffects || !visualEffects.aura) return;
-    
-    const color = spell.color;
+    const visualEffects = spell.visualEffects || {};
+    const auraSizeRaw = visualEffects.auraSize || 20;
+    const auraSize = Number.isFinite(auraSizeRaw) ? Math.max(0.1, auraSizeRaw) : 20;
+    const auraIntensity = Number.isFinite(visualEffects.auraIntensity || 0.3) ? visualEffects.auraIntensity : 0.3;
+    const color = spell.color || { r: 200, g: 120, b: 40 };
     const accentColor = spell.accentColor;
-    let auraSize = visualEffects.auraSize || 20;
-    auraSize = Math.max(0.1, auraSize); // Ensure minimum size
-    const auraIntensity = visualEffects.auraIntensity || 0.3;
-    
+
     // Main aura with primary color
     const gradient = this.ctx.createRadialGradient(
-      projectile.x, projectile.y, projectile.radius,
-      projectile.x, projectile.y, auraSize
+      px, py, baseRadius,
+      px, py, auraSize
     );
     gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${auraIntensity})`);
     gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     this.ctx.fillStyle = gradient;
     this.ctx.beginPath();
-    this.ctx.arc(projectile.x, projectile.y, auraSize, 0, Math.PI * 2);
+    this.ctx.arc(px, py, auraSize, 0, Math.PI * 2);
     this.ctx.fill();
     
     // Add accent color outer ring if available
     if (accentColor) {
       const accentGradient = this.ctx.createRadialGradient(
-        projectile.x, projectile.y, auraSize * 0.7,
-        projectile.x, projectile.y, auraSize * 1.2
+        px, py, auraSize * 0.7,
+        px, py, auraSize * 1.2
       );
       accentGradient.addColorStop(0, `rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, ${auraIntensity * 0.3})`);
       accentGradient.addColorStop(1, `rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, 0)`);
       
       this.ctx.fillStyle = accentGradient;
       this.ctx.beginPath();
-      this.ctx.arc(projectile.x, projectile.y, auraSize * 1.2, 0, Math.PI * 2);
+      this.ctx.arc(px, py, auraSize * 1.2, 0, Math.PI * 2);
       this.ctx.fill();
     }
   }
