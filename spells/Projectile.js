@@ -45,7 +45,7 @@ export class Projectile {
       // Wave properties
       if (wave > 0) {
         this.waveAngle = 0;
-        this.waveAmplitude = 15 + wave * 40;
+        this.waveAmplitude = 15 + wave * 80;
         this.waveFrequency = 5 + wave * 5;
       }
     }
