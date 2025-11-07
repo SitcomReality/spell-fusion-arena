@@ -30,7 +30,8 @@ export const ELEMENTS = {
     speed: 280,
     damage: 20,
     dot: 8,
-    chaining: 4
+    chaining: 4,
+    wave: 2
   }, {
     trail: true,
     trailType: 'spark',
