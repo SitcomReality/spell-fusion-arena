@@ -95,7 +95,15 @@ export class CollisionHandler {
 
   handleAoEDamage(projectile, centerEnemy, aoeIntensity) {
     const game = this.game;
-    const aoeRadius = 50 + aoeIntensity * 30; // Base 50px, scales with intensity
+    // Base radius scales with intensity, but apply a non-linear scale that
+    // reduces fractional aoe values (so 0.1 ≈ ~50% size, 0.5 ≈ ~75% size),
+    // keeps aoe=1 unchanged, and allows values >1 to continue increasing linearly.
+    const baseAoERadius = 50 + aoeIntensity * 30; // baseline radius before biasing
+    // For aoeIntensity in [0,1] bias the scale toward smaller sizes:
+    // scale = 0.5 + 0.5 * aoeIntensity (=> 0.1 -> 0.55, 0.5 -> 0.75, 1 -> 1)
+    // clamp the fractional bias to 1 so >1 intensities grow from the base value linearly.
+    const biasScale = 0.5 + 0.5 * Math.min(1, aoeIntensity);
+    const aoeRadius = Math.max(2, baseAoERadius * biasScale);
     // Emit a short-lived AoE visual centered at the impacted enemy for clarity
     try {
       game.createAoEVisual(centerEnemy.x, centerEnemy.y, aoeRadius, projectile.spell.color, 0.6);
