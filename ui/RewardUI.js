@@ -160,7 +160,7 @@ export class RewardUI {
     essenceCard.innerHTML = `
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
-      <div class="reward-card-small-desc">Use Mana Essence to equip spells.</div>
+      <div class="reward-card-small-desc">Use Mana Essence to create spells (more elements → higher cost).</div>
       <div class="reward-card-essence-amount">Amount: <span class="essence-amt"></span> ME</div>
     `;
     essenceCard.addEventListener('click', () => this.selectEssence());
