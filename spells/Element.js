@@ -367,6 +367,11 @@ export const ELEMENTS = {
   }, true, 'rare')
 };
 
+// Ensure all elements start locked regardless of how they were constructed
+for (const key of Object.keys(ELEMENTS)) {
+  ELEMENTS[key].locked = true;
+}
+
 export function getUnlockedElements() {
   return Object.entries(ELEMENTS)
     .filter(([_, element]) => !element.locked)

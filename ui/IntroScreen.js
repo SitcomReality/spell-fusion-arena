@@ -137,7 +137,8 @@ export class IntroScreen {
       `;
 
       card.addEventListener('click', () => {
-        this.selectedStartingElements.push(elem);
+        // store the element KEY (not the whole object) so we can unlock them deterministically
+        this.selectedStartingElements.push(choice.key);
         updateProgress();
         // Small delay to show selection feedback
         setTimeout(() => {
@@ -162,9 +163,26 @@ export class IntroScreen {
     // Hide intro screen and start game with selected elements
     this.container.remove();
 
-    // Pass the selected elements and seed to the game
+    // Unlock the chosen starting elements so they become available in the library
+    const startingElems = this.selectedStartingElements.map(k => {
+      try {
+        // Import unlockElement at runtime to flip the locked flag
+        // (we rely on the module-level function available in the project)
+        // eslint-disable-next-line no-undef
+        if (typeof unlockElement === 'function') unlockElement(k);
+      } catch (e) {
+        // fallback: directly set flag if unlocking helper not present yet
+        if (typeof window !== 'undefined' && window.ELEMENTS && window.ELEMENTS[k]) {
+          window.ELEMENTS[k].locked = false;
+        }
+      }
+      // return the Element object for the game start payload
+      return (typeof ELEMENTS !== 'undefined' && ELEMENTS[k]) ? ELEMENTS[k] : null;
+    }).filter(Boolean);
+
+    // Pass the selected elements (objects) and seed to the game
     this.onGameStart({
-      startingElements: this.selectedStartingElements,
+      startingElements: startingElems,
       seed: this.rng.seed
     });
   }
