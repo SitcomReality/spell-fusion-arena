@@ -67,10 +67,12 @@ export class FusionBuilder {
         } else {
           // Show faded mana essence icon + cost for empty fusion slot
           const cost = COSTS[i] || 0;
-          slot.innerHTML = `<div class="fusion-slot-placeholder" style="display:flex;gap:6px;align-items:center;color:rgba(200,200,200,0.6);font-weight:500;">
-            <span style="opacity:0.55;filter:grayscale(60%);display:inline-flex;align-items:center;">${Icons.manaEssenceSVG(14)}</span>
-            <span style="font-size:14px;color:rgba(220,220,220,0.65);"> ${cost}</span>
-          </div>`;
+          slot.innerHTML = `
+            <div class="fusion-slot-placeholder">
+              <span class="fusion-slot-placeholder-icon">${Icons.manaEssenceSVG(14)}</span>
+              <span class="fusion-slot-placeholder-cost">${cost}</span>
+            </div>
+          `;
         }
       } else {
         // locked slot with unlock CTA

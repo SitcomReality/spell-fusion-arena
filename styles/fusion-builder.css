@@ -114,10 +114,47 @@
   background: rgba(0, 0, 0, 0.9);
 }
 
+/* Placeholder (empty) slot styling previously inline */
 .fusion-slot-placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(200,200,200,0.6);
+  font-weight: 500;
+  font-size: 16px; /* fallback main size */
+}
+
+/* Icon inside placeholder: faded / desaturated look */
+.fusion-slot-placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  filter: grayscale(60%);
+  line-height: 0;
+}
+
+/* Numeric cost styling */
+.fusion-slot-placeholder-cost {
+  font-size: 14px;
+  color: rgba(220,220,220,0.65);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Maintain previous large placeholder fallback (legacy) */
+.fusion-slot-placeholder.legacy {
   font-size: 28px;
   color: #222;
   font-weight: 300;
+}
+
+/* Mobile fallback: slightly smaller placeholder text */
+@media (max-width: 768px) {
+  .fusion-slot-placeholder {
+    font-size: 14px;
+    gap: 4px;
+  }
 }
 
 /* Mobile fallback: keep grid behavior manageable */
