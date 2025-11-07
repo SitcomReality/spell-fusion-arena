@@ -22,6 +22,31 @@ export class Projectile {
     this.generation = 0;
     this.potencyMultiplier = 1.0; // How strong this generation's properties are
 
+    // New movement properties
+    this.movementType = 'standard';
+    const spiral = this.properties.spiral || 0;
+    const wave = this.properties.wave || 0;
+    const homing = this.properties.homing || 0;
+
+    if (spiral > 0.5 && spiral > (wave + homing)) {
+      this.movementType = 'spiral';
+      this.spiralOriginX = x;
+      this.spiralOriginY = y;
+      this.spiralAngle = Math.atan2(targetY - y, targetX - x);
+      this.spiralRadius = this.radius;
+      this.spiralDirection = Math.random() < 0.5 ? 1 : -1;
+      // Use base speed for outward movement, spiral value for rotation speed
+      this.spiralOutwardSpeed = this.properties.speed || 150;
+      this.spiralRotationSpeed = 2 + spiral * 2; // Rad/s
+    } else {
+      // Wave properties
+      if (wave > 0) {
+        this.waveAngle = 0;
+        this.waveAmplitude = 15 + wave * 40;
+        this.waveFrequency = 5 + wave * 5;
+      }
+    }
+
     this.initVelocity(targetX, targetY);
   }
 
@@ -31,7 +56,13 @@ export class Projectile {
     const dy = targetY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (this.spell.properties.lob) {
+    if (this.movementType === 'spiral') {
+      // Initial velocity for spiral is tangential
+      const tangentAngle = this.spiralAngle + (Math.PI / 2) * this.spiralDirection;
+      this.vx = Math.cos(tangentAngle) * speed;
+      this.vy = Math.sin(tangentAngle) * speed;
+      this.gravity = 0;
+    } else if (this.spell.properties.lob) {
       this.vx = (dx / dist) * speed * 0.7;
       this.vy = (dy / dist) * speed * 0.7 - 100;
       this.gravity = 200;
@@ -49,30 +80,59 @@ export class Projectile {
       return null;
     }
 
-    // Apply gravity for lob projectiles
-    this.vy += this.gravity * dt;
+    // --- MOVEMENT LOGIC ---
+    if (this.movementType === 'spiral') {
+      // Spiral movement: orbit origin and move outwards
+      this.spiralRadius += this.spiralOutwardSpeed * dt;
+      this.spiralAngle += this.spiralRotationSpeed * dt * this.spiralDirection;
+      
+      const nextX = this.spiralOriginX + Math.cos(this.spiralAngle) * this.spiralRadius;
+      const nextY = this.spiralOriginY + Math.sin(this.spiralAngle) * this.spiralRadius;
+      
+      // Update velocity for collision/orientation purposes
+      this.vx = (nextX - this.x) / dt;
+      this.vy = (nextY - this.y) / dt;
+      this.x = nextX;
+      this.y = nextY;
+      
+    } else {
+      // Standard movement (linear + modifiers)
+      
+      // Apply gravity for lob projectiles
+      this.vy += this.gravity * dt;
 
-    // Homing behavior
-    if (this.properties.homing && enemies.length > 0) {
-      const target = this.findNearestEnemy(enemies);
-      if (target) {
-        const dx = target.x - this.x;
-        const dy = target.y - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const homingStrength = 150 * dt;
-        this.vx += (dx / dist) * homingStrength;
-        this.vy += (dy / dist) * homingStrength;
+      // Homing behavior
+      if (this.properties.homing && enemies.length > 0) {
+        const target = this.findNearestEnemy(enemies);
+        if (target) {
+          const dx = target.x - this.x;
+          const dy = target.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          // Homing strength scales with property value
+          const homingStrength = (100 + this.properties.homing * 150) * dt;
+          this.vx += (dx / dist) * homingStrength;
+          this.vy += (dy / dist) * homingStrength;
 
-        // Maintain speed
-        const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-        const targetSpeed = this.spell.properties.speed;
-        this.vx = (this.vx / currentSpeed) * targetSpeed;
-        this.vy = (this.vy / currentSpeed) * targetSpeed;
+          // Maintain speed
+          const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+          const targetSpeed = this.spell.properties.speed;
+          this.vx = (this.vx / currentSpeed) * targetSpeed;
+          this.vy = (this.vy / currentSpeed) * targetSpeed;
+        }
+      }
+
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+
+      // Wave motion perpendicular to velocity
+      if (this.waveAmplitude) {
+        this.waveAngle += this.waveFrequency * dt;
+        const perpAngle = Math.atan2(this.vy, this.vx) + Math.PI / 2;
+        const waveOffset = Math.sin(this.waveAngle) * this.waveAmplitude;
+        this.x += Math.cos(perpAngle) * waveOffset * dt;
+        this.y += Math.sin(perpAngle) * waveOffset * dt;
       }
     }
-
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
 
     // Bounce off walls
     if (this.properties.bouncing && this.bounces < this.maxBounces) {
