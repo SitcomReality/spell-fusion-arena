@@ -1,4 +1,5 @@
 import { ELEMENTS, getLockedElements } from '../spells/Element.js';
+import { Icons } from './Icons.js';
 
 export class RewardUI {
   constructor(onRewardChosen, rng = null, gameState = null) {
@@ -74,7 +75,7 @@ export class RewardUI {
     this.container.innerHTML = `
       <div class="reward-modal">
         <h2>Wave ${waveNumber} Complete!</h2>
-        <p class="reward-subtitle">You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} Essence</p>
+        <p class="reward-subtitle">${Icons.focusSVG(14)} You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} ${Icons.manaEssenceSVG(14)}</p>
         <p class="reward-subtitle">Take your reward</p>
         <div class="reward-choices" id="reward-choices"></div>
       </div>
@@ -87,8 +88,8 @@ export class RewardUI {
     essenceCard.innerHTML = `
       <div class="reward-card-color default-bg"></div>
       <h3>Mana Essence</h3>
-      <div class="reward-card-small-desc">Use Mana Essence to equip spells.</div>
-      <div class="reward-card-essence-amount">Amount: <span class="essence-amt"></span> ME</div>
+      <div class="reward-card-small-desc">Use Mana Essence to create spells (more elements → higher cost).</div>
+      <div class="reward-card-essence-amount">${Icons.manaEssenceSVG(14)} Amount: <span class="essence-amt"></span> ME</div>
     `;
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
     const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));
@@ -104,7 +105,7 @@ export class RewardUI {
     this.container.innerHTML = `
       <div class="reward-modal">
         <h2>Wave ${waveNumber} Complete!</h2>
-        <p class="reward-subtitle">You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} Essence</p>
+        <p class="reward-subtitle">${Icons.focusSVG(14)} You received: 1 Focus and ${1 + Math.floor(Math.random() * 3)} ${Icons.manaEssenceSVG(14)}</p>
         <p class="reward-subtitle">Choose an element to unlock, or take Mana Essence</p>
         <div class="reward-choices" id="reward-choices"></div>
       </div>
