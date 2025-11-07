@@ -201,4 +201,17 @@ export class EffectsRenderer {
     this.ctx.arc(projectile.x, projectile.y, auraSize, 0, Math.PI * 2);
     this.ctx.fill();
   }
+
+  renderAoECircle(aoe) {
+    const alpha = Math.max(0, Math.min(1, aoe.life / (aoe.maxLife || 1)));
+    const color = aoe.color || { r: 200, g: 120, b: 40 };
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.25 * alpha;
+    this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.9 * alpha})`;
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.arc(aoe.x, aoe.y, aoe.radius, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.restore();
+  }
 }

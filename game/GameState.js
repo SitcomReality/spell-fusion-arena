@@ -21,6 +21,7 @@ export class GameState {
     this.enemies = [];
     this.projectiles = [];
     this.particles = [];
+    this.aoeEffects = []; // transient AoE visual effects
 
     this.score = 0;
     this.paused = false;
@@ -32,7 +33,8 @@ export class GameState {
 
   update(dt) {
     if (this.paused) return;
-
+    this.updateAoEs(dt);
+    
     // Update wave manager
     this.waveManager.update(dt);
 
@@ -101,6 +103,18 @@ export class GameState {
 
   updateParticles(dt) {
     this.particleManager.updateParticles(dt);
+  }
+
+  updateAoEs(dt) {
+    if (!this.aoeEffects) return;
+    for (const aoe of this.aoeEffects) {
+      aoe.life -= dt;
+    }
+    this.aoeEffects = this.aoeEffects.filter(a => a.life > 0);
+  }
+
+  createAoEVisual(x, y, radius, color, duration = 0.6) {
+    this.aoeEffects.push({ x, y, radius, color, life: duration, maxLife: duration });
   }
 
   pause() {

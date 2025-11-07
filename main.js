@@ -117,6 +117,11 @@ class Game {
       this.fxRenderer.renderProjectileAura(projectile);
     }
     
+    // Render transient AoE visualizations (distinctive circles)
+    for (const aoe of this.gameState.aoeEffects) {
+      this.fxRenderer.renderAoECircle(aoe);
+    }
+    
     // Render all particles
     for (const particle of this.gameState.particles) {
       this.fxRenderer.renderParticle(particle);

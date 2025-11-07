@@ -96,6 +96,10 @@ export class CollisionHandler {
   handleAoEDamage(projectile, centerEnemy, aoeIntensity) {
     const game = this.game;
     const aoeRadius = 50 + aoeIntensity * 30; // Base 50px, scales with intensity
+    // Emit a short-lived AoE visual centered at the impacted enemy for clarity
+    try {
+      game.createAoEVisual(centerEnemy.x, centerEnemy.y, aoeRadius, projectile.spell.color, 0.6);
+    } catch (e) { /* silent if game doesn't support visuals yet */ }
 
     for (const enemy of game.enemies) {
       if (!enemy.alive || enemy === centerEnemy) continue;
