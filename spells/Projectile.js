@@ -33,7 +33,7 @@ export class Projectile {
       this.spiralOriginX = x;
       this.spiralOriginY = y;
       this.spiralAngle = Math.atan2(targetY - y, targetX - x);
-      this.spiralRadius = this.radius;
+      this.spiralRadius = this.radius * 0.5;
       this.spiralDirection = Math.random() < 0.5 ? 1 : -1;
       // Use base speed for outward movement, spiral value for rotation speed
       this.spiralOutwardSpeed = this.properties.speed || 150;
