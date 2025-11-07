@@ -1,23 +1,25 @@
-import { getLockedElements, unlockElement } from '../spells/Element.js';
+import { ELEMENTS, getLockedElements } from '../spells/Element.js';
 
 export class RewardUI {
-  constructor(onRewardChosen, rng = null) {
+  constructor(onRewardChosen, rng = null, gameState = null) {
     this.onRewardChosen = onRewardChosen;
     this.container = null;
     this.choices = [];
-    this.essenceOffer = 0; // Mana Essence offered
-    this.rng = rng; // Use provided seeded RNG or null for random
+    this.essenceOffer = 0;
+    this.rng = rng;
+    this.gameState = gameState;
   }
 
   show(waveNumber) {
-    // Note: automatic rewards (1 Focus + 1-3 Essence) are granted by the Game when this is invoked.
-    const lockedElements = getLockedElements();
+    // Get locked elements based on current game state's unlocked elements
+    const unlockedKeys = this.gameState ? this.gameState.unlockedElementKeys : [];
+    const lockedElements = getLockedElements(unlockedKeys);
     const elementKeys = Object.keys(lockedElements);
     
     // Determine offered Mana Essence (biased distribution 5-10)
     this.essenceOffer = this.rollEssenceOffer();
 
-    // Provide a short summary line to remind player of automatic awards (will be inserted into modal)
+    // Provide a short summary line
     this.autoRewardSummary = `You received: 1 Focus and ${Math.max(1, Math.min(3, this.essenceOffer <= 10 ? 1 : 1))} Essence`;
 
     if (elementKeys.length === 0) {
@@ -26,9 +28,8 @@ export class RewardUI {
       return;
     }
 
-    // Pick 2 random locked elements, weighted by rarity (common > uncommon > rare)
+    // Pick 2 random locked elements, weighted by rarity
     this.choices = [];
-    // Build weighted pool: common weight 60, uncommon 30, rare 10
     const pool = [];
     for (const k of elementKeys) {
       const r = lockedElements[k].rarity || 'common';
@@ -43,7 +44,6 @@ export class RewardUI {
         picked.add(key);
         this.choices.push({ key, element: lockedElements[key] });
       }
-      // remove all occurrences of selected key from pool to avoid repeats
       for (let i = pool.length - 1; i >= 0; i--) if (pool[i] === key) pool.splice(i, 1);
     }
 
@@ -170,7 +170,6 @@ export class RewardUI {
   }
 
   selectElement(elementKey) {
-    unlockElement(elementKey);
     this.hide();
     this.onRewardChosen({ type: 'element', key: elementKey });
   }

@@ -7,10 +7,11 @@ import { SpellFusion } from '../spells/SpellFusion.js';
 import { getSpellCost } from '../spells/Element.js';
 
 export class FusionUI {
-  constructor(onSpellEquipped) {
+  constructor(onSpellEquipped, gameState) {
     this.container = document.getElementById('fusion-ui');
     this.equippedContainer = document.getElementById('equipped-spells');
     this.onSpellEquipped = onSpellEquipped;
+    this.gameState = gameState;
 
     this.selectedElements = [];
     this.currentSpell = null;
@@ -108,11 +109,9 @@ export class FusionUI {
       clearBtn.addEventListener('click', () => this.clearFusion());
     }
 
-    // initial updates
-    this.elementsLibrary.refresh();
+    // initial updates - pass unlockedElementKeys to refresh
+    this.elementsLibrary.refresh(this.gameState?.unlockedElementKeys || []);
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
-
-    // render created spells list
     this.renderCreatedSpells();
 
     // Set up preview clear callback
@@ -265,7 +264,7 @@ export class FusionUI {
   }
 
   refresh() {
-    this.elementsLibrary.refresh();
+    this.elementsLibrary.refresh(this.gameState.unlockedElementKeys);
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();

@@ -7,11 +7,14 @@ import { ParticleManager } from './ParticleManager.js';
 import { castSpell } from './GameActions.js';
 
 export class GameState {
-  constructor(canvasWidth, canvasHeight, seed = null) {
+  constructor(canvasWidth, canvasHeight, seed = null, unlockedElementKeys = []) {
     this.width = canvasWidth;
     this.height = canvasHeight;
     this.centerX = canvasWidth / 2;
     this.centerY = canvasHeight / 2;
+
+    // Track which elements are unlocked for this game session
+    this.unlockedElementKeys = [...unlockedElementKeys];
 
     this.player = new Player(this.centerX, this.centerY, CONFIG.player.radius);
     // Initial setup for player spells and essence
@@ -33,6 +36,12 @@ export class GameState {
     this.lastFocusReward = 0; // Track focus rewarded this wave
 
     this.seed = seed;
+  }
+
+  unlockElement(elementKey) {
+    if (!this.unlockedElementKeys.includes(elementKey)) {
+      this.unlockedElementKeys.push(elementKey);
+    }
   }
 
   update(dt) {

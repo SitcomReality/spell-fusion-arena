@@ -1,4 +1,4 @@
-import { ELEMENTS, getUnlockedElements } from '../spells/Element.js';
+import { ELEMENTS } from '../spells/Element.js';
 import { SeededRandom } from '../game/SeededRandom.js';
 
 export class IntroScreen {
@@ -7,6 +7,7 @@ export class IntroScreen {
     this.container = null;
     this.rng = null;
     this.selectedStartingElements = [];
+    this.selectedElementKeys = [];
   }
 
   show() {
@@ -36,6 +37,7 @@ export class IntroScreen {
     // Clear the current screen and show loadout selection
     this.container.innerHTML = '';
     this.selectedStartingElements = [];
+    this.selectedElementKeys = [];
     this.showLoadoutSelection(seed);
   }
 
@@ -124,7 +126,7 @@ export class IntroScreen {
       if (progressText) progressText.textContent = `${this.selectedStartingElements.length} / 4 selected`;
     };
 
-    const makeCard = (choice, onSelect) => {
+    const makeCard = (choice) => {
       const card = document.createElement('div');
       card.className = 'loadout-choice-card';
       const elem = choice.elem;
@@ -137,8 +139,8 @@ export class IntroScreen {
       `;
 
       card.addEventListener('click', () => {
-        // store the element KEY (not the whole object) so we can unlock them deterministically
-        this.selectedStartingElements.push(choice.key);
+        this.selectedStartingElements.push(elem);
+        this.selectedElementKeys.push(choice.key);
         updateProgress();
         // Small delay to show selection feedback
         setTimeout(() => {
@@ -149,8 +151,8 @@ export class IntroScreen {
       return card;
     };
 
-    choiceContainer.appendChild(makeCard(choice1, () => {}));
-    choiceContainer.appendChild(makeCard(choice2, () => {}));
+    choiceContainer.appendChild(makeCard(choice1));
+    choiceContainer.appendChild(makeCard(choice2));
 
     // Remove the old choice cards if any exist
     const oldChoice = this.container.querySelector('.loadout-choice-container');
@@ -163,26 +165,10 @@ export class IntroScreen {
     // Hide intro screen and start game with selected elements
     this.container.remove();
 
-    // Unlock the chosen starting elements so they become available in the library
-    const startingElems = this.selectedStartingElements.map(k => {
-      try {
-        // Import unlockElement at runtime to flip the locked flag
-        // (we rely on the module-level function available in the project)
-        // eslint-disable-next-line no-undef
-        if (typeof unlockElement === 'function') unlockElement(k);
-      } catch (e) {
-        // fallback: directly set flag if unlocking helper not present yet
-        if (typeof window !== 'undefined' && window.ELEMENTS && window.ELEMENTS[k]) {
-          window.ELEMENTS[k].locked = false;
-        }
-      }
-      // return the Element object for the game start payload
-      return (typeof ELEMENTS !== 'undefined' && ELEMENTS[k]) ? ELEMENTS[k] : null;
-    }).filter(Boolean);
-
-    // Pass the selected elements (objects) and seed to the game
+    // Pass the selected elements, their keys, and seed to the game
     this.onGameStart({
-      startingElements: startingElems,
+      startingElements: this.selectedStartingElements,
+      startingElementKeys: this.selectedElementKeys,
       seed: this.rng.seed
     });
   }

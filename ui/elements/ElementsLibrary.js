@@ -1,4 +1,4 @@
-import { getUnlockedElements } from '../../spells/Element.js';
+import { ELEMENTS, getUnlockedElements } from '../../spells/Element.js';
 
 export class ElementsLibrary {
   constructor(onClick) {
@@ -12,12 +12,12 @@ export class ElementsLibrary {
     this.container.innerHTML = '';
   }
 
-  refresh() {
+  refresh(unlockedKeys = []) {
     if (!this.container) return;
     this.container.innerHTML = '';
     this.cardMap.clear();
 
-    const unlocked = getUnlockedElements();
+    const unlocked = getUnlockedElements(unlockedKeys);
     for (const [key, element] of Object.entries(unlocked)) {
       const card = document.createElement('div');
       card.className = 'element-card';

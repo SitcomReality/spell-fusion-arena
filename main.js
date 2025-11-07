@@ -48,8 +48,16 @@ class Game {
     // Create seeded RNG for this game session
     this.rng = new SeededRandom(seed);
 
-    // Create game state with seed
-    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height, seed);
+    // Create game state with seed and starting unlocked elements
+    const startingElementKeys = startingElements.map(elem => {
+      // Find the key for this element in ELEMENTS
+      for (const [key, el] of Object.entries(window.ELEMENTS_EXPORT || {})) {
+        if (el === elem) return key;
+      }
+      return null;
+    }).filter(k => k !== null);
+    
+    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height, seed, startingElementKeys);
     
     // Set starting spells from selection
     const startingSpells = startingElements.slice(0, 4);
@@ -65,6 +73,7 @@ class Game {
       if (reward.type === 'essence') {
         this.fusionUI.addEssenceToBank(reward.amount);
       } else if (reward.type === 'element') {
+        this.gameState.unlockElement(reward.key);
         this.fusionUI.refresh();
       }
       this.gameState.resume();

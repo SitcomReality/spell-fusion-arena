@@ -1,10 +1,9 @@
 export class Element {
-  constructor(name, color, propertyGenes, visualEffects, locked = true, rarity = 'common') {
+  constructor(name, color, propertyGenes, visualEffects, rarity = 'common') {
     this.name = name;
     this.color = color;
     this.propertyGenes = propertyGenes || {}; // property contribution system
     this.visualEffects = visualEffects;
-    this.locked = locked;
     this.rarity = rarity; // 'common', 'uncommon', or 'rare'
   }
 }
@@ -26,7 +25,7 @@ export const PROPERTY_TYPES = {
 };
 
 export const ELEMENTS = {
-  // COMMON ELEMENTS (start unlocked, basic/foundational)
+  // COMMON ELEMENTS
   fire: new Element('Fire', { r: 255, g: 100, b: 50 }, {
     speed: 280,
     damage: 20,
@@ -43,7 +42,7 @@ export const ELEMENTS = {
     impactParticles: 20,
     impactType: 'spark',
     sizeMultiplier: 1.0
-  }, false, 'common'),
+  }, 'common'),
   
   frost: new Element('Frost', { r: 120, g: 220, b: 255 }, {
     speed: 240,
@@ -62,7 +61,7 @@ export const ELEMENTS = {
     ambientParticles: true,
     ambientType: 'glow',
     sizeMultiplier: 0.95
-  }, false, 'common'),
+  }, 'common'),
   
   stone: new Element('Stone', { r: 130, g: 110, b: 60 }, {
     speed: 140,
@@ -80,7 +79,7 @@ export const ELEMENTS = {
     impactType: 'smoke',
     shake: true,
     sizeMultiplier: 1.4
-  }, false, 'common'),
+  }, 'common'),
 
   nature: new Element('Nature', { r: 100, g: 220, b: 100 }, {
     speed: 220,
@@ -101,7 +100,7 @@ export const ELEMENTS = {
     impactType: 'aura',
     growth: true,
     sizeMultiplier: 1.05
-  }, false, 'common'),
+  }, 'common'),
 
   wind: new Element('Wind', { r: 200, g: 245, b: 255 }, {
     speed: 360,
@@ -121,7 +120,7 @@ export const ELEMENTS = {
     impactType: 'swirl',
     wispy: true,
     sizeMultiplier: 0.85
-  }, false, 'common'),
+  }, 'common'),
 
   // UNCOMMON ELEMENTS
   blood: new Element('Blood', { r: 220, g: 20, b: 60 }, {
@@ -140,7 +139,7 @@ export const ELEMENTS = {
     impactType: 'spark',
     drip: true,
     sizeMultiplier: 0.9
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   shadow: new Element('Shadow', { r: 100, g: 70, b: 140 }, {
     speed: 290,
@@ -160,7 +159,7 @@ export const ELEMENTS = {
     impactType: 'swirl',
     wispy: true,
     sizeMultiplier: 1.0
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   metal: new Element('Metal', { r: 190, g: 190, b: 210 }, {
     speed: 260,
@@ -177,7 +176,7 @@ export const ELEMENTS = {
     impactParticles: 20,
     impactType: 'spark',
     sizeMultiplier: 1.0
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   arcane: new Element('Arcane', { r: 200, g: 120, b: 255 }, {
     speed: 270,
@@ -198,7 +197,7 @@ export const ELEMENTS = {
     impactType: 'swirl',
     swirl: true,
     sizeMultiplier: 1.0
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   light: new Element('Light', { r: 255, g: 240, b: 100 }, {
     speed: 350,
@@ -218,7 +217,7 @@ export const ELEMENTS = {
     impactType: 'spark',
     beam: true,
     sizeMultiplier: 0.85
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   poison: new Element('Poison', { r: 150, g: 255, b: 100 }, {
     speed: 240,
@@ -238,7 +237,7 @@ export const ELEMENTS = {
     impactType: 'smoke',
     drip: true,
     sizeMultiplier: 0.95
-  }, false, 'uncommon'),
+  }, 'uncommon'),
 
   // RARE ELEMENTS (more exotic, powerful, vivid)
   void: new Element('Void', { r: 50, g: 30, b: 80 }, {
@@ -260,7 +259,7 @@ export const ELEMENTS = {
     vortex: true,
     pullParticles: true,
     sizeMultiplier: 1.2
-  }, true, 'rare'),
+  }, 'rare'),
 
   chaos: new Element('Chaos', { r: 255, g: 80, b: 200 }, {
     speed: 290,
@@ -283,7 +282,7 @@ export const ELEMENTS = {
     chaotic: true,
     randomColors: true,
     sizeMultiplier: 1.08
-  }, true, 'rare'),
+  }, 'rare'),
 
   abyss: new Element('Abyss', { r: 40, g: 80, b: 160 }, {
     speed: 210,
@@ -303,7 +302,7 @@ export const ELEMENTS = {
     impactType: 'swirl',
     wispy: true,
     sizeMultiplier: 1.02
-  }, true, 'rare'),
+  }, 'rare'),
 
   inferno: new Element('Inferno', { r: 255, g: 140, b: 40 }, {
     speed: 270,
@@ -324,7 +323,7 @@ export const ELEMENTS = {
     impactType: 'spark',
     beam: true,
     sizeMultiplier: 1.15
-  }, true, 'rare'),
+  }, 'rare'),
 
   crystal: new Element('Crystal', { r: 180, g: 240, b: 255 }, {
     speed: 220,
@@ -344,7 +343,7 @@ export const ELEMENTS = {
     impactType: 'spark',
     shimmer: true,
     sizeMultiplier: 0.98
-  }, true, 'rare'),
+  }, 'rare'),
 
   electrum: new Element('Electrum', { r: 255, g: 200, b: 50 }, {
     speed: 340,
@@ -364,30 +363,31 @@ export const ELEMENTS = {
     impactType: 'spark',
     crackle: true,
     sizeMultiplier: 0.92
-  }, true, 'rare')
+  }, 'rare')
 };
 
-// Ensure all elements start locked regardless of how they were constructed
-for (const key of Object.keys(ELEMENTS)) {
-  ELEMENTS[key].locked = true;
+export function getUnlockedElements(unlockedKeys) {
+  if (!unlockedKeys || unlockedKeys.length === 0) {
+    return {};
+  }
+  const result = {};
+  for (const key of unlockedKeys) {
+    if (ELEMENTS[key]) {
+      result[key] = ELEMENTS[key];
+    }
+  }
+  return result;
 }
 
-export function getUnlockedElements() {
-  return Object.entries(ELEMENTS)
-    .filter(([_, element]) => !element.locked)
-    .reduce((acc, [key, element]) => {
-      acc[key] = element;
-      return acc;
-    }, {});
-}
-
-export function getLockedElements() {
-  return Object.entries(ELEMENTS)
-    .filter(([_, element]) => element.locked)
-    .reduce((acc, [key, element]) => {
-      acc[key] = element;
-      return acc;
-    }, {});
+export function getLockedElements(unlockedKeys) {
+  if (!unlockedKeys) unlockedKeys = [];
+  const result = {};
+  for (const [key, element] of Object.entries(ELEMENTS)) {
+    if (!unlockedKeys.includes(key)) {
+      result[key] = element;
+    }
+  }
+  return result;
 }
 
 export function unlockElement(elementKey) {
