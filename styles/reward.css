@@ -42,6 +42,58 @@
   letter-spacing: 0.8px;
 }
 
+/* Rarity pill shown on element cards */
+.rarity-pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  color: #0a0a0f;
+  background: rgba(200,200,200,0.12);
+  border: 1px solid rgba(255,255,255,0.06);
+  align-self: center;
+}
+
+/* Header wrapper inside card to position title and rarity */
+.reward-card .reward-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Visual prominence controlled by --rarity-intensity (0.0..1.0) */
+.reward-card[data-rarity="common"] {
+  --rarity-intensity: 0.0;
+}
+.reward-card[data-rarity="uncommon"] {
+  --rarity-intensity: 0.5;
+}
+.reward-card[data-rarity="rare"] {
+  --rarity-intensity: 1.0;
+}
+
+/* Apply border/glow and pill color scaling with rarity intensity */
+.reward-card {
+  box-shadow: 0 0 calc(12px * var(--rarity-intensity, 0)) rgba(255, 215, 90, calc(0.12 * var(--rarity-intensity, 0))) , 0 0 10px rgba(0,0,0,0.15);
+  border-color: color-mix(in srgb, #4a9eff 60%, rgba(0,0,0,0.0)) ;
+}
+
+/* Stronger accent for uncommon/rare */
+.reward-card[data-rarity="uncommon"] .rarity-pill {
+  background: rgba(140, 200, 90, 0.12);
+  color: #dff6c8;
+  border-color: rgba(140,200,90,0.15);
+}
+.reward-card[data-rarity="rare"] .rarity-pill {
+  background: linear-gradient(90deg, rgba(255,200,80,0.12), rgba(255,120,200,0.08));
+  color: #fff1d6;
+  border-color: rgba(255,200,80,0.22);
+  box-shadow: 0 0 10px rgba(255,200,80, calc(0.22 * var(--rarity-intensity,1)));
+}
+
 .reward-choices {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

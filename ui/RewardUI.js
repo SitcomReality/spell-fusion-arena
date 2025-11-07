@@ -25,18 +25,24 @@ export class RewardUI {
       return;
     }
 
-    // Pick 2 random locked elements
+    // Pick 2 random locked elements, weighted by rarity (common > uncommon > rare)
     this.choices = [];
-    const availableKeys = [...elementKeys];
-    const numChoices = Math.min(2, availableKeys.length);
-    
-    for (let i = 0; i < numChoices; i++) {
-      const randomIndex = Math.floor(Math.random() * availableKeys.length);
-      this.choices.push({
-        key: availableKeys[randomIndex],
-        element: lockedElements[availableKeys[randomIndex]]
-      });
-      availableKeys.splice(randomIndex, 1);
+    // Build weighted pool: common weight 60, uncommon 30, rare 10
+    const pool = [];
+    for (const k of elementKeys) {
+      const r = lockedElements[k].rarity || 'common';
+      const w = r === 'rare' ? 10 : (r === 'uncommon' ? 30 : 60);
+      for (let i = 0; i < w; i++) pool.push(k);
+    }
+    const picked = new Set();
+    while (this.choices.length < 2 && pool.length > 0) {
+      const key = pool[Math.floor(Math.random() * pool.length)];
+      if (!picked.has(key)) {
+        picked.add(key);
+        this.choices.push({ key, element: lockedElements[key] });
+      }
+      // remove all occurrences of selected key from pool to avoid repeats
+      for (let i = pool.length - 1; i >= 0; i--) if (pool[i] === key) pool.splice(i, 1);
     }
 
     this.render(waveNumber);
@@ -112,7 +118,8 @@ export class RewardUI {
       const card = document.createElement('div');
       card.className = 'reward-card';
       card.dataset.key = choice.key;
-      
+      card.dataset.rarity = elem.rarity || 'common';
+
       const propertyGenes = elem.propertyGenes || {};
       const propertiesHtml = Object.keys(propertyGenes).length === 0
         ? '<div class="reward-card-small-desc">No special properties</div>'
@@ -125,13 +132,21 @@ export class RewardUI {
       
       card.innerHTML = `
         <div class="reward-card-color"></div>
-        <h3>${elem.name}</h3>
+        <div class="reward-card-header">
+          <h3>${elem.name}</h3>
+          <span class="rarity-pill">${(elem.rarity || 'common')}</span>
+        </div>
         ${propertiesHtml}
       `;
       
       const colorEl = card.querySelector('.reward-card-color');
       if (colorEl) colorEl.style.background = `rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})`;
       
+      // visual intensity based on rarity: common=0.0, uncommon=0.5, rare=1.0
+      const rarityMap = { common: 0.0, uncommon: 0.5, rare: 1.0 };
+      const rarityIntensity = rarityMap[elem.rarity] ?? 0.0;
+      card.style.setProperty('--rarity-intensity', `${rarityIntensity}`);
+
       card.addEventListener('click', () => this.selectElement(choice.key));
       choicesContainer.appendChild(card);
     });
