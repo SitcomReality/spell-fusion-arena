@@ -1,3 +1,5 @@
+import { Icons } from './Icons.js';
+
 export class SpellSlotsUI {
   constructor(container, callbacks = {}) {
     this.externalContainer = container;
@@ -130,7 +132,16 @@ export class SpellSlotsUI {
       // focus display moved below the slot
       const focusEl = document.createElement('div');
       focusEl.className = `spell-slot-essence ${equippedSpells[i] ? '' : 'inactive'}`;
-      focusEl.textContent = `Focus: ${focus}`;
+
+      // Use the Focus SVG icon instead of the "Focus:" text.
+      // Create icon element and append the numeric value.
+      const iconEl = Icons.createIconElement(Icons.focusSVG(14));
+      iconEl.classList.add('slot-focus-icon');
+      focusEl.appendChild(iconEl);
+      const numNode = document.createElement('span');
+      numNode.className = 'slot-focus-number';
+      numNode.textContent = `${focus}`;
+      focusEl.appendChild(numNode);
 
       wrapper.appendChild(slot);
       wrapper.appendChild(focusEl);
