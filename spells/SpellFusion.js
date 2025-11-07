@@ -96,28 +96,31 @@ export class SpellFusion {
   }
 
   static fuseVisualEffects(...visuals) {
-    // Combine visual effects from all elements
+    // Normalize inputs: ensure every entry is an object to avoid undefined property access
+    const vs = visuals.map(v => v || {});
+    
+    // Combine visual effects from all elements (using normalized array)
     const fused = {
-      trail: visuals.some(v => v.trail),
-      trailType: visuals.find(v => v.trail)?.trailType || 'trail',
-      trailDensity: Math.floor(visuals.reduce((sum, v) => sum + (v.trailDensity || 0), 0) / visuals.length),
-      trailSize: Math.floor(visuals.reduce((sum, v) => sum + (v.trailSize || 0), 0) / visuals.length),
-      aura: visuals.some(v => v.aura),
-      auraSize: Math.floor(visuals.reduce((sum, v) => sum + (v.auraSize || 0), 0) / visuals.length),
-      auraIntensity: visuals.reduce((sum, v) => sum + (v.auraIntensity || 0), 0) / visuals.length,
-      impactParticles: Math.floor(visuals.reduce((sum, v) => sum + (v.impactParticles || 0), 0) / visuals.length),
-      impactType: visuals[0]?.impactType || 'spark',
+      trail: vs.some(v => v.trail),
+      trailType: (vs.find(v => v.trail) || {}).trailType || 'trail',
+      trailDensity: Math.floor(vs.reduce((sum, v) => sum + (v.trailDensity || 0), 0) / Math.max(1, vs.length)),
+      trailSize: Math.floor(vs.reduce((sum, v) => sum + (v.trailSize || 0), 0) / Math.max(1, vs.length)),
+      aura: vs.some(v => v.aura),
+      auraSize: Math.floor(vs.reduce((sum, v) => sum + (v.auraSize || 0), 0) / Math.max(1, vs.length)),
+      auraIntensity: vs.reduce((sum, v) => sum + (v.auraIntensity || 0), 0) / Math.max(1, vs.length),
+      impactParticles: Math.floor(vs.reduce((sum, v) => sum + (v.impactParticles || 0), 0) / Math.max(1, vs.length)),
+      impactType: (vs[0] && vs[0].impactType) || 'spark',
       
       // Special effects - combine from all elements
-      beam: visuals.some(v => v.beam),
-      swirl: visuals.some(v => v.swirl),
-      vortex: visuals.some(v => v.vortex),
-      wispy: visuals.some(v => v.wispy),
-      shimmer: visuals.some(v => v.shimmer),
-      chaotic: visuals.some(v => v.chaotic),
-      pullParticles: visuals.some(v => v.pullParticles)
+      beam: vs.some(v => v.beam),
+      swirl: vs.some(v => v.swirl),
+      vortex: vs.some(v => v.vortex),
+      wispy: vs.some(v => v.wispy),
+      shimmer: vs.some(v => v.shimmer),
+      chaotic: vs.some(v => v.chaotic),
+      pullParticles: vs.some(v => v.pullParticles)
     };
-    
+     
     return fused;
   }
 }
