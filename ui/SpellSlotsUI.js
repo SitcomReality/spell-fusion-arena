@@ -3,9 +3,11 @@ export class SpellSlotsUI {
     this.externalContainer = container;
     this.onUnequip = callbacks.onUnequip || (() => {});
     this.onAllocateFocus = callbacks.onAllocateFocus || (() => {});
+    this.onEquipFromInventory = callbacks.onEquipFromInventory || (() => {});
     this.getEquippedSpells = callbacks.getEquippedSpells || (() => []);
     this.getSpellSlotFocus = callbacks.getSpellSlotFocus || (() => []);
     this.getFocusBank = callbacks.getFocusBank || (() => 0);
+    this.getSpellInventory = callbacks.getSpellInventory || (() => []);
     this.container = null;
   }
 
@@ -16,7 +18,7 @@ export class SpellSlotsUI {
     this.externalContainer.appendChild(this.container);
   }
 
-  update(equippedSpells, slotFocus, focusBank) {
+  update(equippedSpells, slotFocus, focusBank, spellInventory) {
     if (!this.externalContainer) return;
     this.externalContainer.innerHTML = `<div class="spell-slots" id="external-spell-slots"></div>`;
     const grid = document.getElementById('external-spell-slots');
@@ -103,7 +105,13 @@ export class SpellSlotsUI {
           btn.addEventListener('mouseleave', () => showTooltip(false));
         }
       } else {
-        slot.innerHTML = `<span class="spell-slot-placeholder">O</span>`;
+        // Empty slot: show button to pick from inventory
+        slot.innerHTML = `<button class="spell-slot-empty-btn" data-slot="${i}">+</button>`;
+        const emptyBtn = slot.querySelector('.spell-slot-empty-btn');
+        emptyBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.showInventorySelector(i, spellInventory);
+        });
       }
 
       // Add add-focus button overlay if bank available
@@ -128,5 +136,53 @@ export class SpellSlotsUI {
       wrapper.appendChild(focusEl);
       grid.appendChild(wrapper);
     }
+  }
+
+  // NEW: Show inventory selector modal when empty slot is clicked
+  showInventorySelector(slotIndex, spellInventory) {
+    if (spellInventory.length === 0) {
+      alert('No spells in inventory. Create a spell first!');
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'inventory-selector-overlay';
+    overlay.className = 'inventory-selector-overlay';
+    overlay.innerHTML = `
+      <div class="inventory-selector-modal">
+        <div class="inventory-selector-header">
+          <h3>Select a spell for Slot ${slotIndex + 1}</h3>
+          <button class="inventory-selector-close" aria-label="Close">×</button>
+        </div>
+        <div class="inventory-selector-list" id="inventory-list"></div>
+      </div>
+    `;
+
+    const listContainer = overlay.querySelector('#inventory-list');
+    spellInventory.forEach((spell, idx) => {
+      const item = document.createElement('div');
+      item.className = 'inventory-spell-item';
+      const color = spell.color;
+      item.innerHTML = `
+        <div class="inventory-spell-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
+        <div class="inventory-spell-info">
+          <div class="inventory-spell-name">${spell.name}</div>
+          <div class="inventory-spell-desc">Damage: ${Math.round(spell.properties.damage)}, Speed: ${Math.round(spell.properties.speed)}</div>
+        </div>
+      `;
+      item.addEventListener('click', () => {
+        this.onEquipFromInventory(slotIndex, spell);
+        overlay.remove();
+      });
+      listContainer.appendChild(item);
+    });
+
+    const closeBtn = overlay.querySelector('.inventory-selector-close');
+    closeBtn.addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
   }
 }

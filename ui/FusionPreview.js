@@ -24,7 +24,7 @@ export class FusionPreview {
           </div>
           <div class="panel-controls">
             <button class="fusion-preview-clear" disabled aria-disabled="true">Clear</button>
-            <button class="fusion-preview-equip" disabled aria-disabled="true">Equip</button>
+            <button class="fusion-preview-create" disabled aria-disabled="true">Create</button>
           </div>
         </div>
         <div class="panel-body">
@@ -34,7 +34,7 @@ export class FusionPreview {
     `;
   }
 
-  showSpell(spell, onEquip) {
+  showSpell(spell, onCreate) {
     if (!this.panel.container) return;
     const color = spell.color;
     const props = spell.properties || {};
@@ -56,10 +56,10 @@ export class FusionPreview {
           }
         },
         {
-          className: 'fusion-preview-equip',
-          label: 'Equip',
+          className: 'fusion-preview-create',
+          label: 'Create',
           onClick: () => {
-            if (onEquip) onEquip();
+            if (onCreate) onCreate();
           }
         }
       ]
