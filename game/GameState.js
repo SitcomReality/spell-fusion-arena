@@ -29,6 +29,7 @@ export class GameState {
     // New: handlers for collision and particles
     this.collisionHandler = new CollisionHandler(this);
     this.particleManager = new ParticleManager(this);
+    this.lastFocusReward = 0; // Track focus rewarded this wave
   }
 
   update(dt) {
@@ -95,6 +96,19 @@ export class GameState {
       }
       return true;
     });
+
+    // Check if wave just completed and award focus
+    if (this.waveManager.waveActive === false && this.waveManager.enemiesRemaining === 0 && this.lastFocusReward < this.waveManager.currentWave) {
+      this.lastFocusReward = this.waveManager.currentWave;
+      const focusReward = CONFIG.wave.focusRewardPerWave || 3;
+      try {
+        if (window.gameInstance && window.gameInstance.fusionUI) {
+          window.gameInstance.fusionUI.addFocusToBank(focusReward);
+        }
+      } catch (e) {
+        // silent
+      }
+    }
   }
 
   createParticles(x, y, color) {

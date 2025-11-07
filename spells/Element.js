@@ -369,3 +369,15 @@ export function unlockElement(elementKey) {
     ELEMENTS[elementKey].locked = false;
   }
 }
+
+// Spell equipping costs based on number of fused elements
+export const SPELL_COSTS = {
+  1: 1,   // 1 element
+  2: 5,   // 2 elements
+  3: 10,  // 3 elements
+  4: 20   // 4 elements
+};
+
+export function getSpellCost(elementCount) {
+  return SPELL_COSTS[elementCount] || 0;
+}

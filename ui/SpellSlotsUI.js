@@ -2,24 +2,22 @@ export class SpellSlotsUI {
   constructor(container, callbacks = {}) {
     this.externalContainer = container;
     this.onUnequip = callbacks.onUnequip || (() => {});
-    this.onAllocateEssence = callbacks.onAllocateEssence || (() => {});
+    this.onAllocateFocus = callbacks.onAllocateFocus || (() => {});
     this.getEquippedSpells = callbacks.getEquippedSpells || (() => []);
-    this.getSpellSlotEssence = callbacks.getSpellSlotEssence || (() => []);
-    this.getEssenceBank = callbacks.getEssenceBank || (() => 0);
+    this.getSpellSlotFocus = callbacks.getSpellSlotFocus || (() => []);
+    this.getFocusBank = callbacks.getFocusBank || (() => 0);
     this.container = null;
   }
 
   mount() {
-    // Ensure equipped container exists
     if (!this.externalContainer) return;
     this.externalContainer.innerHTML = '';
     this.container = document.createElement('div');
     this.externalContainer.appendChild(this.container);
   }
 
-  update(equippedSpells, slotEssence, bank) {
+  update(equippedSpells, slotFocus, focusBank) {
     if (!this.externalContainer) return;
-    // Removed the equipped-title header per request
     this.externalContainer.innerHTML = `<div class="spell-slots" id="external-spell-slots"></div>`;
     const grid = document.getElementById('external-spell-slots');
 
@@ -31,7 +29,7 @@ export class SpellSlotsUI {
       const slot = document.createElement('div');
       slot.className = 'spell-slot';
 
-      const essence = slotEssence[i] || 0;
+      const focus = slotFocus[i] || 0;
 
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
@@ -65,7 +63,7 @@ export class SpellSlotsUI {
           this.onUnequip(i);
         });
 
-        // Populate tooltip content with properties (used on mobile while pressing)
+        // Populate tooltip content with properties
         const tooltipEl = slot.querySelector('.slot-props-tooltip');
         if (tooltipEl) {
           if (propEntries.length === 0) {
@@ -89,14 +87,11 @@ export class SpellSlotsUI {
         };
 
         if (btn) {
-          // mouse interactions
-          btn.addEventListener('mousedown', (ev) => {
+          btn.addEventListener('mousemove', (ev) => {
             ev.stopPropagation();
             showTooltip(true);
           });
           document.addEventListener('mouseup', () => showTooltip(false));
-
-          // touch interactions (press and hold)
           btn.addEventListener('touchstart', (ev) => {
             ev.stopPropagation();
             showTooltip(true);
@@ -108,30 +103,29 @@ export class SpellSlotsUI {
           btn.addEventListener('mouseleave', () => showTooltip(false));
         }
       } else {
-        // simple symbol placeholder "O"
         slot.innerHTML = `<span class="spell-slot-placeholder">O</span>`;
       }
 
-      // Add add-essence button overlay if bank available
-      if (bank > 0) {
+      // Add add-focus button overlay if bank available
+      if (focusBank > 0) {
         const addBtn = document.createElement('button');
         addBtn.className = 'slot-add-essence';
         addBtn.textContent = '+';
-        addBtn.title = 'Assign 1 Mana Essence to this slot';
+        addBtn.title = 'Assign 1 Focus to this slot';
         addBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          this.onAllocateEssence(i);
+          this.onAllocateFocus(i);
         });
         slot.appendChild(addBtn);
       }
 
-      // essence display moved below the slot
-      const essenceEl = document.createElement('div');
-      essenceEl.className = `spell-slot-essence ${equippedSpells[i] ? '' : 'inactive'}`;
-      essenceEl.textContent = `ME: ${essence}`;
+      // focus display moved below the slot
+      const focusEl = document.createElement('div');
+      focusEl.className = `spell-slot-essence ${equippedSpells[i] ? '' : 'inactive'}`;
+      focusEl.textContent = `Focus: ${focus}`;
 
       wrapper.appendChild(slot);
-      wrapper.appendChild(essenceEl);
+      wrapper.appendChild(focusEl);
       grid.appendChild(wrapper);
     }
   }

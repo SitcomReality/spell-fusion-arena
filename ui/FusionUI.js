@@ -4,6 +4,7 @@ import { FusionBuilder } from './FusionBuilder.js';
 import { FusionPreview } from './FusionPreview.js';
 import { SpellSlotsUI } from './SpellSlotsUI.js';
 import { SpellFusion } from '../spells/SpellFusion.js';
+import { getSpellCost } from '../spells/Element.js';
 
 export class FusionUI {
   constructor(onSpellEquipped) {
@@ -14,10 +15,11 @@ export class FusionUI {
     this.selectedElements = [];
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null];
-    this.spellSlotEssence = [5, 0, 0, 0];
-    this.essenceBank = 0;
-    this.maxFusionSlots = 4; // Can unlock up to 4
-    this.unlockedFusionSlots = 1; // Start with 1 unlocked
+    this.spellSlotFocus = [1, 0, 0, 0]; // Focus starts at 1 for slot 1, 0 for others
+    this.essenceBank = 0; // Mana Essence for spell equipping
+    this.focusBank = 0;   // Focus for upgrading slots
+    this.maxFusionSlots = 4;
+    this.unlockedFusionSlots = 4; // All slots unlocked from start
 
     // Create subcomponents
     this.elementsLibrary = new ElementsLibrary((key, element, cardEl) => {
@@ -37,10 +39,10 @@ export class FusionUI {
 
     this.spellSlotsUI = new SpellSlotsUI(this.equippedContainer, {
       getEquippedSpells: () => this.equippedSpells,
-      getSpellSlotEssence: () => this.spellSlotEssence,
+      getSpellSlotFocus: () => this.spellSlotFocus,
       getEssenceBank: () => this.essenceBank,
       onUnequip: (i) => this.unequipSpell(i),
-      onAllocateEssence: (i) => this.allocateEssenceToSlot(i)
+      onAllocateFocus: (i) => this.allocateFocusToSlot(i)
     });
 
     this.render();
@@ -48,22 +50,16 @@ export class FusionUI {
 
   addEssenceToBank(amount) {
     this.essenceBank += amount;
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank);
+  }
+
+  addFocusToBank(amount) {
+    this.focusBank += amount;
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank);
   }
 
   unlockFusionSlot(slotIndex) {
-    if (this.unlockedFusionSlots >= this.maxFusionSlots) return;
-    if (this.essenceBank < 1) {
-      // not enough essence, ignore
-      return;
-    }
-
-    // unlock next slot in sequence (ensure sequential)
-    this.unlockedFusionSlots = Math.min(this.maxFusionSlots, this.unlockedFusionSlots + 1);
-    this.essenceBank -= 1;
-
-    this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    // Slots are all unlocked from the start now, so this is a no-op
   }
 
   render() {
@@ -81,7 +77,6 @@ export class FusionUI {
           <h2>Create Spell</h2>
           <div class="fusion-layout-wrapper">
             <div class="fusion-builder" id="fusion-builder"></div>
-            <!-- Spell result panel is now a direct sibling of the fusion-builder -->
             <div id="fusion-panel"></div>
           </div>
         </div>
@@ -97,37 +92,32 @@ export class FusionUI {
 
     // initial updates
     this.elementsLibrary.refresh();
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank);
 
     // Set up preview clear callback
     this.fusionPreview.setOnClear(() => this.clearFusion());
   }
 
   renderSpellSlots() {
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank);
   }
 
   onElementClicked(key, element, cardEl) {
-    // highlight & show details with add button
     this.elementsLibrary.markSelectedCard(cardEl);
     this.detailsPanel.show(element, () => this.addElementToFusion(element));
   }
 
   addElementToFusion(element) {
-    if (this.selectedElements.length >= this.unlockedFusionSlots) return;
+    if (this.selectedElements.length >= this.maxFusionSlots) return;
     this.selectedElements.push(element);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
     this.updateFusionPreview();
 
-    // On small screens, only scroll the fusion UI down to the "Create Spell" section
-    // when the add action resulted in all unlocked fusion slots being occupied.
     try {
       if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        // Only auto-scroll when we've just filled all unlocked slots
-        if (this.selectedElements.length === this.unlockedFusionSlots) {
-          const fusionContainer = this.container; // #fusion-ui
+        if (this.selectedElements.length === this.maxFusionSlots) {
+          const fusionContainer = this.container;
           const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
-          // The second fusion-section contains the builder/preview by render layout
           const targetSection = fusionSections[1] || fusionSections[0];
           if (targetSection) {
             const offsetTop = targetSection.offsetTop;
@@ -136,7 +126,7 @@ export class FusionUI {
         }
       }
     } catch (e) {
-      // silent fallback on any error
+      // silent fallback
     }
   }
 
@@ -163,38 +153,38 @@ export class FusionUI {
     this.fusionPreview.showSpell(this.currentSpell, () => this.equipSpell(this.currentSpell));
   }
 
-  createSpellFromSelection() {
-    if (!this.currentSpell) return;
-    this.equipSpell(this.currentSpell);
-    this.selectedElements = [];
-    this.currentSpell = null;
-    this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.updateFusionPreview(true);
-    this.renderSpellSlots();
-  }
-
   equipSpell(spell) {
+    const elementCount = this.selectedElements.length;
+    const cost = getSpellCost(elementCount);
+
+    // Check if player has enough essence
+    if (this.essenceBank < cost) {
+      alert(`Need ${cost} Mana Essence to equip this spell (have ${this.essenceBank})`);
+      return;
+    }
+
     const emptyIndex = this.equippedSpells.findIndex(s => s === null);
     if (emptyIndex !== -1) {
       this.equippedSpells[emptyIndex] = spell;
+      this.essenceBank -= cost;
+      
       // notify GameState via callback, passing full arrays
-      this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+      this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
       this.renderSpellSlots();
     }
   }
 
   unequipSpell(index) {
     this.equippedSpells[index] = null;
-    this.spellSlotEssence[index] = Math.floor(this.spellSlotEssence[index] * 0.75);
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+    this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
   }
 
-  allocateEssenceToSlot(slotIndex) {
-    if (this.essenceBank <= 0) return;
-    this.spellSlotEssence[slotIndex] = (this.spellSlotEssence[slotIndex] || 0) + 1;
-    this.essenceBank -= 1;
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotEssence);
+  allocateFocusToSlot(slotIndex) {
+    if (this.focusBank <= 0) return;
+    this.spellSlotFocus[slotIndex] = (this.spellSlotFocus[slotIndex] || 0) + 1;
+    this.focusBank -= 1;
+    this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
   }
 
@@ -204,9 +194,8 @@ export class FusionUI {
 
   refresh() {
     this.elementsLibrary.refresh();
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotEssence, this.essenceBank);
+    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank);
     this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.fusionBuilder.setUnlockedSlots(this.unlockedFusionSlots);
     this.updateFusionPreview();
   }
 }
