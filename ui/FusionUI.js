@@ -146,10 +146,26 @@ export class FusionUI {
       item.innerHTML = `
         <span class="created-spell-color" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></span>
         <span class="created-spell-label">${spell.name} <span class="created-spell-meta">— D:${dmg} S:${spd}</span></span>
+        <button class="created-spell-delete" title="Delete spell" aria-label="Delete spell">✕</button>
       `;
 
+      // Delete button handler: remove spell from inventory and re-render
+      const deleteBtn = item.querySelector('.created-spell-delete');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Remove the spell at this index
+          this.spellInventory.splice(idx, 1);
+          // Re-render slots and created list
+          this.renderSpellSlots();
+          this.renderCreatedSpells();
+        });
+      }
+
       // Allow clicking to equip from this list via a quick-equip action (optional UX)
-      item.addEventListener('click', () => {
+      item.addEventListener('click', (ev) => {
+        // Avoid triggering equip when clicking the delete button
+        if (ev.target.closest('.created-spell-delete')) return;
         // If user has no equipped slot empty, open a chooser by dispatching a simple event:
         const event = new CustomEvent('fusionui:equip-from-created', { detail: { spell, index: idx } });
         window.dispatchEvent(event);
