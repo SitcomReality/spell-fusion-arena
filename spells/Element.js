@@ -1,10 +1,11 @@
 export class Element {
-  constructor(name, color, propertyGenes, visualEffects, locked = true) {
+  constructor(name, color, propertyGenes, visualEffects, locked = true, rarity = 'common') {
     this.name = name;
     this.color = color;
     this.propertyGenes = propertyGenes || {}; // property contribution system
     this.visualEffects = visualEffects;
     this.locked = locked;
+    this.rarity = rarity; // 'common', 'uncommon', or 'rare'
   }
 }
 
@@ -25,27 +26,26 @@ export const PROPERTY_TYPES = {
 };
 
 export const ELEMENTS = {
-  // Starting elements (unlocked by default)
-  fire: new Element('Fire', { r: 255, g: 80, b: 20 }, {
+  // COMMON ELEMENTS (start unlocked, basic/foundational)
+  fire: new Element('Fire', { r: 255, g: 100, b: 50 }, {
     speed: 280,
     damage: 20,
     dot: 8,
-    chaining: 4,
-    wave: 2
+    chaining: 4
   }, {
     trail: true,
     trailType: 'spark',
-    trailDensity: 3,
+    trailDensity: 4,
     trailSize: 4,
     aura: true,
-    auraSize: 15,
-    auraIntensity: 0.4,
+    auraSize: 18,
+    auraIntensity: 0.5,
     impactParticles: 20,
     impactType: 'spark',
     sizeMultiplier: 1.0
-  }, false),
+  }, false, 'common'),
   
-  frost: new Element('Frost', { r: 100, g: 200, b: 255 }, {
+  frost: new Element('Frost', { r: 120, g: 220, b: 255 }, {
     speed: 240,
     damage: 18,
     slowing: 7,
@@ -57,158 +57,77 @@ export const ELEMENTS = {
     trailDensity: 5,
     trailSize: 3,
     aura: false,
-    impactParticles: 15,
+    impactParticles: 18,
     impactType: 'spark',
     ambientParticles: true,
     ambientType: 'glow',
     sizeMultiplier: 0.95
-  }, false),
+  }, false, 'common'),
   
-  storm: new Element('Storm', { r: 200, g: 150, b: 255 }, {
-    speed: 320,
-    damage: 19,
-    chaining: 7,
-    piercing: 3,
-    knockback: 3,
-    spiral: 4
-  }, {
-    trail: true,
-    trailType: 'spark',
-    trailDensity: 8,
-    trailSize: 2,
-    aura: true,
-    auraSize: 25,
-    auraIntensity: 0.5,
-    impactParticles: 25,
-    impactType: 'spark',
-    crackle: true,
-    sizeMultiplier: 0.9
-  }, false),
-  
-  stone: new Element('Stone', { r: 120, g: 100, b: 80 }, {
-    speed: 160,
-    damage: 32,
+  stone: new Element('Stone', { r: 130, g: 110, b: 60 }, {
+    speed: 140,
+    damage: 35,
     knockback: 8,
-    aoe: 5,
-    piercing: 2
+    aoe: 8,
+    piercing: 1
   }, {
     trail: true,
     trailType: 'smoke',
     trailDensity: 2,
-    trailSize: 6,
+    trailSize: 7,
     aura: false,
-    impactParticles: 30,
+    impactParticles: 35,
     impactType: 'smoke',
     shake: true,
-    sizeMultiplier: 1.3
-  }, false),
+    sizeMultiplier: 1.4
+  }, false, 'common'),
 
-  // Unlockable elements
-  poison: new Element('Poison', { r: 120, g: 255, b: 80 }, {
-    speed: 260,
-    damage: 16,
-    dot: 8,
-    slowing: 3,
-    aoe: 2
-  }, {
-    trail: true,
-    trailType: 'smoke',
-    trailDensity: 4,
-    trailSize: 5,
-    aura: true,
-    auraSize: 18,
-    auraIntensity: 0.3,
-    impactParticles: 18,
-    impactType: 'smoke',
-    drip: true,
-    sizeMultiplier: 0.95
-  }),
-
-  light: new Element('Light', { r: 255, g: 255, b: 200 }, {
-    speed: 360,
-    damage: 17,
-    piercing: 8,
-    chaining: 2,
-    aoe: 3
-  }, {
-    trail: true,
-    trailType: 'beam',
-    trailDensity: 10,
-    trailSize: 3,
-    aura: true,
-    auraSize: 30,
-    auraIntensity: 0.6,
-    impactParticles: 12,
-    impactType: 'spark',
-    beam: true,
-    sizeMultiplier: 0.85
-  }),
-
-  shadow: new Element('Shadow', { r: 80, g: 60, b: 120 }, {
-    speed: 300,
-    damage: 21,
-    homing: 6,
-    lifesteal: 5,
-    piercing: 2
-  }, {
-    trail: true,
-    trailType: 'smoke',
-    trailDensity: 6,
-    trailSize: 4,
-    aura: true,
-    auraSize: 20,
-    auraIntensity: 0.5,
-    impactParticles: 15,
-    impactType: 'swirl',
-    wispy: true,
-    sizeMultiplier: 1.05
-  }),
-
-  arcane: new Element('Arcane', { r: 180, g: 100, b: 255 }, {
-    speed: 270,
-    damage: 22,
-    chaining: 5,
-    aoe: 4,
-    spiral: 3
-  }, {
-    trail: true,
-    trailType: 'swirl',
-    trailDensity: 7,
-    trailSize: 3,
-    aura: true,
-    auraSize: 22,
-    auraIntensity: 0.7,
-    impactParticles: 25,
-    impactType: 'swirl',
-    swirl: true,
-    sizeMultiplier: 1.0
-  }),
-
-  nature: new Element('Nature', { r: 80, g: 200, b: 100 }, {
+  nature: new Element('Nature', { r: 100, g: 220, b: 100 }, {
     speed: 220,
-    damage: 15,
-    slowing: 8,
-    dot: 3,
+    damage: 14,
+    slowing: 6,
+    dot: 4,
     aoe: 4,
-    wave: 2
+    wave: 3
   }, {
     trail: true,
     trailType: 'aura',
     trailDensity: 5,
     trailSize: 3,
     aura: true,
-    auraSize: 25,
+    auraSize: 24,
     auraIntensity: 0.4,
-    impactParticles: 20,
+    impactParticles: 22,
     impactType: 'aura',
     growth: true,
-    sizeMultiplier: 1.1
-  }),
+    sizeMultiplier: 1.05
+  }, false, 'common'),
 
-  blood: new Element('Blood', { r: 200, g: 20, b: 50 }, {
+  wind: new Element('Wind', { r: 200, g: 245, b: 255 }, {
+    speed: 360,
+    damage: 12,
+    piercing: 4,
+    knockback: 4,
+    homing: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 8,
+    trailSize: 2,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.25,
+    impactParticles: 14,
+    impactType: 'swirl',
+    wispy: true,
+    sizeMultiplier: 0.85
+  }, false, 'common'),
+
+  // UNCOMMON ELEMENTS
+  blood: new Element('Blood', { r: 220, g: 20, b: 60 }, {
     speed: 250,
-    damage: 23,
-    lifesteal: 7,
+    damage: 24,
+    lifesteal: 8,
     knockback: 3,
     dot: 2
   }, {
@@ -221,119 +140,34 @@ export const ELEMENTS = {
     impactType: 'spark',
     drip: true,
     sizeMultiplier: 0.9
-  }),
+  }, false, 'uncommon'),
 
-  void: new Element('Void', { r: 40, g: 20, b: 60 }, {
-    speed: 200,
-    damage: 28,
-    vortex: 7,
-    aoe: 6,
+  shadow: new Element('Shadow', { r: 100, g: 70, b: 140 }, {
+    speed: 290,
+    damage: 21,
+    homing: 6,
+    lifesteal: 4,
     piercing: 2
   }, {
     trail: true,
-    trailType: 'swirl',
-    trailDensity: 10,
-    trailSize: 2,
-    aura: true,
-    auraSize: 35,
-    auraIntensity: 0.6,
-    impactParticles: 30,
-    impactType: 'swirl',
-    vortex: true,
-    pullParticles: true,
-    sizeMultiplier: 1.15
-  }),
-
-  crystal: new Element('Crystal', { r: 150, g: 220, b: 255 }, {
-    speed: 210,
-    damage: 19,
-    piercing: 4,
-    aoe: 4,
-    splitting: 3
-  }, {
-    trail: true,
-    trailType: 'spark',
-    trailDensity: 4,
-    trailSize: 3,
-    aura: true,
-    auraSize: 20,
-    auraIntensity: 0.5,
-    impactParticles: 22,
-    impactType: 'spark',
-    shimmer: true,
-    sizeMultiplier: 0.95
-  }, false),
-
-  chaos: new Element('Chaos', { r: 255, g: 100, b: 200 }, {
-    speed: 290,
-    damage: 24,
-    chaining: 4,
-    dot: 4,
-    knockback: 4,
-    repulsion: 2,
-    wave: 10
-  }, {
-    trail: true,
-    trailType: 'spark',
-    trailDensity: 12,
+    trailType: 'smoke',
+    trailDensity: 6,
     trailSize: 4,
     aura: true,
-    auraSize: 28,
-    auraIntensity: 0.8,
-    impactParticles: 35,
-    impactType: 'spark',
-    chaotic: true,
-    randomColors: true,
-    sizeMultiplier: 1.05
-  }),
-
-  earth: new Element('Earth', { r: 140, g: 100, b: 60 }, {
-    speed: 140,
-    damage: 35,
-    knockback: 10,
-    aoe: 8,
-    repulsion: 3
-  }, {
-    trail: true,
-    trailType: 'smoke',
-    trailDensity: 3,
-    trailSize: 8,
-    aura: false,
-    impactParticles: 40,
-    impactType: 'smoke',
-    shake: true,
-    rocks: true,
-    sizeMultiplier: 1.4
-  }),
-
-  wind: new Element('Wind', { r: 200, g: 240, b: 255 }, {
-    speed: 380,
-    damage: 14,
-    knockback: 5,
-    piercing: 4,
-    chaining: 2,
-    spiral: 5
-  }, {
-    trail: true,
-    trailType: 'swirl',
-    trailDensity: 8,
-    trailSize: 2,
-    aura: true,
     auraSize: 22,
-    auraIntensity: 0.3,
+    auraIntensity: 0.5,
     impactParticles: 16,
     impactType: 'swirl',
     wispy: true,
-    sizeMultiplier: 0.85
-  }),
+    sizeMultiplier: 1.0
+  }, false, 'uncommon'),
 
-  metal: new Element('Metal', { r: 180, g: 180, b: 200 }, {
-    speed: 270,
+  metal: new Element('Metal', { r: 190, g: 190, b: 210 }, {
+    speed: 260,
     damage: 26,
     piercing: 6,
     chaining: 4,
-    knockback: 2,
-    splitting: 2
+    knockback: 2
   }, {
     trail: true,
     trailType: 'spark',
@@ -343,7 +177,194 @@ export const ELEMENTS = {
     impactParticles: 20,
     impactType: 'spark',
     sizeMultiplier: 1.0
-  })
+  }, false, 'uncommon'),
+
+  arcane: new Element('Arcane', { r: 200, g: 120, b: 255 }, {
+    speed: 270,
+    damage: 22,
+    chaining: 5,
+    aoe: 4,
+    splitting: 2,
+    wave: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 7,
+    trailSize: 3,
+    aura: true,
+    auraSize: 24,
+    auraIntensity: 0.7,
+    impactParticles: 26,
+    impactType: 'swirl',
+    swirl: true,
+    sizeMultiplier: 1.0
+  }, false, 'uncommon'),
+
+  light: new Element('Light', { r: 255, g: 240, b: 100 }, {
+    speed: 350,
+    damage: 16,
+    piercing: 8,
+    chaining: 3,
+    aoe: 3
+  }, {
+    trail: true,
+    trailType: 'beam',
+    trailDensity: 10,
+    trailSize: 3,
+    aura: true,
+    auraSize: 32,
+    auraIntensity: 0.65,
+    impactParticles: 13,
+    impactType: 'spark',
+    beam: true,
+    sizeMultiplier: 0.85
+  }, false, 'uncommon'),
+
+  poison: new Element('Poison', { r: 150, g: 255, b: 100 }, {
+    speed: 240,
+    damage: 15,
+    slowing: 5,
+    dot: 7,
+    aoe: 3
+  }, {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 4,
+    trailSize: 5,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.35,
+    impactParticles: 18,
+    impactType: 'smoke',
+    drip: true,
+    sizeMultiplier: 0.95
+  }, false, 'uncommon'),
+
+  // RARE ELEMENTS (more exotic, powerful, vivid)
+  void: new Element('Void', { r: 50, g: 30, b: 80 }, {
+    speed: 200,
+    damage: 30,
+    vortex: 6,
+    aoe: 6,
+    piercing: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 10,
+    trailSize: 2,
+    aura: true,
+    auraSize: 38,
+    auraIntensity: 0.7,
+    impactParticles: 32,
+    impactType: 'swirl',
+    vortex: true,
+    pullParticles: true,
+    sizeMultiplier: 1.2
+  }, true, 'rare'),
+
+  chaos: new Element('Chaos', { r: 255, g: 80, b: 200 }, {
+    speed: 290,
+    damage: 25,
+    chaining: 4,
+    dot: 3,
+    knockback: 5,
+    repulsion: 2,
+    wave: 4
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 12,
+    trailSize: 4,
+    aura: true,
+    auraSize: 30,
+    auraIntensity: 0.85,
+    impactParticles: 38,
+    impactType: 'spark',
+    chaotic: true,
+    randomColors: true,
+    sizeMultiplier: 1.08
+  }, true, 'rare'),
+
+  abyss: new Element('Abyss', { r: 40, g: 80, b: 160 }, {
+    speed: 210,
+    damage: 32,
+    homing: 7,
+    wave: 5,
+    piercing: 3
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 9,
+    trailSize: 3,
+    aura: true,
+    auraSize: 28,
+    auraIntensity: 0.6,
+    impactParticles: 24,
+    impactType: 'swirl',
+    wispy: true,
+    sizeMultiplier: 1.02
+  }, true, 'rare'),
+
+  inferno: new Element('Inferno', { r: 255, g: 140, b: 40 }, {
+    speed: 270,
+    damage: 33,
+    dot: 6,
+    knockback: 6,
+    aoe: 5,
+    splitting: 2
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 8,
+    trailSize: 5,
+    aura: true,
+    auraSize: 26,
+    auraIntensity: 0.75,
+    impactParticles: 32,
+    impactType: 'spark',
+    beam: true,
+    sizeMultiplier: 1.15
+  }, true, 'rare'),
+
+  crystal: new Element('Crystal', { r: 180, g: 240, b: 255 }, {
+    speed: 220,
+    damage: 18,
+    piercing: 4,
+    splitting: 4,
+    aoe: 3
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 6,
+    trailSize: 3,
+    aura: true,
+    auraSize: 22,
+    auraIntensity: 0.6,
+    impactParticles: 24,
+    impactType: 'spark',
+    shimmer: true,
+    sizeMultiplier: 0.98
+  }, true, 'rare'),
+
+  electrum: new Element('Electrum', { r: 255, g: 200, b: 50 }, {
+    speed: 340,
+    damage: 18,
+    chaining: 6,
+    homing: 5,
+    wave: 2
+  }, {
+    trail: true,
+    trailType: 'beam',
+    trailDensity: 9,
+    trailSize: 2,
+    aura: true,
+    auraSize: 25,
+    auraIntensity: 0.65,
+    impactParticles: 18,
+    impactType: 'spark',
+    crackle: true,
+    sizeMultiplier: 0.92
+  }, true, 'rare')
 };
 
 export function getUnlockedElements() {
