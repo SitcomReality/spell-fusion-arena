@@ -115,21 +115,27 @@ export class EffectsRenderer {
   renderSparkParticle(particle, alpha) {
     const color = particle.color;
     
+    // Ensure numeric, finite size and positions to avoid canvas errors
+    const safeX = Number.isFinite(particle.x) ? particle.x : 0;
+    const safeY = Number.isFinite(particle.y) ? particle.y : 0;
+    const safeSize = Number.isFinite(particle.size) ? Math.max(0.1, particle.size) : 1;
+    const coreSize = 1;
+
     // Bright core
     this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-    this.ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+    this.ctx.fillRect(safeX - coreSize, safeY - coreSize, coreSize * 2, coreSize * 2);
     
-    // Colored glow
+    // Colored glow (use safeSize for gradient radius)
     const gradient = this.ctx.createRadialGradient(
-      particle.x, particle.y, 0,
-      particle.x, particle.y, particle.size * 2
+      safeX, safeY, 0,
+      safeX, safeY, safeSize * 2
     );
     gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.8})`);
     gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     
     this.ctx.fillStyle = gradient;
     this.ctx.beginPath();
-    this.ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+    this.ctx.arc(safeX, safeY, safeSize * 2, 0, Math.PI * 2);
     this.ctx.fill();
   }
 
