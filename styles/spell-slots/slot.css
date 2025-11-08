@@ -225,3 +225,13 @@
   font-size: 12px;
   color: #aaa;
 }
+
+/* Restore desktop grid layout for spell slots (4 across) */
+@media (min-width: 769px) {
+  .spell-slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    align-items: start;
+  }
+}
