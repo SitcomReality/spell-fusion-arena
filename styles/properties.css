@@ -1,0 +1,177 @@
+/* Centralized property badge and properties section styles */
+
+/* Property badges (used in spell slots, fusion preview, element details, rewards) */
+.property-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(138, 43, 226, 0.1);
+  border: 1px solid #4a2a7f;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 10;
+}
+
+/* Tooltip */
+.property-badge::after {
+  content: attr(data-property);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 10, 15, 0.95);
+  color: #eaf8ff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  border: 1px solid rgba(74, 158, 255, 0.12);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  transform-origin: bottom center;
+  display: block;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* Show tooltip on hover or when .active is present (for touch/press) */
+.property-badge:hover::after,
+.property-badge.active::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Small caret */
+.property-badge::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(10, 10, 15, 0.95);
+  border-left: 1px solid rgba(74, 158, 255, 0.08);
+  border-top: 1px solid rgba(74, 158, 255, 0.08);
+  transform: translateX(-50%) rotate(45deg) translateY(4px);
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  pointer-events: none;
+}
+
+/* Show caret when tooltip visible */
+.property-badge:hover::before,
+.property-badge.active::before {
+  opacity: 1;
+  transform: translateX(-50%) rotate(45deg) translateY(0);
+}
+
+.property-badge:hover {
+  border-color: #7a5aaf;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+}
+
+/* Property icon styles */
+.property-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+}
+
+/* Property icon mappings */
+.property-badge[data-property="damage"] .property-icon,
+.reward-card-property-icon[data-property="damage"] { background-image: url('/img/damage.png'); }
+
+.property-badge[data-property="speed"] .property-icon,
+.reward-card-property-icon[data-property="speed"] { background-image: url('/img/speed.png'); }
+
+.property-badge[data-property="knockback"] .property-icon,
+.reward-card-property-icon[data-property="knockback"] { background-image: url('/img/knockback.png'); }
+
+.property-badge[data-property="aoe"] .property-icon,
+.reward-card-property-icon[data-property="aoe"] { background-image: url('/img/aoe.png'); }
+
+.property-badge[data-property="dot"] .property-icon,
+.reward-card-property-icon[data-property="dot"] { background-image: url('/img/dot.png'); }
+
+.property-badge[data-property="piercing"] .property-icon,
+.reward-card-property-icon[data-property="piercing"] { background-image: url('/img/piercing.png'); }
+
+.property-badge[data-property="homing"] .property-icon,
+.reward-card-property-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
+
+.property-badge[data-property="slowing"] .property-icon,
+.reward-card-property-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
+
+.property-badge[data-property="lifesteal"] .property-icon,
+.reward-card-property-icon[data-property="lifesteal"] { background-image: url('/img/lifesteal.png'); }
+
+.property-badge[data-property="chaining"] .property-icon,
+.reward-card-property-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
+
+.property-badge[data-property="vortex"] .property-icon,
+.reward-card-property-icon[data-property="vortex"] { background-image: url('/img/attraction.png'); }
+
+.property-badge[data-property="repulsion"] .property-icon,
+.reward-card-property-icon[data-property="repulsion"] { background-image: url('/img/repulsion.png'); }
+
+.property-badge[data-property="splitting"] .property-icon,
+.reward-card-property-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
+
+.property-badge[data-property="wave"] .property-icon,
+.reward-card-property-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
+
+.property-badge[data-property="spiral"] .property-icon,
+.reward-card-property-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
+
+/* Properties section containers */
+.properties-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.properties-title {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+  display: none;
+}
+
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 160px;
+}
+
+.properties-empty {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.property-name {
+  color: #9db4ff;
+  text-transform: capitalize;
+}
+
+.property-value {
+  color: #64c8ff;
+  font-weight: 600;
+}

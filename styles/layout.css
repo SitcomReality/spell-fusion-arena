@@ -1,0 +1,309 @@
+/* Layout and containers */
+#game-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 20px;
+  max-width: 1400px;
+  flex-wrap: wrap;
+}
+
+/* New wrapper for canvas + equipped spells */
+#canvas-and-spells {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Canvas wrapper for layering */
+#canvas-wrapper {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  flex-shrink: 0;
+}
+
+/* HUD with sci-fi aesthetic */
+#hud {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 15, 46, 0.95) 100%);
+  padding: 15px;
+  border: 1px solid #4a9eff;
+  min-width: 150px;
+  z-index: 100;
+  font-size: 12px;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.25), inset 0 0 10px rgba(74, 158, 255, 0.05);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.hud-item {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #64c8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Fusion UI panel */
+#fusion-ui {
+  flex: 1;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  min-width: 300px;
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.2), inset 0 0 20px rgba(74, 158, 255, 0.05);
+}
+
+/* Equipped spells container */
+#equipped-spells {
+  width: 100%;
+  max-width: 800px;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  box-shadow: 0 0 15px rgba(74, 158, 255, 0.15);
+}
+
+.equipped-title {
+  font-size: 14px;
+  color: #64c8ff;
+  margin-bottom: 6px;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tablet layout (768px - 1024px) */
+@media (max-width: 1024px) {
+  #game-container {
+    gap: 15px;
+    padding: 15px;
+  }
+
+  #canvas-wrapper {
+    width: 600px;
+    height: 450px;
+  }
+
+  #game-canvas,
+  #fx-canvas {
+    width: 600px !important;
+    height: 450px !important;
+  }
+
+  #fusion-ui {
+    max-width: 500px;
+    padding: 15px;
+  }
+
+  #hud {
+    padding: 12px;
+    min-width: 120px;
+    font-size: 11px;
+  }
+
+  .hud-item {
+    font-size: 11px;
+  }
+}
+
+/* Mobile layout (< 768px) */
+@media (max-width: 768px) {
+  body {
+    min-height: auto;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  /* #canvas-and-spells becomes the fixed header wrapper for canvas and slots side-by-side */
+  #canvas-and-spells {
+    width: 100%;
+    max-width: 500px; /* Cap the max width of the main fixed header area */
+    position: fixed;
+    top: 4px; /* Matches previous canvas top */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 120;
+    
+    display: flex; 
+    flex-direction: row; 
+    gap: 4px; /* Gap between canvas and slots */
+    align-items: stretch; /* Ensure equipped-spells matches canvas height */
+    padding: 0;
+  }
+
+  #canvas-wrapper {
+    /* Canvas wrapper needs to be square now */
+    width: auto;
+    flex: 1 1 auto;
+    aspect-ratio: 1 / 1;
+    max-width: calc(100% - 70px); /* Reserve space for slots + gap */
+    height: auto;
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: auto;
+    box-shadow: none;
+  }
+
+  #game-canvas,
+  #fx-canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #equipped-spells {
+    flex: 0 0 62px; /* Fixed width for the slots area */
+    width: 62px;
+    max-width: 62px;
+    padding: 4px 1px;
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: auto;
+    height: auto;
+    /* overflow: hidden; */ /* removed to allow tooltips to extend outside */
+    
+    /* Ensure internal flex direction is column (inherited from desktop) */
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between; 
+    /* margin-top: 24px; */ /* removed - header will leave space for equipped spells via CSS variable */
+    flex: 0 0 56px;
+    width: 56px;
+    max-width: 56px;
+    opacity: 0.6;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  #hud {
+    position: fixed;
+    top: calc(4px + 8px);
+    left: 50%;
+    /* Shift the HUD left by half of the equipped-spells width so it occupies the middle
+       area between the canvas and the equipped-spells column. Keeps it visually aligned
+       with the canvas while avoiding overlap of the slot column on the right. */
+    transform: translateX(calc(-50% - (var(--equipped-spells-width, 56px) / 2)));
+    /* Limit width so HUD fits within canvas area minus the slots column and some gutter */
+    width: calc(100% - var(--equipped-spells-width, 56px) - 40px);
+    max-width: 500px;
+    z-index: 130;
+    background: linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(26, 15, 46, 0.7) 100%);
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s, transform 0.2s;
+  }
+
+  #hud:hover,
+  #hud:active,
+  #hud:focus-within {
+    background: linear-gradient(135deg, rgba(10, 10, 15, 1) 0%, rgba(26, 15, 46, 1) 100%);
+    opacity: 1;
+    /* keep the same shifted horizontal position when hovered */
+    transform: translateX(calc(-50% - (var(--equipped-spells-width, 56px) / 2))) translateY(-2px);
+  }
+
+  #fusion-ui {
+    width: 100%;
+    max-width: 500px;
+    padding: 4px;
+    border: 2px solid #4a9eff;
+    position: fixed;
+    /* stack: canvas top (4px) + fixed header height + gap (4px) */
+    top: calc(4px + var(--fixed-header-height, 430px) + 4px); 
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    overflow-y: auto;
+    min-height: 150px;
+  }
+
+  .hud-item {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 12px;
+    font-size: 10px;
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  #game-container {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  #canvas-wrapper {
+    max-width: 100%;
+  }
+
+  #fusion-ui {
+    max-height: none;
+    overflow-y: scroll;
+    padding: 4px;
+    min-height: 150px;
+  }
+
+  #hud {
+    top: 8px;
+    width: calc(100% - 56px);
+    max-width: 420px;
+    padding: 2px 4px;
+    text-align: center;
+  }
+}
+
+/* Scrollbar styling for Fusion UI elements (Moved from reward.css) */
+#fusion-ui::-webkit-scrollbar {
+  width: 8px;
+}
+
+#fusion-ui::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+#fusion-ui::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+#fusion-ui::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.elements-library::-webkit-scrollbar {
+  width: 6px;
+}
+
+.elements-library::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elements-library::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+.elements-library::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

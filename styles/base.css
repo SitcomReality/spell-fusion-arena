@@ -1,0 +1,42 @@
+/* Base / reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Space Mono', monospace;
+  background: #0a0a0f;
+  color: #e0e0ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+/* Utility classes */
+.hidden { display: none !important; }
+.center { display: flex; align-items: center; justify-content: center; }
+
+/* Establish a subtle grid background for lab aesthetic */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(0deg, rgba(100, 200, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 200, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#game-container {
+  position: relative;
+  z-index: 1;
+}
