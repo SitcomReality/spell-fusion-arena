@@ -203,15 +203,17 @@
     position: fixed;
     top: calc(4px + 8px);
     left: 50%;
-    transform: translateX(-50%);
-    /* Make the HUD respect the equipped-spells width by shrinking overall available width.
-       This leaves a right-hand gap approximately equal to --equipped-spells-width set by JS. */
+    /* Shift the HUD left by half of the equipped-spells width so it occupies the middle
+       area between the canvas and the equipped-spells column. Keeps it visually aligned
+       with the canvas while avoiding overlap of the slot column on the right. */
+    transform: translateX(calc(-50% - (var(--equipped-spells-width, 56px) / 2)));
+    /* Limit width so HUD fits within canvas area minus the slots column and some gutter */
     width: calc(100% - var(--equipped-spells-width, 56px) - 40px);
     max-width: 500px;
     z-index: 130;
     background: linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(26, 15, 46, 0.7) 100%);
     opacity: 0.7;
-    transition: opacity 0.2s, background 0.2s;
+    transition: opacity 0.2s, background 0.2s, transform 0.2s;
   }
 
   #hud:hover,
@@ -219,7 +221,8 @@
   #hud:focus-within {
     background: linear-gradient(135deg, rgba(10, 10, 15, 1) 0%, rgba(26, 15, 46, 1) 100%);
     opacity: 1;
-    transform: translateX(-50%) translateY(-2px);
+    /* keep the same shifted horizontal position when hovered */
+    transform: translateX(calc(-50% - (var(--equipped-spells-width, 56px) / 2))) translateY(-2px);
   }
 
   #fusion-ui {
