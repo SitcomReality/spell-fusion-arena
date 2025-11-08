@@ -8,6 +8,8 @@ export class FusionBuilder {
     this.selectedElements = [];
     this.onSlotRemove = options.onSlotRemove || (() => {});
     this.onUnlockSlot = options.onUnlockSlot || (() => {});
+    // NEW: optional getter to read current Mana Essence (fallback to 0)
+    this.getEssence = options.getEssence || (() => 0);
   }
 
   mount(container) {
@@ -44,11 +46,22 @@ export class FusionBuilder {
     // Placeholder costs per fusion slot (1..4)
     const COSTS = [1, 5, 10, 20];
     
+    // Read current essence so we can mark unusable slots
+    const currentEssence = Number(this.getEssence() || 0);
+
     // Always render total slots, show locked overlay for locked ones
     for (let i = 0; i < this.totalSlots; i++) {
       const slot = document.createElement('div');
       slot.className = 'fusion-slot';
       slot.dataset.slot = i;
+
+      // If the player doesn't have enough essence for this slot, mark inactive
+      const required = COSTS[i] || 0;
+      if (currentEssence < required) {
+        slot.classList.add('inactive-slot');
+      } else {
+        slot.classList.remove('inactive-slot');
+      }
 
       if (i < this.unlockedSlots) {
         // unlocked slot
@@ -69,7 +82,7 @@ export class FusionBuilder {
           const cost = COSTS[i] || 0;
           slot.innerHTML = `
             <div class="fusion-slot-placeholder">
-              <span class="fusion-slot-placeholder-icon">${Icons.manaEssenceSVG(14)}</span>
+              <span class="fusion-slot-placeholder-icon">${Icons ? Icons.manaEssenceSVG(14) : ''}</span>
               <span class="fusion-slot-placeholder-cost">${cost}</span>
             </div>
           `;

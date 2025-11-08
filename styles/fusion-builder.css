@@ -47,6 +47,30 @@
   text-align:center;
 }
 
+/* New: Visual treatment for fusion slots that are currently unusable due to insufficient Mana Essence */
+.fusion-slot.inactive-slot {
+  filter: grayscale(70%) contrast(0.85) brightness(0.85);
+  opacity: 0.7;
+  border-color: rgba(120, 120, 120, 0.35);
+  box-shadow: none;
+  transform: none;
+  pointer-events: auto; /* still allow interactions like attempting to unlock or seeing tooltip */
+}
+
+/* Keep unlock CTA visible but muted when slot is inactive */
+.fusion-slot.inactive-slot .fusion-slot-unlock,
+.fusion-slot.inactive-slot .fusion-slot-placeholder {
+  opacity: 0.9;
+  filter: none;
+  color: rgba(200,200,200,0.9);
+}
+
+/* Slightly dim remove button when inactive (if present for UX consistency) */
+.fusion-slot.inactive-slot .fusion-slot-remove {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .fusion-slot-lock-icon {
   font-size:20px;
   opacity:0.9;

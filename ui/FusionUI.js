@@ -34,7 +34,9 @@ export class FusionUI {
       totalSlots: 4,
       unlockedSlots: this.unlockedFusionSlots,
       onSlotRemove: (idx) => this.removeElement(idx),
-      onUnlockSlot: (slotIndex) => this.unlockFusionSlot(slotIndex)
+      onUnlockSlot: (slotIndex) => this.unlockFusionSlot(slotIndex),
+      // NEW: allow builder to read the live Mana Essence value so it can mark inactive slots
+      getEssence: () => this.essenceBank
     });
 
     this.fusionPreview = new FusionPreview();
