@@ -12,6 +12,7 @@
   z-index: 2000;
   padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden; /* prevent horizontal scroll on small screens */
 }
 
 .intro-screen-container {
@@ -98,11 +99,12 @@
   display: flex;
   gap: 40px;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch; /* ensure children stretch to equal height */
   margin-top: 40px;
   flex-wrap: wrap;
 }
 
+/* Make each card able to grow/shrink to match its sibling height */
 .loadout-choice-card {
   background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
   border: 2px solid #4a9eff;
@@ -115,13 +117,56 @@
   flex-direction: column;
   gap: 15px;
   align-items: center;
+  flex: 1 1 0; /* allow cards to grow equally and match tallest sibling */
+  box-sizing: border-box;
 }
 
-.loadout-choice-card:hover {
-  border-color: #64c8ff;
-  box-shadow: 0 0 30px rgba(100, 200, 255, 0.4);
-  transform: translateY(-5px);
-  background: linear-gradient(135deg, #1a0f2e 0%, #2a1a4e 100%);
+/* Keep inner content centered while allowing card to stretch vertically */
+.loadout-choice-card > .loadout-card-color,
+.loadout-choice-card > h3,
+.loadout-choice-card > .loadout-card-rarity,
+.loadout-choice-card .properties-list {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+/* Allow properties list to scroll vertically if one card has too many badges */
+.loadout-choice-card .properties-list {
+  max-height: 48%; /* relative cap so it won't force card to grow excessively */
+  overflow-y: auto;
+  margin-top: 8px;
+  padding-right: 6px; /* room for scrollbar */
+  box-sizing: border-box;
+}
+
+/* Mobile overrides keep equal-height behavior */
+@media (max-width: 768px) {
+  .loadout-choice-container {
+    flex-direction: row;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .loadout-choice-card {
+    min-width: 180px;
+    padding: 20px;
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .loadout-choice-card {
+    min-width: 0;
+    padding: 10px;          /* reduce internal padding */
+    min-width: 0;           /* allow flex to shrink */
+    max-width: 48%;         /* slight breathing room for gap/borders */
+    flex: 1 1 48%;
+  }
+
+  .loadout-choice-card .properties-list {
+    max-height: 40%;
+  }
 }
 
 .loadout-card-color {
