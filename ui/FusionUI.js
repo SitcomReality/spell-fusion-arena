@@ -55,11 +55,23 @@ export class FusionUI {
   addEssenceToBank(amount) {
     this.essenceBank += amount;
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
+    // Update HUD if available
+    try {
+      if (window && window.gameInstance && window.gameInstance.hud) {
+        window.gameInstance.hud.setEssence(this.essenceBank);
+      }
+    } catch (e) {}
   }
 
   addFocusToBank(amount) {
     this.focusBank += amount;
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
+    // Update HUD if available
+    try {
+      if (window && window.gameInstance && window.gameInstance.hud) {
+        window.gameInstance.hud.setFocus(this.focusBank);
+      }
+    } catch (e) {}
   }
 
   unlockFusionSlot(slotIndex) {
@@ -250,6 +262,13 @@ export class FusionUI {
     this.renderSpellSlots();
     // Update created spells list
     this.renderCreatedSpells();
+
+    // Update HUD to reflect essence spent
+    try {
+      if (window && window.gameInstance && window.gameInstance.hud) {
+        window.gameInstance.hud.setEssence(this.essenceBank);
+      }
+    } catch (e) {}
   }
 
   // NEW: Equip spell from inventory to a slot (free)
@@ -273,6 +292,12 @@ export class FusionUI {
     this.focusBank -= 1;
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
+    // Update HUD to reflect focus spent
+    try {
+      if (window && window.gameInstance && window.gameInstance.hud) {
+        window.gameInstance.hud.setFocus(this.focusBank);
+      }
+    } catch (e) {}
   }
 
   getEquippedSpells() {

@@ -98,6 +98,17 @@ class Game {
       this.rewardUI.show(waveNumber);
     });
 
+    // initialize HUD with current initial values
+    try {
+      if (this.hud) {
+        this.hud.setWave(this.gameState.waveManager.currentWave);
+        this.hud.setScore(this.gameState.score);
+        this.hud.setEnemies(0);
+        this.hud.setEssence(this.fusionUI.essenceBank);
+        this.hud.setFocus(this.fusionUI.focusBank);
+      }
+    } catch (e) {}
+
     // Show the first wave start button
     this.showNextWaveButton();
     
@@ -110,6 +121,13 @@ class Game {
     this.waveStartButton.show(nextWaveNumber, () => {
       this.gameState.waveManager.startNextWave();
       this.gameState.startWave();
+      // Update HUD wave count (start pressed)
+      try {
+        if (this.hud) this.hud.setWave(this.gameState.waveManager.currentWave);
+        // When the wave is queued to spawn, we may not yet have the spawned enemies;
+        // GameState will notify HUD when it actually spawns, but set enemies to 0 for clarity.
+        if (this.hud) this.hud.setEnemies(0);
+      } catch (e) {}
     });
   }
   
@@ -176,7 +194,8 @@ class Game {
   update(dt) {
     this.gameState.update(dt);
     this.gameState.updateParticles(dt);
-    this.hud.update(this.gameState);
+    // HUD no longer updated every frame
+    // this.hud.update(this.gameState);
   }
   
   render() {

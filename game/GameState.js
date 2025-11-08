@@ -55,6 +55,13 @@ export class GameState {
     // Spawn new wave if needed
     if (this.waveManager.waveActive && this.enemies.length === 0) {
       this.enemies = this.waveManager.spawnWave();
+      // notify HUD of enemy count for the new wave
+      try {
+        if (window && window.gameInstance && window.gameInstance.hud) {
+          window.gameInstance.hud.setEnemies(this.enemies.length);
+          window.gameInstance.hud.setWave(this.waveManager.currentWave);
+        }
+      } catch (e) { /* silent */ }
     }
 
     // Update player and check for casting
@@ -105,6 +112,15 @@ export class GameState {
       if (!e.alive) {
         this.waveManager.enemyDefeated();
         this.score += 10;
+        // notify HUD of score and decreased enemy count
+        try {
+          if (window && window.gameInstance && window.gameInstance.hud) {
+            window.gameInstance.hud.setScore(this.score);
+            // enemies array hasn't been filtered yet in caller contexts, but we can decrement current tracked count
+            const remaining = Math.max(0, this.enemies.length - 1);
+            window.gameInstance.hud.setEnemies(remaining);
+          }
+        } catch (e) { /* silent */ }
         return false;
       }
       return true;
