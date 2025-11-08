@@ -152,7 +152,7 @@ export class GameState {
     this.projectiles = this.projectiles.filter(p => p.alive);
     this.enemies = this.enemies.filter(e => {
       if (!e.alive) {
-        this.waveManager.enemyDefeated();
+        // NOTE: enemyDefeated is called earlier when enemies are marked removed (to avoid double-callbacks).
         this.score += 10;
         // notify HUD of score and decreased enemy count
         try {
