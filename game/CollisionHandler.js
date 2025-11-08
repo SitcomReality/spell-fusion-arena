@@ -1,4 +1,5 @@
 import { Projectile } from '../spells/Projectile.js';
+import { PropertyApplier } from '../spells/projectile/PropertyApplier.js';
 
 export class CollisionHandler {
   constructor(gameState) {
@@ -139,20 +140,109 @@ export class CollisionHandler {
         // Use new generalized damage function for AoE, centered at centerEnemy
         enemy.takeDamageFromSource(centerEnemy.x, centerEnemy.y, destructionRadius, 'explosive');
 
-        // Apply DoT properties from projectile
+        // Apply DoT properties from projectile (existing behavior)
         const dotIntensity = projectile.properties.dot || 0;
         if (dotIntensity > 0) {
           const duration = 2 + dotIntensity * 1.5;
           const damagePerTick = Math.max(1, damage * dotIntensity * 0.12);
-          enemy.applyBurning(duration, damagePerTick);
+          enemy.applyBurning(duration, damagePerTick, projectile.spell.color);
         }
 
-        // Apply slowing from AoE
+        // Apply slowing from AoE (existing behavior)
         const slowIntensity = projectile.properties.slowing || 0;
         if (slowIntensity > 0) {
           const duration = 1.5 + slowIntensity * 1;
           const slowAmount = Math.min(0.6, 0.2 + slowIntensity * 0.08);
           enemy.applySlowing(duration, slowAmount);
+        }
+
+        // NEW: probabilistically propagate other non-movement projectile properties (knockback, lifesteal, poison, etc.)
+        // Build a diluted temp projectile and apply via PropertyApplier so AoE can sometimes carry those effects.
+        try {
+          const temp = {
+            x: centerEnemy.x,
+            y: centerEnemy.y,
+            radius: projectile.radius,
+            spell: projectile.spell,
+            properties: {}
+          };
+
+          // list of properties that make sense to propagate via AoE
+          const propagateProps = ['knockback', 'lifesteal', 'poison', 'dot'];
+          for (const prop of propagateProps) {
+            const val = projectile.properties[prop];
+            if (val && val > 0) {
+              // chance increases with property strength and global potency; clamp to avoid certainty
+              const chance = Math.min(0.95, 0.12 + (val * 0.08) * (projectile.potencyMultiplier || 1) * aoeIntensity);
+              if (Math.random() <= chance) {
+                // apply diluted magnitude so AoE side-effects are weaker than direct projectile impact
+                temp.properties[prop] = val * 0.5 * (projectile.potencyMultiplier || 1) * aoeIntensity;
+              }
+            }
+          }
+
+          // If any propagated properties were set, apply them
+          if (Object.keys(temp.properties).length > 0) {
+            PropertyApplier.applyProperties(temp, enemy);
+
+            // Try to credit lifesteal to player if available (best-effort; player health may not be implemented yet)
+            if (temp.properties.lifesteal && temp.properties.lifesteal > 0) {
+              const lifestealFraction = temp.properties.lifesteal;
+              const healAmount = Math.max(0, damage * lifestealFraction * 0.08);
+              try {
+                if (game.player && typeof game.player.receiveHealing === 'function') {
+                  game.player.receiveHealing(healAmount);
+                } else if (game.player && typeof game.player.hp === 'number') {
+                  game.player.hp = Math.min(game.player.maxHp || 100, (game.player.hp || 0) + healAmount);
+                }
+              } catch (e) { /* best-effort; silently ignore if player doesn't support healing yet */ }
+            }
+          }
+        } catch (e) {
+          // Non-critical: if PropertyApplier or lifesteal hook fails, continue silently.
+        }
+
+        // Handle piercing
+        const pierceIntensity = projectile.properties.piercing || 0;
+        const maxPierces = Math.floor(pierceIntensity) + 1;
+        const pierceCount = (projectile.pierceCount || 0);
+
+        let shouldDie = false;
+        if (pierceCount >= maxPierces) {
+          shouldDie = true;
+        } else {
+          projectile.pierceCount = pierceCount + 1;
+        }
+
+        // Handle splitting
+        const splittingIntensity = projectile.properties.splitting || 0;
+        if (splittingIntensity > 0) {
+          this.handleSplitting(projectile, enemy);
+        }
+
+        // Handle chaining - if not already dead from other mechanics
+        const chainingIntensity = projectile.properties.chaining || 0;
+        if (!shouldDie && chainingIntensity > 0) {
+          const chainedEnemies = projectile.chainedEnemies || [];
+          chainedEnemies.push(enemy);
+          projectile.chainedEnemies = chainedEnemies;
+
+          // Try to find another enemy to chain to
+          const nextTarget = this.findChainTarget(projectile, chainedEnemies);
+          if (nextTarget) {
+            // Redirect projectile to new target
+            this.redirectProjectile(projectile, nextTarget);
+          } else {
+            // No more targets, die
+            shouldDie = true;
+          }
+        } else if (!shouldDie && !chainingIntensity) {
+          // No chaining and no piercing surviving, die
+          shouldDie = true;
+        }
+
+        if (shouldDie) {
+          projectile.alive = false;
         }
       }
     }
