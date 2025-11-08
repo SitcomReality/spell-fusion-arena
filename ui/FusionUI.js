@@ -288,6 +288,12 @@ export class FusionUI {
 
   // NEW: Equip spell from inventory to a slot (free)
   equipSpellFromInventory(slotIndex, spell) {
+    // Remove the same spell from any other slot so each spell occupies at most one slot
+    for (let i = 0; i < this.equippedSpells.length; i++) {
+      if (i !== slotIndex && this.equippedSpells[i] === spell) {
+        this.equippedSpells[i] = null;
+      }
+    }
     this.equippedSpells[slotIndex] = spell;
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
