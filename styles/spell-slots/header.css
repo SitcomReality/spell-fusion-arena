@@ -24,8 +24,8 @@
 
 /* Visual treatment for slots that are inactive (0 Focus) */
 .spell-slot.inactive-slot {
-  opacity: 0.56;
-  filter: grayscale(60%) contrast(0.9);
+  /* Keep the slot container layout unchanged so the add-focus control can remain emphasized.
+     Visual muting is applied to specific child elements below. */
   box-shadow: none;
   border-color: rgba(120, 120, 120, 0.35);
   background: linear-gradient(135deg, #070708 0%, #111018 100%);
@@ -44,11 +44,14 @@
   pointer-events: none;
   color: #999;
   text-shadow: none;
+  filter: grayscale(60%);
 }
 
 /* Slightly dim footer text for inactive slots */
 .spell-slot.inactive-slot .spell-slot-footer .spell-slot-name {
   color: #9aa2b3;
+  filter: grayscale(60%);
+  opacity: 0.7;
 }
 
 .spell-slot:hover {
