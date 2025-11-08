@@ -202,7 +202,19 @@ export class FusionUI {
 
     try {
       if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        if (this.selectedElements.length === this.maxFusionSlots) {
+        // Determine whether to auto-scroll: only when all currently affordable slots are filled.
+        // Use the same COSTS mapping as FusionBuilder to determine per-slot required essence.
+        const COSTS = [1, 5, 10, 20]; // per-slot required Mana Essence for slots 0..3
+        const currentEssence = Number(this.essenceBank || 0);
+
+        // Count how many fusion slots are currently affordable (player can pay the slot cost)
+        let affordableSlots = 0;
+        for (let i = 0; i < Math.min(this.maxFusionSlots, COSTS.length); i++) {
+          if (currentEssence >= (COSTS[i] || 0)) affordableSlots++;
+        }
+
+        // If the number of selected elements equals the number of affordable slots, scroll down.
+        if (this.selectedElements.length === affordableSlots && affordableSlots > 0) {
           const fusionContainer = this.container;
           const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
           const targetSection = fusionSections[1] || fusionSections[0];
