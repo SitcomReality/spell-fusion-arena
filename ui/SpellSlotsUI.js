@@ -31,7 +31,13 @@ export class SpellSlotsUI {
       wrapper.dataset.slot = i;
 
       const slot = document.createElement('div');
-      slot.className = 'spell-slot';
+      // Mark slot as inactive when it has 0 Focus so CSS can style & disable empty button
+      slot.className = 'spell-slot' + (focus < 1 ? ' inactive-slot' : '');
+      if (focus < 1) {
+        slot.setAttribute('data-focus', '0');
+      } else {
+        slot.setAttribute('data-focus', String(focus));
+      }
 
       const focus = slotFocus[i] || 0;
 
@@ -164,10 +170,20 @@ export class SpellSlotsUI {
         }
 
         const emptyBtn = slot.querySelector('.spell-slot-empty-btn');
-        emptyBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.showInventorySelector(i, spellInventory);
-        });
+        if (emptyBtn) {
+          if (focus < 1) {
+            // visually disabled & provide tooltip/title explaining why
+            emptyBtn.disabled = true;
+            emptyBtn.title = 'Assign Focus to this slot to enable equipping a spell';
+            // ensure it's non-interactive (defensive)
+            emptyBtn.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); });
+          } else {
+            emptyBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.showInventorySelector(i, spellInventory);
+            });
+          }
+        }
       }
 
       wrapper.appendChild(slot);

@@ -22,6 +22,35 @@
   padding: 0;
 }
 
+/* Visual treatment for slots that are inactive (0 Focus) */
+.spell-slot.inactive-slot {
+  opacity: 0.56;
+  filter: grayscale(60%) contrast(0.9);
+  box-shadow: none;
+  border-color: rgba(120, 120, 120, 0.35);
+  background: linear-gradient(135deg, #070708 0%, #111018 100%);
+}
+
+/* Keep the add-focus control emphasized even when slot is inactive */
+.spell-slot.inactive-slot .slot-add-focus {
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(100, 200, 255, 0.18);
+}
+
+/* Disable/grey out the empty-slot button when slot is inactive */
+.spell-slot.inactive-slot .spell-slot-empty-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  color: #999;
+  text-shadow: none;
+}
+
+/* Slightly dim footer text for inactive slots */
+.spell-slot.inactive-slot .spell-slot-footer .spell-slot-name {
+  color: #9aa2b3;
+}
+
 .spell-slot:hover {
   border-color: #64c8ff;
   box-shadow: 0 0 20px rgba(100, 200, 255, 0.2);
