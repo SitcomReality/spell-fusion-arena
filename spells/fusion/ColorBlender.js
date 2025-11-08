@@ -82,6 +82,83 @@ export const ColorBlender = {
     return { primary: primaryColor, accent: accentColor, secondary: secondaryColor };
   },
 
+  // NEW: Blend with element visual genes to determine secondary color and influence patterns
+  blendWithVisualGenes(...elements) {
+    if (!elements || elements.length === 0) {
+      return {
+        primary: { r: 200, g: 200, b: 200 },
+        secondary: { r: 180, g: 180, b: 180 },
+        accent: null
+      };
+    }
+
+    // Extract primary and secondary colors from elements
+    const primaryColors = elements.map(e => e.color);
+    const secondaryColors = elements.map(e => e.secondaryColor || e.color);
+    const visualGenes = elements.map(e => e.visualGenes || {
+      primaryColorInfluence: 1.0,
+      secondaryAffinity: 0.5,
+      particleColor: 0.8,
+      auraColor: 0.7
+    });
+
+    // Blend primary colors normally
+    const blendedPrimary = this.blend(...primaryColors);
+    const primaryResult = blendedPrimary.primary;
+
+    // Blend secondary colors with weighting based on visual genes
+    let secondaryHueSum = 0, secondarySatSum = 0, secondaryLightSum = 0;
+    let secondaryWeightSum = 0;
+
+    for (let i = 0; i < elements.length; i++) {
+      const genes = visualGenes[i];
+      const influence = (genes.secondaryAffinity || 0.5) * (genes.primaryColorInfluence || 1.0);
+      const secHsl = this.rgbToHsl(secondaryColors[i]);
+      
+      // Position matters: earlier elements have stronger influence
+      const positionMultiplier = 1 / (1 + i * 0.3);
+      const weight = influence * positionMultiplier;
+
+      secondaryHueSum += secHsl.h * weight;
+      secondarySatSum += secHsl.s * weight;
+      secondaryLightSum += secHsl.l * weight;
+      secondaryWeightSum += weight;
+    }
+
+    let secondaryResult = primaryResult;
+    if (secondaryWeightSum > 0) {
+      const secondaryHsl = {
+        h: (secondaryHueSum / secondaryWeightSum) % 360,
+        s: Math.min(1.0, secondarySatSum / secondaryWeightSum),
+        l: Math.min(0.75, secondaryLightSum / secondaryWeightSum)
+      };
+      secondaryResult = this.hslToRgb(secondaryHsl);
+    }
+
+    // Generate accent from the element with highest secondary affinity
+    let accentColor = null;
+    let maxSecondaryAffinity = 0;
+    let accentElementIdx = -1;
+    for (let i = 0; i < visualGenes.length; i++) {
+      if ((visualGenes[i].secondaryAffinity || 0) > maxSecondaryAffinity) {
+        maxSecondaryAffinity = visualGenes[i].secondaryAffinity || 0;
+        accentElementIdx = i;
+      }
+    }
+    if (accentElementIdx >= 0) {
+      const accentHsl = this.rgbToHsl(secondaryColors[accentElementIdx]);
+      accentHsl.s = Math.min(1.0, accentHsl.s * 1.2);
+      accentHsl.l = Math.min(0.7, accentHsl.l * 1.1);
+      accentColor = this.hslToRgb(accentHsl);
+    }
+
+    return {
+      primary: primaryResult,
+      secondary: secondaryResult,
+      accent: accentColor
+    };
+  },
+
   rgbToHsl(rgb) {
     const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
     const max = Math.max(r, g, b), min = Math.min(r, g, b);

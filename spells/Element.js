@@ -366,6 +366,25 @@ export const ELEMENTS = {
   }, 'rare')
 };
 
+// Add secondary colors to all elements
+Object.assign(ELEMENTS.fire, { secondaryColor: { r: 255, g: 180, b: 40 }, visualGenes: { primaryColorInfluence: 1.2, secondaryAffinity: 0.3, particleColor: 0.8, auraColor: 0.6 } });
+Object.assign(ELEMENTS.frost, { secondaryColor: { r: 180, g: 240, b: 255 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.7, particleColor: 0.9, auraColor: 0.8 } });
+Object.assign(ELEMENTS.stone, { secondaryColor: { r: 180, g: 140, b: 80 }, visualGenes: { primaryColorInfluence: 1.4, secondaryAffinity: 0.2, particleColor: 0.6, auraColor: 0.3 } });
+Object.assign(ELEMENTS.nature, { secondaryColor: { r: 150, g: 255, b: 120 }, visualGenes: { primaryColorInfluence: 0.8, secondaryAffinity: 0.8, particleColor: 0.9, auraColor: 0.9 } });
+Object.assign(ELEMENTS.wind, { secondaryColor: { r: 230, g: 255, b: 240 }, visualGenes: { primaryColorInfluence: 0.7, secondaryAffinity: 0.6, particleColor: 1.0, auraColor: 0.7 } });
+Object.assign(ELEMENTS.blood, { secondaryColor: { r: 140, g: 20, b: 40 }, visualGenes: { primaryColorInfluence: 1.1, secondaryAffinity: 0.5, particleColor: 0.8, auraColor: 0.4 } });
+Object.assign(ELEMENTS.shadow, { secondaryColor: { r: 150, g: 100, b: 200 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.9, particleColor: 0.7, auraColor: 0.9 } });
+Object.assign(ELEMENTS.metal, { secondaryColor: { r: 255, g: 200, b: 80 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.4, particleColor: 1.0, auraColor: 0.5 } });
+Object.assign(ELEMENTS.arcane, { secondaryColor: { r: 255, g: 100, b: 200 }, visualGenes: { primaryColorInfluence: 0.8, secondaryAffinity: 0.95, particleColor: 0.85, auraColor: 1.1 } });
+Object.assign(ELEMENTS.light, { secondaryColor: { r: 255, g: 255, b: 200 }, visualGenes: { primaryColorInfluence: 0.75, secondaryAffinity: 0.8, particleColor: 1.05, auraColor: 1.0 } });
+Object.assign(ELEMENTS.poison, { secondaryColor: { r: 100, g: 180, b: 60 }, visualGenes: { primaryColorInfluence: 0.95, secondaryAffinity: 0.7, particleColor: 0.9, auraColor: 0.7 } });
+Object.assign(ELEMENTS.void, { secondaryColor: { r: 100, g: 80, b: 160 }, visualGenes: { primaryColorInfluence: 1.0, secondaryAffinity: 0.9, particleColor: 0.8, auraColor: 1.2 } });
+Object.assign(ELEMENTS.chaos, { secondaryColor: { r: 255, g: 150, b: 100 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.85, particleColor: 1.1, auraColor: 1.0 } });
+Object.assign(ELEMENTS.abyss, { secondaryColor: { r: 100, g: 150, b: 220 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.75, particleColor: 0.85, auraColor: 0.95 } });
+Object.assign(ELEMENTS.inferno, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
+Object.assign(ELEMENTS.crystal, { secondaryColor: { r: 100, g: 200, b: 255 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.8, particleColor: 0.95, auraColor: 1.05 } });
+Object.assign(ELEMENTS.electrum, { secondaryColor: { r: 255, g: 255, b: 150 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.7, particleColor: 1.1, auraColor: 0.8 } });
+
 export function getUnlockedElements(unlockedKeys) {
   if (!unlockedKeys || unlockedKeys.length === 0) {
     return {};
