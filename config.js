@@ -9,7 +9,7 @@ export const CONFIG = {
   },
   enemy: {
     baseSpeed: 30,
-    spawnRadius: 520
+    spawnRadius: 450
   },
   wave: {
     initialDelay: 3000,

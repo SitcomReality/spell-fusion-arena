@@ -38,7 +38,6 @@ export class WaveManager {
   
   spawnWave() {
     const enemies = [];
-    // Rebalanced: fewer enemies early, gentler ramp
     const baseCount = 3 + Math.floor(this.currentWave * 1.5);
     
     for (let i = 0; i < baseCount; i++) {
@@ -59,7 +58,8 @@ export class WaveManager {
         else type = ENEMY_TYPES.tank;
       }
       
-      // More generous stagger on early waves; tighter later
+      // Create enemy and assign a small randomized spawn delay so they start moving at slightly different times.
+      // Delay: early waves get slightly larger spread and offset to ease difficulty, later waves tighten spread.
       const spawnSpread = this.currentWave <= 2 ? 1.2 : 0.9;
       const baseOffset = this.currentWave <= 2 ? 0.5 : 0.2;
       const spawnDelay = baseOffset + this.rng.next() * spawnSpread;
