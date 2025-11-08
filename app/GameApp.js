@@ -10,6 +10,7 @@ import { WaveStartButton } from '../ui/WaveStartButton.js';
 import { SeededRandom } from '../game/SeededRandom.js';
 import { ELEMENTS } from '../spells/Element.js';
 import { createLayoutObserver } from './LayoutObserver.js';
+import { GameOverUI } from '../ui/GameOverUI.js';
 
 export class GameApp {
   constructor() {
@@ -28,6 +29,7 @@ export class GameApp {
     this.fusionUI = null;
     this.rewardUI = null;
     this.waveStartButton = null;
+    this.gameOverUI = null;
     this.rng = null;
 
     this.lastTime = 0;
@@ -47,6 +49,9 @@ export class GameApp {
   }
 
   startGameWithLoadout(startingElements, seed) {
+    // Clean up previous game if any
+    this.cleanupGame();
+
     this.rng = new SeededRandom(seed);
 
     const startingElementKeys = startingElements.map(elem => {
@@ -90,11 +95,17 @@ export class GameApp {
       this.rewardUI.show(waveNumber);
     });
 
+    // Handle game over
+    this.gameState.onGameOver = () => {
+      this.handleGameOver();
+    };
+
     try {
       if (this.hud) {
         this.hud.setWave(this.gameState.waveManager.currentWave);
         this.hud.setScore(this.gameState.score);
         this.hud.setEnemies(0);
+        this.hud.setHealth(this.gameState.player.hp);
         this.hud.setEssence(this.fusionUI.essenceBank);
         this.hud.setFocus(this.fusionUI.focusBank);
       }
@@ -102,6 +113,46 @@ export class GameApp {
 
     this.showNextWaveButton();
     this.start();
+  }
+
+  // Handle game over
+  handleGameOver() {
+    this.running = false;
+    const waveNumber = this.gameState.waveManager.currentWave - 1;
+    const finalScore = this.gameState.score;
+    const finalHealth = this.gameState.player.hp;
+
+    this.gameOverUI = new GameOverUI(() => {
+      this.gameOverUI.hide();
+      this.cleanupGame();
+      this.showIntroScreen();
+    });
+
+    this.gameOverUI.show(waveNumber, finalScore, finalHealth);
+  }
+
+  // Clean up game resources
+  cleanupGame() {
+    this.running = false;
+    if (this.gameOverUI) {
+      this.gameOverUI.hide();
+      this.gameOverUI = null;
+    }
+    if (this.waveStartButton) {
+      this.waveStartButton.hide();
+      this.waveStartButton = null;
+    }
+    if (this.rewardUI) {
+      this.rewardUI.hide();
+      this.rewardUI = null;
+    }
+    // Clear canvas
+    if (this.renderer) {
+      this.renderer.clear(COLORS.background);
+    }
+    if (this.fxRenderer) {
+      this.fxRenderer.clear();
+    }
   }
 
   showNextWaveButton() {
@@ -125,6 +176,7 @@ export class GameApp {
   }
 
   start() {
+    this.running = true;
     requestAnimationFrame((time) => this.gameLoop(time));
   }
 

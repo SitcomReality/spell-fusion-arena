@@ -3,6 +3,8 @@ export class Player {
     this.x = x;
     this.y = y;
     this.radius = radius;
+    this.hp = 1000;
+    this.maxHp = 1000;
     this.equippedSpells = []; // Array of spells for each slot
     this.spellSlotFocus = []; // Focus resource for each slot (increases firing speed)
     this.timeSinceLastCast = [0, 0, 0, 0]; // Track cast timing per slot

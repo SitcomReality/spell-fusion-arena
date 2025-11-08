@@ -29,6 +29,8 @@ export class GameState {
     this.score = 0;
     this.paused = false;
     this.waveStartPending = false; // NEW: True when waiting for player to start wave
+    this.gameOver = false; // NEW: Track if game is over
+    this.onGameOver = null; // NEW: Callback when player dies
 
     // New: handlers for collision and particles
     this.collisionHandler = new CollisionHandler(this);
@@ -45,7 +47,7 @@ export class GameState {
   }
 
   update(dt) {
-    if (this.paused || this.waveStartPending) return;
+    if (this.paused || this.waveStartPending || this.gameOver) return;
     
     this.updateAoEs(dt);
     
@@ -93,6 +95,46 @@ export class GameState {
         this.particles.push(...enemy.particleRequests);
         enemy.particleRequests.length = 0; // Clear requests after collection
       }
+    }
+
+    // Check for enemies reaching center and damage player
+    const enemiesToRemove = [];
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
+      if (!enemy.alive) continue;
+      
+      const dx = enemy.x - this.centerX;
+      const dy = enemy.y - this.centerY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      // If enemy reaches center (within a small radius), damage player
+      if (dist < enemy.type.width / 2 + this.player.radius) {
+        this.player.hp -= 10;
+        enemiesToRemove.push(i);
+        
+        // Update HUD
+        try {
+          if (window && window.gameInstance && window.gameInstance.hud) {
+            window.gameInstance.hud.setHealth(this.player.hp);
+          }
+        } catch (e) { /* silent */ }
+        
+        // Check if player is dead
+        if (this.player.hp <= 0) {
+          this.gameOver = true;
+          if (this.onGameOver) {
+            this.onGameOver();
+          }
+          return;
+        }
+      }
+    }
+    
+    // Remove enemies that reached center (in reverse order to maintain indices)
+    for (let i = enemiesToRemove.length - 1; i >= 0; i--) {
+      const idx = enemiesToRemove[i];
+      this.enemies[idx].alive = false;
+      this.waveManager.enemyDefeated();
     }
 
     // Update projectiles and collect trail particles

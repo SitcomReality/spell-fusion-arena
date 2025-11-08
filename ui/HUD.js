@@ -9,7 +9,8 @@ export class HUD {
       score: 0,
       enemies: 0,
       essence: 0,
-      focus: 0
+      focus: 0,
+      health: 1000
     };
     // initial render
     this.render();
@@ -50,6 +51,12 @@ export class HUD {
     this.render();
   }
 
+  setHealth(n) {
+    if (this.state.health === n) return;
+    this.state.health = n;
+    this.render();
+  }
+
   // Small internal renderer that composes HTML from cached state
   render() {
     const s = this.state;
@@ -57,6 +64,7 @@ export class HUD {
     this.container.innerHTML = `
       <div class="hud-item">Wave: ${s.wave}</div>
       <div class="hud-item">Score: ${s.score}</div>
+      <div class="hud-item">Health: ${s.health}</div>
       <div class="hud-item">Enemies: ${s.enemies}</div>
       <div class="hud-item">Essence: ${Icons.manaEssenceSVG(14)} ${s.essence}</div>
       <div class="hud-item">Focus: ${Icons.focusSVG(14)} ${s.focus}</div>
