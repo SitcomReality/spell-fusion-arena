@@ -213,7 +213,7 @@ export class Enemy {
 export const ENEMY_TYPES = {
   grunt: {
     name: 'Grunt',
-    speed: 30,
+    speed: 15,
     width: 16,
     height: 16,
     pattern: 'blob',
@@ -222,7 +222,7 @@ export const ENEMY_TYPES = {
   
   runner: {
     name: 'Runner',
-    speed: 60,
+    speed: 30,
     width: 12,
     height: 12,
     pattern: 'blob',
@@ -231,7 +231,7 @@ export const ENEMY_TYPES = {
   
   tank: {
     name: 'Tank',
-    speed: 15,
+    speed: 12,
     width: 24,
     height: 24,
     pattern: 'square',
