@@ -358,18 +358,3 @@
   gap: 16px;
   justify-content: center;
 }
-
-.loadout-choice-card .properties-list {
-  max-width: 140px;
-  flex-wrap: wrap;
-  gap: 6px;
-  overflow: hidden;
-  word-break: normal;
-}
-
-/* Ensure individual property badges inside loadout cards can wrap compactly */
-.loadout-choice-card .property-badge {
-  white-space: normal;
-  padding: 4px 6px 4px 4px;
-  font-size: 11px;
-}
