@@ -22,10 +22,25 @@ export class Enemy {
     this.poisonTickTimer = 0;
     
     this.particleRequests = []; // Stores particles to be emitted by GameState
+    
+    // Optional spawn delay (seconds). When >0 the enemy will exist but not move/approach until it counts down.
+    this.spawnDelay = 0;
   }
   
   update(dt, centerX, centerY) {
     if (!this.alive) return;
+
+    // If this enemy has a spawnDelay, count it down and skip behavior until it reaches zero.
+    if (this.spawnDelay && this.spawnDelay > 0) {
+      this.spawnDelay -= dt;
+      // Once spawnDelay elapses, ensure speed resets to base in case status effects were applied earlier.
+      if (this.spawnDelay <= 0) {
+        this.spawnDelay = 0;
+        this.speed = this.baseSpeed;
+      } else {
+        return;
+      }
+    }
     
     // Update status effects
     this.updateStatusEffects(dt);

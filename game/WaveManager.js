@@ -41,7 +41,8 @@ export class WaveManager {
     const baseCount = 5 + this.currentWave * 2;
     
     for (let i = 0; i < baseCount; i++) {
-      const angle = (Math.PI * 2 * i) / baseCount + (this.rng.next() - 0.5) * 0.5;
+      // Slight jitter to break perfect radial symmetry
+      const angle = (Math.PI * 2 * i) / baseCount + (this.rng.next() - 0.5) * 0.4;
       const x = this.centerX + Math.cos(angle) * CONFIG.enemy.spawnRadius;
       const y = this.centerY + Math.sin(angle) * CONFIG.enemy.spawnRadius;
       
@@ -57,7 +58,12 @@ export class WaveManager {
         else type = ENEMY_TYPES.tank;
       }
       
-      enemies.push(new Enemy(x, y, type));
+      // Create enemy and assign a small randomized spawn delay so they start moving at slightly different times.
+      // Delay range: ~0 .. 1.2 seconds (scaled slightly by wave index to create more spread on larger waves).
+      const spawnDelay = this.rng.next() * 1.2 * (1 + (this.currentWave * 0.03));
+      const e = new Enemy(x, y, type);
+      e.spawnDelay = spawnDelay;
+      enemies.push(e);
     }
     
     this.enemiesRemaining = enemies.length;
