@@ -58,11 +58,16 @@ export class IntroScreen {
         <span class="progress-text">0 / 4 selected</span>
       </div>
     `;
+    // Ensure both the title content and the choice cards are placed inside the same
+    // intro-screen-container so the choice cards render below the intro content.
     this.container.innerHTML = '';
-    this.container.appendChild(titleEl);
+    const containerEl = document.createElement('div');
+    containerEl.className = 'intro-screen-container';
+    containerEl.appendChild(titleEl);
+    this.container.appendChild(containerEl);
 
     // Start the choice sequence
-    this.showLoadoutChoice(elementPool, 0);
+    this.showLoadoutChoice(elementPool, 0, containerEl);
   }
 
   rollElementPool(count) {
@@ -96,7 +101,7 @@ export class IntroScreen {
     return pool;
   }
 
-  showLoadoutChoice(elementPool, choiceIndex) {
+  showLoadoutChoice(elementPool, choiceIndex, parentContainer = null) {
     if (choiceIndex >= 4) {
       // All choices made, start game with selected elements
       this.startGameWithLoadout();
@@ -144,7 +149,7 @@ export class IntroScreen {
         updateProgress();
         // Small delay to show selection feedback
         setTimeout(() => {
-          this.showLoadoutChoice(nextPool, choiceIndex + 1);
+          this.showLoadoutChoice(nextPool, choiceIndex + 1, parentContainer);
         }, 200);
       });
 
@@ -154,11 +159,11 @@ export class IntroScreen {
     choiceContainer.appendChild(makeCard(choice1));
     choiceContainer.appendChild(makeCard(choice2));
 
-    // Remove the old choice cards if any exist
-    const oldChoice = this.container.querySelector('.loadout-choice-container');
+    // Remove the old choice cards if any exist inside the same parent container
+    const targetParent = parentContainer || this.container;
+    const oldChoice = targetParent.querySelector('.loadout-choice-container');
     if (oldChoice) oldChoice.remove();
-
-    this.container.appendChild(choiceContainer);
+    targetParent.appendChild(choiceContainer);
   }
 
   startGameWithLoadout() {
