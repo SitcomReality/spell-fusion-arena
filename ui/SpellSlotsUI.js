@@ -31,15 +31,11 @@ export class SpellSlotsUI {
       wrapper.dataset.slot = i;
 
       const slot = document.createElement('div');
+      // Ensure we read the focus amount before using it to build the slot
+      const focus = slotFocus[i] || 0;
       // Mark slot as inactive when it has 0 Focus so CSS can style & disable empty button
       slot.className = 'spell-slot' + (focus < 1 ? ' inactive-slot' : '');
-      if (focus < 1) {
-        slot.setAttribute('data-focus', '0');
-      } else {
-        slot.setAttribute('data-focus', String(focus));
-      }
-
-      const focus = slotFocus[i] || 0;
+      slot.setAttribute('data-focus', String(focus));
 
       // HTML template parts for focus display and add button (used in both equipped/empty states)
       let headerContentHtml = `
