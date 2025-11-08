@@ -35,6 +35,26 @@ export class SpellSlotsUI {
 
       const focus = slotFocus[i] || 0;
 
+      // HTML template parts for focus display and add button (used in both equipped/empty states)
+      let headerContentHtml = `
+          <div class="spell-slot-header">
+            <span class="spell-slot-focus-display"></span>
+            ${focusBank > 0 ? `<button class="slot-add-focus" title="Assign 1 Focus to this slot">+</button>` : ''}
+          </div>`;
+
+      const appendFocusDisplay = (slotEl) => {
+        const focusDisplayEl = slotEl.querySelector('.spell-slot-focus-display');
+        if (!focusDisplayEl) return;
+        
+        const iconEl = Icons.createIconElement(Icons.focusSVG(14));
+        iconEl.classList.add('slot-focus-icon');
+        focusDisplayEl.appendChild(iconEl);
+        const numNode = document.createElement('span');
+        numNode.className = 'slot-focus-number';
+        numNode.textContent = `${focus}`;
+        focusDisplayEl.appendChild(numNode);
+      };
+
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
         const color = spell.color;
@@ -52,34 +72,34 @@ export class SpellSlotsUI {
                       </div>`;
             }).join('') + '</div>';
 
-        // New structure: header (focus + add-focus), content (props), footer (name + swap)
         slot.innerHTML = `
+          ${headerContentHtml}
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
-            <div class="spell-slot-header">
-              <div class="slot-focus-display">
-                ${Icons.createIconElement(Icons.focusSVG(14)).outerHTML}
-                <span class="slot-focus-number">${focus}</span>
-              </div>
-              <!-- add-focus button (only visible when focusBank > 0) -->
-              <button class="add-focus" title="Assign 1 Focus to this slot" aria-label="Add Focus">+</button>
-            </div>
-            <div class="spell-slot-body">
-              <button class="slot-props-btn" aria-label="Show properties">i</button>
-              <div class="slot-props-tooltip" aria-hidden="true"></div>
-              ${propsHtml}
-            </div>
-            <div class="spell-slot-footer">
-              <div class="spell-slot-name">${spell.name}</div>
-              <button class="spell-slot-swap" title="Swap this spell">⇄</button>
-            </div>
+            <button class="slot-props-btn" aria-label="Show properties">i</button>
+            <div class="slot-props-tooltip" aria-hidden="true"></div>
+            ${propsHtml}
+            <button class="spell-slot-swap" title="Swap spell">⇄</button>
+          </div>
+          <div class="spell-slot-footer">
+            <span class="spell-slot-name">${spell.name}</span>
           </div>
         `;
-        // Swap button opens the created-spells inventory for selecting a replacement
-        const swapBtn = slot.querySelector('.spell-slot-swap');
-        if (swapBtn) {
-          swapBtn.addEventListener('click', (e) => {
+        
+        appendFocusDisplay(slot);
+
+        // Wire up the swap button (was unequip)
+        slot.querySelector('.spell-slot-swap').addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Change from unequip to show inventory selector modal
+          this.showInventorySelector(i, this.getSpellInventory());
+        });
+
+        // Wire up the add focus button if it exists
+        const addFocusBtn = slot.querySelector('.slot-add-focus');
+        if (addFocusBtn) {
+          addFocusBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.showInventorySelector(i, spellInventory);
+            this.onAllocateFocus(i);
           });
         }
 
@@ -125,10 +145,24 @@ export class SpellSlotsUI {
       } else {
         // Empty slot: show button to pick from inventory
         slot.innerHTML = `
-          <div class="spell-slot-empty">
-            <button class="spell-slot-empty-btn" data-slot="${i}">+</button>
+          ${headerContentHtml}
+          <button class="spell-slot-empty-btn" data-slot="${i}">+</button>
+          <div class="spell-slot-footer">
+            <span class="spell-slot-name inactive">Empty Slot</span>
           </div>
         `;
+
+        appendFocusDisplay(slot);
+        
+        // Wire up the add focus button if it exists
+        const addFocusBtn = slot.querySelector('.slot-add-focus');
+        if (addFocusBtn) {
+          addFocusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.onAllocateFocus(i);
+          });
+        }
+
         const emptyBtn = slot.querySelector('.spell-slot-empty-btn');
         emptyBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -136,19 +170,6 @@ export class SpellSlotsUI {
         });
       }
 
-      // Add add-focus button overlay if bank available
-      // The add-focus button is part of the header now; wire it up if focusBank > 0
-      const headerAddBtn = slot.querySelector('.add-focus');
-      if (headerAddBtn) {
-        headerAddBtn.style.display = focusBank > 0 ? 'inline-flex' : 'none';
-        headerAddBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.onAllocateFocus(i);
-        });
-      }
-
-      // focus display moved below the slot
-      // Footer already contains name; just append slot to wrapper
       wrapper.appendChild(slot);
       grid.appendChild(wrapper);
     }
@@ -187,7 +208,6 @@ export class SpellSlotsUI {
         </div>
       `;
       item.addEventListener('click', () => {
-        // Use the provided callback to equip (swap) into the selected slot
         this.onEquipFromInventory(slotIndex, spell);
         overlay.remove();
       });
