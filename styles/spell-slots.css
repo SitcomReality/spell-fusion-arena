@@ -178,33 +178,39 @@
   line-height: 18px; /* Adjust line-height for visual centering of '+' */
   border-radius: 50%;
   border: 1px solid #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
+  background: rgba(74, 158, 255, 0.12);
   color: #64c8ff;
   font-size: 14px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 8px rgba(74, 158, 255, 0.2);
+  transition: all 0.18s ease;
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.18);
   padding: 0;
   flex-shrink: 0;
   position: relative; /* allow pseudo-element sheen */
-  overflow: visible;
+  overflow: hidden; /* ensure glint is clipped to circular shape */
 }
 
-/* pseudo-element for glint */
+/* pseudo-element for glint - constrained inside the circular button now */
 .slot-add-focus::before {
   content: "";
   position: absolute;
-  left: -40%;
+  left: -80%;
   top: -10%;
-  width: 180%;
-  height: 120%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.0) 65%);
-  transform: skewX(-18deg);
+  width: 260%;
+  height: 140%;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.0) 0%,
+    rgba(255,255,255,0.35) 38%,
+    rgba(255,255,255,0.65) 50%,
+    rgba(255,255,255,0.35) 62%,
+    rgba(255,255,255,0.0) 100%);
+  transform: rotate(-18deg);
   pointer-events: none;
   opacity: 0;
   border-radius: 50%;
   mix-blend-mode: screen;
+  filter: blur(6px);
 }
 
 /* apply periodic sheen + glint */
@@ -221,13 +227,17 @@
     box-shadow: 0 0 0px rgba(100,200,255,0);
     transform: translateY(0) scale(1);
   }
-  30% {
-    box-shadow: 0 0 6px rgba(100,200,255,0.10);
-    transform: translateY(-1px) scale(1.02);
+  25% {
+    box-shadow: 0 0 10px rgba(100,200,255,0.16), 0 0 4px rgba(180,220,255,0.06) inset;
+    transform: translateY(-1px) scale(1.03);
   }
-  60% {
-    box-shadow: 0 0 12px rgba(100,200,255,0.18);
+  50% {
+    box-shadow: 0 0 18px rgba(100,200,255,0.26), 0 0 6px rgba(180,220,255,0.08) inset;
     transform: translateY(0) scale(1);
+  }
+  75% {
+    box-shadow: 0 0 10px rgba(120,220,200,0.18), 0 0 4px rgba(220,180,255,0.06) inset;
+    transform: translateY(-0.5px) scale(1.02);
   }
   100% {
     box-shadow: 0 0 0px rgba(100,200,255,0);
@@ -235,35 +245,69 @@
   }
 }
 
-/* Moving sheen overlay for a little glint across the circular button */
+/* Moving sheen overlay for a little glint across the circular button (clipped by overflow:hidden) */
 @keyframes slot-add-focus-glint {
-  0% { background-position: -60% 0; opacity: 0.0; }
-  40% { opacity: 0.6; }
-  60% { opacity: 0.6; }
-  100% { background-position: 160% 0; opacity: 0.0; }
+  0% { transform: translateX(-100%) rotate(-18deg); opacity: 0; }
+  35% { opacity: 0.9; transform: translateX(10%) rotate(-18deg); }
+  60% { opacity: 0.9; transform: translateX(40%) rotate(-18deg); }
+  100% { transform: translateX(120%) rotate(-18deg); opacity: 0; }
 }
 
 /* Slightly stronger hover to indicate interactivity (keeps it readable) */
 .slot-add-focus:hover {
-  transform: scale(1.06);
-  box-shadow: 0 0 14px rgba(100,200,255,0.22);
+  transform: scale(1.08);
+  box-shadow: 0 0 22px rgba(100,200,255,0.30);
 }
 
 /* Highlighting / glow for spell-slot-header when wave start is blocked by unspent Focus
    and the player is hovering the wave-start panel. The controlling classes are toggled
    on the documentElement by WaveStartButton.js so we don't rely on fragile DOM selectors. */
 @keyframes header-pulse {
-  0% { box-shadow: 0 0 6px rgba(100,200,255,0.06), inset 0 0 6px rgba(100,200,255,0.02); }
-  50% { box-shadow: 0 0 18px rgba(100,200,255,0.22), inset 0 0 12px rgba(100,200,255,0.06); }
-  100% { box-shadow: 0 0 6px rgba(100,200,255,0.06), inset 0 0 6px rgba(100,200,255,0.02); }
+  0% {
+    box-shadow:
+      0 0 6px rgba(100,200,255,0.12),
+      inset 0 0 6px rgba(100,200,255,0.03);
+    border-color: rgba(100,200,255,0.45);
+    background: rgba(10,12,20,0.18);
+  }
+  25% {
+    box-shadow:
+      0 0 18px rgba(100,200,255,0.28),
+      0 0 6px rgba(160,220,255,0.06) inset,
+      0 0 30px rgba(120,180,255,0.08);
+    border-color: rgba(130,200,255,0.7);
+    background: linear-gradient(90deg, rgba(10,14,24,0.20), rgba(18,22,36,0.14));
+  }
+  50% {
+    box-shadow:
+      0 0 24px rgba(120,235,190,0.30),
+      inset 0 0 12px rgba(120,235,190,0.06);
+    border-color: rgba(120,235,190,0.75);
+    background: linear-gradient(90deg, rgba(12,16,26,0.24), rgba(20,26,40,0.16));
+  }
+  75% {
+    box-shadow:
+      0 0 18px rgba(255,200,120,0.28),
+      inset 0 0 8px rgba(255,200,120,0.05);
+    border-color: rgba(255,200,120,0.7);
+    background: linear-gradient(90deg, rgba(12,14,24,0.18), rgba(26,16,36,0.12));
+  }
+  100% {
+    box-shadow:
+      0 0 6px rgba(100,200,255,0.12),
+      inset 0 0 6px rgba(100,200,255,0.03);
+    border-color: rgba(100,200,255,0.45);
+    background: rgba(10,12,20,0.18);
+  }
 }
 
 /* Only apply the glow when both flags are present on <html> */
 .wave-overlay-focus-blocked.wave-overlay-panel-hover #equipped-spells .spell-slot-header {
   border-color: #64c8ff;
-  animation: header-pulse 1.8s ease-in-out infinite;
-  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+  animation: header-pulse 2.4s ease-in-out infinite;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease, background 0.12s ease;
   z-index: 5; /* ensure glow renders above adjacent UI without changing layout */
+  position: relative;
 }
 
 .spell-slot-stats {
