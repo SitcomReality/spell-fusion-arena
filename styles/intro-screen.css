@@ -199,4 +199,42 @@
   .loadout-choice-card {
     max-width: 50%;
   }
+
+  /* Mobile tweaks to make two cards fit more reliably */
+  .loadout-choice-container {
+    gap: 8px;               /* reduce space between cards */
+    padding: 0 6px;         /* small side padding to avoid overflow */
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;      /* prefer single row, allow scroll if extreme */
+    overflow: hidden;
+  }
+
+  .loadout-choice-card {
+    box-sizing: border-box;
+    padding: 10px;          /* reduce internal padding */
+    min-width: 0;           /* allow flex to shrink */
+    max-width: 48%;         /* slight breathing room for gap/borders */
+  }
+
+  .loadout-card-color {
+    width: 52px;
+    height: 52px;
+  }
+
+  .loadout-choice-card h3 {
+    font-size: 14px;
+  }
+
+  /* Prevent the properties list from forcing the card wider */
+  .loadout-choice-card .properties-list {
+    max-width: 120px;
+    gap: 4px;
+  }
+
+  .loadout-choice-card .property-badge {
+    padding: 4px 6px 4px 4px;
+    font-size: 10px;
+    white-space: normal;
+  }
 }
