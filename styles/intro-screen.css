@@ -134,7 +134,7 @@
 /* Allow properties list to scroll vertically if one card has too many badges */
 .loadout-choice-card .properties-list {
   max-height: 48%; /* relative cap so it won't force card to grow excessively */
-  overflow-y: auto;
+  overflow-y: visible;
   margin-top: 8px;
   padding-right: 6px; /* room for scrollbar */
   box-sizing: border-box;
