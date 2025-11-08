@@ -52,20 +52,36 @@ export class SpellSlotsUI {
                       </div>`;
             }).join('') + '</div>';
 
+        // New structure: header (focus + add-focus), content (props), footer (name + swap)
         slot.innerHTML = `
           <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
-            <button class="slot-props-btn" aria-label="Show properties">i</button>
-            <div class="slot-props-tooltip" aria-hidden="true"></div>
-            <span class="spell-slot-name">${spell.name}</span>
-            ${propsHtml}
-            <span class="spell-slot-number">${i + 1}</span>
-            <button class="spell-slot-unequip">−</button>
+            <div class="spell-slot-header">
+              <div class="slot-focus-display">
+                ${Icons.createIconElement(Icons.focusSVG(14)).outerHTML}
+                <span class="slot-focus-number">${focus}</span>
+              </div>
+              <!-- add-focus button (only visible when focusBank > 0) -->
+              <button class="add-focus" title="Assign 1 Focus to this slot" aria-label="Add Focus">+</button>
+            </div>
+            <div class="spell-slot-body">
+              <button class="slot-props-btn" aria-label="Show properties">i</button>
+              <div class="slot-props-tooltip" aria-hidden="true"></div>
+              ${propsHtml}
+            </div>
+            <div class="spell-slot-footer">
+              <div class="spell-slot-name">${spell.name}</div>
+              <button class="spell-slot-swap" title="Swap this spell">⇄</button>
+            </div>
           </div>
         `;
-        slot.querySelector('.spell-slot-unequip').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.onUnequip(i);
-        });
+        // Swap button opens the created-spells inventory for selecting a replacement
+        const swapBtn = slot.querySelector('.spell-slot-swap');
+        if (swapBtn) {
+          swapBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showInventorySelector(i, spellInventory);
+          });
+        }
 
         // Populate tooltip content with properties
         const tooltipEl = slot.querySelector('.slot-props-tooltip');
@@ -108,7 +124,11 @@ export class SpellSlotsUI {
         }
       } else {
         // Empty slot: show button to pick from inventory
-        slot.innerHTML = `<button class="spell-slot-empty-btn" data-slot="${i}">+</button>`;
+        slot.innerHTML = `
+          <div class="spell-slot-empty">
+            <button class="spell-slot-empty-btn" data-slot="${i}">+</button>
+          </div>
+        `;
         const emptyBtn = slot.querySelector('.spell-slot-empty-btn');
         emptyBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -117,34 +137,19 @@ export class SpellSlotsUI {
       }
 
       // Add add-focus button overlay if bank available
-      if (focusBank > 0) {
-        const addBtn = document.createElement('button');
-        addBtn.className = 'slot-add-essence';
-        addBtn.textContent = '+';
-        addBtn.title = 'Assign 1 Focus to this slot';
-        addBtn.addEventListener('click', (e) => {
+      // The add-focus button is part of the header now; wire it up if focusBank > 0
+      const headerAddBtn = slot.querySelector('.add-focus');
+      if (headerAddBtn) {
+        headerAddBtn.style.display = focusBank > 0 ? 'inline-flex' : 'none';
+        headerAddBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.onAllocateFocus(i);
         });
-        slot.appendChild(addBtn);
       }
 
       // focus display moved below the slot
-      const focusEl = document.createElement('div');
-      focusEl.className = `spell-slot-essence ${equippedSpells[i] ? '' : 'inactive'}`;
-
-      // Use the Focus SVG icon instead of the "Focus:" text.
-      // Create icon element and append the numeric value.
-      const iconEl = Icons.createIconElement(Icons.focusSVG(14));
-      iconEl.classList.add('slot-focus-icon');
-      focusEl.appendChild(iconEl);
-      const numNode = document.createElement('span');
-      numNode.className = 'slot-focus-number';
-      numNode.textContent = `${focus}`;
-      focusEl.appendChild(numNode);
-
+      // Footer already contains name; just append slot to wrapper
       wrapper.appendChild(slot);
-      wrapper.appendChild(focusEl);
       grid.appendChild(wrapper);
     }
   }
@@ -182,6 +187,7 @@ export class SpellSlotsUI {
         </div>
       `;
       item.addEventListener('click', () => {
+        // Use the provided callback to equip (swap) into the selected slot
         this.onEquipFromInventory(slotIndex, spell);
         overlay.remove();
       });
