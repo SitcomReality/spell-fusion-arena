@@ -20,9 +20,9 @@ export class IntroScreen {
           <h1 class="intro-title">Spell Fusion Arena</h1>
           <p class="intro-subtitle">Master the elements. Defeat the waves.</p>
           <button class="intro-button" id="new-game-btn">New Game</button>
-          <div class="intro-credits" style="margin-top:18px;display:flex;align-items:center;gap:10px;justify-content:center;">
-            <img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" style="height:auto;max-width:100%;" />
-            <span style="color:#9db4ff;font-size:14px;">A game by <strong>SitcomReality</strong></span>
+          <div class="intro-credits">
+            <img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" />
+            <span>A game by <strong>SitcomReality</strong></span>
           </div>
         </div>
       </div>
@@ -65,8 +65,7 @@ export class IntroScreen {
     // Append SitcomReality credit/footer to the loadout content as well
     const credits = document.createElement('div');
     credits.className = 'intro-credits';
-    credits.style.cssText = 'margin-top:18px;display:flex;align-items:center;gap:10px;justify-content:center;';
-    credits.innerHTML = `<img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" style="height:auto;max-width:100%;" /><span style="color:#9db4ff;font-size:14px;">A game by <strong>SitcomReality</strong></span>`;
+    credits.innerHTML = `<img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" /><span>A game by <strong>SitcomReality</strong></span>`;
     titleEl.appendChild(credits);
     // Ensure both the title content and the choice cards are placed inside the same
     // intro-screen-container so the choice cards render below the intro content.

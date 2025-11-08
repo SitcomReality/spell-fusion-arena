@@ -283,3 +283,22 @@
     white-space: normal;
   }
 }
+
+.intro-credits {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.intro-credits img {
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.intro-credits span {
+  color: #9db4ff;
+  font-size: 14px;
+}
