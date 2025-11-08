@@ -105,37 +105,42 @@
     width: auto;
     white-space: nowrap;
   }
-}
 
-@media (max-width: 480px) {
+  /* Make the summary stack so the title gets its own row on small screens */
   .panel-summary {
-    gap: 6px;
-    /* Stack summary elements vertically so the title doesn't get squashed between color and controls */
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
   }
 
-  /* Ensure the title takes the full row and appears above the color + controls */
+  /* Ensure the title row spans full width and doesn't get squeezed */
   .panel-summary-text {
     order: 1;
     width: 100%;
   }
 
-  /* Group color and summary info on the next row */
+  /* Put the color + summary info below the title, keep them aligned horizontally */
   .panel-summary-info {
     order: 2;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     width: 100%;
+    min-width: 0;
   }
 
-  /* Place controls on their own row beneath the color/info and align them to the end */
+  /* Keep controls at the bottom of the summary block */
   .panel-controls {
     order: 3;
     width: 100%;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-summary {
+    gap: 6px;
   }
 }
