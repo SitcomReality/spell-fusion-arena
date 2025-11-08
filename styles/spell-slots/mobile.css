@@ -177,6 +177,25 @@
   .spell-slots { gap: 1px; }
   .spell-slot-wrapper { height: 25%; }
   .spell-slot { border-left: 0; border-right: 0; }
+
+  /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
+  .slot-props-btn {
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    padding: 0;
+  }
+  .spell-slot-content .spell-slot-swap {
+    bottom: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 0;
+  }
 }
 
 /* Additional small adjustments */
