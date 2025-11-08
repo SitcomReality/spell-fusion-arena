@@ -148,7 +148,7 @@ export class IntroScreen {
       let propsHtml = '';
       const propEntries = Object.entries(propGenes);
       if (propEntries.length > 0) {
-        propsHtml = '<div class="properties-list" style="margin-top:8px;">' + propEntries.map(([k, v]) => {
+        propsHtml = '<div class="properties-list">' + propEntries.map(([k, v]) => {
           // display numeric formatting for common keys
           const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
           return `<div class="property-badge" data-property="${k}">
