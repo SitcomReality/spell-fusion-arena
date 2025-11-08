@@ -171,6 +171,12 @@
   .spell-slot-empty-btn {
     font-size: 8px;
   }
+
+  /* compact layout tweaks for equipped-spells on very small screens */
+  #equipped-spells { margin: 0; padding: 0; }
+  .spell-slots { gap: 1px; }
+  .spell-slot-wrapper { height: 25%; }
+  .spell-slot { border-left: 0; border-right: 0; }
 }
 
 /* Additional small adjustments */
