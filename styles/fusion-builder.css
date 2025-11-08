@@ -68,7 +68,6 @@
 /* Slightly dim remove button when inactive (if present for UX consistency) */
 .fusion-slot.inactive-slot .fusion-slot-remove {
   opacity: 0.6;
-  pointer-events: none;
 }
 
 .fusion-slot-lock-icon {
