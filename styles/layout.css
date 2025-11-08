@@ -268,16 +268,10 @@
 
   #hud {
     top: 8px;
-    width: calc(100% - 24px);
+    width: calc(100% - 56px);
     max-width: 420px;
     padding: 2px 4px;
     text-align: center;
-  }
-  
-  #hud:hover,
-  #hud:active,
-  #hud:focus-within {
-    transform: translateX(-50%) translateY(-1px);
   }
 }
 
