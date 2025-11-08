@@ -110,5 +110,32 @@
 @media (max-width: 480px) {
   .panel-summary {
     gap: 6px;
+    /* Stack summary elements vertically so the title doesn't get squashed between color and controls */
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Ensure the title takes the full row and appears above the color + controls */
+  .panel-summary-text {
+    order: 1;
+    width: 100%;
+  }
+
+  /* Group color and summary info on the next row */
+  .panel-summary-info {
+    order: 2;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Place controls on their own row beneath the color/info and align them to the end */
+  .panel-controls {
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
   }
 }
