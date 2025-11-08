@@ -32,6 +32,20 @@
   margin: 0;
 }
 
+/* Moved inline styles for the instructions block */
+.wave-start-panel .wave-start-instructions {
+  font-size: 14px;
+  color: #9db4ff;
+  text-align: center;
+}
+
+/* Styling for the inline focus SVG used inside the instructions */
+.wave-start-panel .focus-svg {
+  vertical-align: middle;
+  margin-right: 6px;
+  display: inline-block;
+}
+
 .wave-start-button {
   padding: 12px 40px;
   font-size: 16px;

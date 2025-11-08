@@ -10,7 +10,7 @@ export class WaveStartButton {
 
     // Inline Focus SVG (kept small and self-contained so we don't need an import)
     const focusSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:6px;">
+      <svg class="focus-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <defs>
           <radialGradient id="focusGrad_inline" cx="50%" cy="40%">
             <stop offset="0" stop-color="#ffd76b" stop-opacity="0.95"/>
@@ -29,7 +29,7 @@ export class WaveStartButton {
     this.overlay.innerHTML = `
       <div class="wave-start-panel">
         <h2>Wave ${waveNumber}</h2>
-        <div class="wave-start-instructions" style="font-size:14px; color:#9db4ff; text-align:center;"></div>
+        <div class="wave-start-instructions"></div>
         <button class="wave-start-button">Start Wave</button>
       </div>
     `;
