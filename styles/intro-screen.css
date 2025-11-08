@@ -194,4 +194,9 @@
     padding: 16px;
     gap: 12px;
   }
+
+  /* New: constrain loadout cards to half width so two can fit side-by-side */
+  .loadout-choice-card {
+    max-width: 50%;
+  }
 }
