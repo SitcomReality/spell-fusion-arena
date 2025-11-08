@@ -1,7 +1,19 @@
 export class PropertyApplier {
-  static applyProperties(projectile, enemy) {
+  static applyProperties(projectile, enemy, gameState) {
     const props = projectile.properties;
     
+    // Lifesteal (NEW)
+    if (props.lifesteal && props.lifesteal > 0 && gameState && gameState.player) {
+      // Chance to proc: increases with lifesteal property strength
+      // Clamp chance to 100% (max 1.0)
+      const procChance = Math.min(1.0, 0.1 + props.lifesteal * 0.08 * (projectile.potencyMultiplier || 1));
+      
+      if (Math.random() < procChance) {
+        // Heal player for 1 HP per proc, as per prompt
+        gameState.player.receiveHealing(1);
+      }
+    }
+
     // Knockback
     if (props.knockback && props.knockback > 0) {
       const dx = enemy.x - projectile.x;

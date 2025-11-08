@@ -23,6 +23,16 @@ export class Player {
     this.applyInitialPhaseOffsets();
   }
 
+  receiveHealing(amount) {
+    this.hp = Math.min(this.maxHp, this.hp + amount);
+    // Update HUD if available
+    try {
+      if (window && window.gameInstance && window.gameInstance.hud) {
+        window.gameInstance.hud.setHealth(this.hp);
+      }
+    } catch (e) { /* silent */ }
+  }
+
   calculateCastIntervals() {
     for (let i = 0; i < this.maxSpellSlots; i++) {
       const focus = this.spellSlotFocus[i] || 0;

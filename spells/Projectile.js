@@ -76,7 +76,7 @@ export class Projectile {
     return ParticleEmitter.createImpactParticles(this);
   }
 
-  applyProjectileProperties(enemy) {
-    PropertyApplier.applyProperties(this, enemy);
+  applyProjectileProperties(enemy, gameState) {
+    PropertyApplier.applyProperties(this, enemy, gameState);
   }
 }

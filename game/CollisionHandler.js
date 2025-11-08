@@ -34,7 +34,7 @@ export class CollisionHandler {
           const hit = enemy.takeDamage(projectile);
           if (hit) {
             // Apply projectile properties to hit enemy
-            projectile.applyProjectileProperties(enemy);
+            projectile.applyProjectileProperties(enemy, game);
 
             // Create impact particles
             const impactParticles = projectile.createImpactParticles();
@@ -183,9 +183,10 @@ export class CollisionHandler {
 
           // If any propagated properties were set, apply them
           if (Object.keys(temp.properties).length > 0) {
-            PropertyApplier.applyProperties(temp, enemy);
+            PropertyApplier.applyProperties(temp, enemy, game);
 
             // Try to credit lifesteal to player if available (best-effort; player health may not be implemented yet)
+            /*
             if (temp.properties.lifesteal && temp.properties.lifesteal > 0) {
               const lifestealFraction = temp.properties.lifesteal;
               const healAmount = Math.max(0, damage * lifestealFraction * 0.08);
@@ -195,8 +196,10 @@ export class CollisionHandler {
                 } else if (game.player && typeof game.player.hp === 'number') {
                   game.player.hp = Math.min(game.player.maxHp || 100, (game.player.hp || 0) + healAmount);
                 }
-              } catch (e) { /* best-effort; silently ignore if player doesn't support healing yet */ }
+              } catch (e) { // best-effort; silently ignore if player doesn't support healing yet 
+              }
             }
+            */
           }
         } catch (e) {
           // Non-critical: if PropertyApplier or lifesteal hook fails, continue silently.
