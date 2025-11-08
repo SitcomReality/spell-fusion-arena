@@ -15,7 +15,7 @@
     display: none;
   }
 
-  .slot-props-btn {
+  .spell-slot-content .slot-props-btn {
     position: absolute;
     top: 4px;
     left: 4px;
@@ -179,7 +179,7 @@
   .spell-slot { border-left: 0; border-right: 0; }
 
   /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
-  .slot-props-btn {
+  .spell-slot-content .slot-props-btn {
     top: 0;
     left: 0;
     width: 24px;
