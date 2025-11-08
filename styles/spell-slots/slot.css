@@ -1,0 +1,227 @@
+/* Slot content area and controls */
+.spell-slot-content {
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 8px;
+  text-align: center;
+  position: relative;
+}
+
+/* Empty slot button to add spell from inventory */
+.spell-slot-empty-btn {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #444;
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spell-slot-empty-btn:hover {
+  color: #64c8ff;
+  text-shadow: 0 0 10px rgba(100, 200, 255, 0.3);
+}
+
+.spell-slot-placeholder {
+  font-size: 20px;
+  color: #222;
+  font-weight: 500;
+}
+
+/* swap/unequip button inside slot content */
+.spell-slot-content .spell-slot-swap {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #8a2be2;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffb8e4;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  font-weight: 700;
+  padding: 0;
+  line-height: 1;
+}
+
+.spell-slot-content .spell-slot-swap:hover {
+  background: rgba(138, 43, 226, 0.4);
+  color: #fff;
+  border-color: #d896ff;
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
+}
+
+/* Properties & badges inside slots */
+.spell-slot-stats {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(230,230,255,0.9);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
+}
+
+.spell-slot-stats .stat-item {
+  background: rgba(0,0,0,0.25);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.04);
+  font-weight: 600;
+  color: #dff6ff;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.spell-slot-properties {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+/* Make property badges inside spell slots darker/opaque for better contrast */
+.spell-slot .property-badge {
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(30, 30, 30, 0.75);
+  color: #e8f6ff;
+}
+
+/* Ensure icons stay fully visible on dark badge */
+.spell-slot .property-badge .property-icon {
+  filter: none;
+  opacity: 1;
+}
+
+/* Inventory selector modal (kept here since it presents when interacting with slots) */
+.inventory-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+
+.inventory-selector-modal {
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
+  padding: 20px;
+  max-width: 500px;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(74, 158, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inventory-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-selector-header h3 {
+  font-size: 16px;
+  color: #64c8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+}
+
+.inventory-selector-close {
+  border: none;
+  background: transparent;
+  color: #64c8ff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.inventory-selector-close:hover {
+  color: #fff;
+}
+
+.inventory-selector-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventory-spell-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+  border: 1px solid #4a2a7f;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inventory-spell-item:hover {
+  border-color: #64c8ff;
+  box-shadow: 0 0 15px rgba(100, 200, 255, 0.2);
+  background: linear-gradient(135deg, #1a1a2a 0%, #2a1a4e 100%);
+}
+
+.inventory-spell-color {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.inventory-spell-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inventory-spell-name {
+  font-size: 14px;
+  color: #64c8ff;
+  font-weight: 600;
+}
+
+.inventory-spell-desc {
+  font-size: 12px;
+  color: #aaa;
+}
