@@ -21,8 +21,10 @@ export class IntroScreen {
           <p class="intro-subtitle">Master the elements. Defeat the waves.</p>
           <button class="intro-button" id="new-game-btn">New Game</button>
           <div class="intro-credits">
-            <img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" />
-            <span>A game by <strong>SitcomReality</strong></span>
+            <span>A game by</span><br/>
+            <a href="https://websim.com/@SitcomReality" target="_blank" rel="noopener noreferrer">
+              <img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" />
+            </a>
           </div>
         </div>
       </div>
@@ -65,7 +67,7 @@ export class IntroScreen {
     // Append SitcomReality credit/footer to the loadout content as well
     const credits = document.createElement('div');
     credits.className = 'intro-credits';
-    credits.innerHTML = `<img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" /><span>A game by <strong>SitcomReality</strong></span>`;
+    credits.innerHTML = `<span>A game by</span><br/><a href="https://websim.com/@SitcomReality" target="_blank" rel="noopener noreferrer"><img src="/sitcomreality.png" alt="SitcomReality" width="250" height="70" /></a>`;
     titleEl.appendChild(credits);
     // Ensure both the title content and the choice cards are placed inside the same
     // intro-screen-container so the choice cards render below the intro content.
