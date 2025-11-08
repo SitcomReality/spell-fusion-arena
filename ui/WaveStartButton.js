@@ -2,20 +2,11 @@ export class WaveStartButton {
   constructor(container) {
     this.container = container;
     this.overlay = null;
+    this._focusPoll = null;
   }
 
   show(waveNumber, onStart) {
     if (this.overlay) this.overlay.remove();
-
-    // Check for unspent Focus in global game instance (safe fallback if not available)
-    let focusBank = 0;
-    try {
-      if (window && window.gameInstance && window.gameInstance.fusionUI) {
-        focusBank = window.gameInstance.fusionUI.focusBank || 0;
-      }
-    } catch (e) {
-      focusBank = 0;
-    }
 
     // Inline Focus SVG (kept small and self-contained so we don't need an import)
     const focusSVG = `
@@ -38,27 +29,55 @@ export class WaveStartButton {
     this.overlay.innerHTML = `
       <div class="wave-start-panel">
         <h2>Wave ${waveNumber}</h2>
-        <div class="wave-start-instructions" style="font-size:14px; color:#9db4ff; text-align:center;">
-          ${focusBank > 0 ? `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.` : ''}
-        </div>
-        <button class="wave-start-button">${focusBank > 0 ? 'Start Wave' : 'Start Wave'}</button>
+        <div class="wave-start-instructions" style="font-size:14px; color:#9db4ff; text-align:center;"></div>
+        <button class="wave-start-button">Start Wave</button>
       </div>
     `;
 
+    const instrEl = this.overlay.querySelector('.wave-start-instructions');
     const btn = this.overlay.querySelector('.wave-start-button');
 
-    // Disable start if player has unspent Focus
-    if (focusBank > 0) {
-      btn.disabled = true;
-      // Provide subtle visual hint that action is blocked
-      btn.title = 'Spend your unspent Focus on a spell slot before starting the wave';
-    } else {
-      btn.disabled = false;
-    }
+    // Helper to read current focus from FusionUI safely
+    const readFocusBank = () => {
+      try {
+        if (window && window.gameInstance && window.gameInstance.fusionUI) {
+          return window.gameInstance.fusionUI.focusBank || 0;
+        }
+      } catch (e) { /* ignore */ }
+      return 0;
+    };
+
+    const updateUI = () => {
+      const focusBank = readFocusBank();
+      if (focusBank > 0) {
+        instrEl.innerHTML = `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.`;
+        btn.disabled = true;
+        btn.title = 'Spend your unspent Focus on a spell slot before starting the wave';
+      } else {
+        instrEl.innerHTML = '';
+        btn.disabled = false;
+        btn.title = '';
+      }
+    };
+
+    // Initial update
+    updateUI();
+
+    // Poll for changes while overlay is visible; this ensures the UI reflects changes
+    // (e.g. when the player assigns Focus from FusionUI). Interval is small but modest.
+    this._focusPoll = setInterval(() => {
+      // If overlay removed externally, clear polling.
+      if (!document.body.contains(this.overlay)) {
+        clearInterval(this._focusPoll);
+        this._focusPoll = null;
+        return;
+      }
+      updateUI();
+    }, 200);
 
     btn.addEventListener('click', () => {
-      // Defensive guard: prevent starting when focus remains
-      if (focusBank > 0) return;
+      // Defensive guard: re-check live value before proceeding
+      if (readFocusBank() > 0) return;
       this.hide();
       onStart();
     });
@@ -67,6 +86,10 @@ export class WaveStartButton {
   }
 
   hide() {
+    if (this._focusPoll) {
+      clearInterval(this._focusPoll);
+      this._focusPoll = null;
+    }
     if (this.overlay) {
       this.overlay.remove();
       this.overlay = null;
