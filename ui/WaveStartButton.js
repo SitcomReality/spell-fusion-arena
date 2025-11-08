@@ -3,6 +3,7 @@ export class WaveStartButton {
     this.container = container;
     this.overlay = null;
     this._focusPoll = null;
+    this._panelHoverHandler = null; // track handlers so we can remove later
   }
 
   show(waveNumber, onStart) {
@@ -53,10 +54,13 @@ export class WaveStartButton {
         instrEl.innerHTML = `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.`;
         btn.disabled = true;
         btn.title = 'Spend your unspent Focus on a spell slot before starting the wave';
+        // Add a document-level flag which CSS will use to highlight spell-slot headers.
+        document.documentElement.classList.add('wave-overlay-focus-blocked');
       } else {
         instrEl.innerHTML = '';
         btn.disabled = false;
         btn.title = '';
+        document.documentElement.classList.remove('wave-overlay-focus-blocked');
       }
     };
 
@@ -70,10 +74,24 @@ export class WaveStartButton {
       if (!document.body.contains(this.overlay)) {
         clearInterval(this._focusPoll);
         this._focusPoll = null;
+        document.documentElement.classList.remove('wave-overlay-focus-blocked');
         return;
       }
       updateUI();
     }, 200);
+
+    // When the panel is hovered/pressed, toggle an additional document class so headers can glow.
+    const panel = this.overlay.querySelector('.wave-start-panel');
+    this._panelHoverHandler = {
+      enter: () => document.documentElement.classList.add('wave-overlay-panel-hover'),
+      leave: () => document.documentElement.classList.remove('wave-overlay-panel-hover')
+    };
+
+    // Use both mouse and touch events to cover desktop and mobile-hover-like interactions.
+    panel.addEventListener('mouseenter', this._panelHoverHandler.enter);
+    panel.addEventListener('mouseleave', this._panelHoverHandler.leave);
+    panel.addEventListener('touchstart', this._panelHoverHandler.enter, { passive: true });
+    panel.addEventListener('touchend', this._panelHoverHandler.leave, { passive: true });
 
     btn.addEventListener('click', () => {
       // Defensive guard: re-check live value before proceeding
@@ -90,10 +108,25 @@ export class WaveStartButton {
       clearInterval(this._focusPoll);
       this._focusPoll = null;
     }
+
+    // Remove document-level classes and event listeners we added
+    document.documentElement.classList.remove('wave-overlay-focus-blocked');
+    document.documentElement.classList.remove('wave-overlay-panel-hover');
+
+    if (this.overlay && this._panelHoverHandler) {
+      const panel = this.overlay.querySelector('.wave-start-panel');
+      if (panel) {
+        panel.removeEventListener('mouseenter', this._panelHoverHandler.enter);
+        panel.removeEventListener('mouseleave', this._panelHoverHandler.leave);
+        panel.removeEventListener('touchstart', this._panelHoverHandler.enter);
+        panel.removeEventListener('touchend', this._panelHoverHandler.leave);
+      }
+      this._panelHoverHandler = null;
+    }
+
     if (this.overlay) {
       this.overlay.remove();
       this.overlay = null;
     }
   }
 }
-
