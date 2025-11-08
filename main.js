@@ -116,6 +116,7 @@ class Game {
   setupMobileLayoutObserver() {
     this.headerContainer = document.getElementById('canvas-and-spells');
     this.fusionUIContainer = document.getElementById('fusion-ui');
+    this.equippedSpellsEl = document.getElementById('equipped-spells');
     
     // Use ResizeObserver to detect the dynamic height of the fixed header region
     // The height changes because the canvas aspect ratio is now square and width is responsive
@@ -125,14 +126,32 @@ class Game {
         const entry = entries[0];
         const height = entry.contentRect.height;
         document.documentElement.style.setProperty('--fixed-header-height', `${height}px`);
+        // Also compute equipped-spells width and expose to CSS so overlays can avoid it.
+        try {
+          const eqEl = this.equippedSpellsEl || document.getElementById('equipped-spells');
+          if (eqEl) {
+            const w = Math.ceil(eqEl.getBoundingClientRect().width);
+            document.documentElement.style.setProperty('--equipped-spells-width', `${w}px`);
+          } else {
+            // fallback
+            document.documentElement.style.setProperty('--equipped-spells-width', `56px`);
+          }
+        } catch (e) {
+          document.documentElement.style.setProperty('--equipped-spells-width', `56px`);
+        }
       } else {
         // Reset if we are in desktop view
         document.documentElement.style.setProperty('--fixed-header-height', `0px`);
+        document.documentElement.style.setProperty('--equipped-spells-width', `0px`);
       }
     });
 
     if (this.headerContainer) {
       this.layoutObserver.observe(this.headerContainer);
+    }
+    // Observe equipped-spells for width changes as well (keeps variable in sync)
+    if (this.equippedSpellsEl) {
+      this.layoutObserver.observe(this.equippedSpellsEl);
     }
   }
   

@@ -67,6 +67,22 @@
     padding: 10px 30px;
     font-size: 14px;
   }
+
+  /* On mobile avoid covering the equipped-spells area by honoring the
+     --equipped-spells-width variable (set by JS). The overlay itself will
+     inset from the right so the panel and its content will not sit over
+     the slot column; falls back to 56px if variable is not set. */
+  .wave-start-overlay {
+    right: var(--equipped-spells-width, 56px);
+    left: 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Limit panel max-width so long text wraps without overlapping the slots */
+  .wave-start-panel {
+    max-width: calc(100% - var(--equipped-spells-width, 56px) - 20px);
+  }
 }
 
 @media (max-width: 480px) {
