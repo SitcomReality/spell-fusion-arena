@@ -137,10 +137,26 @@ export class IntroScreen {
       const elem = choice.elem;
       const color = elem.color;
 
+      // Build property badges markup from propertyGenes
+      const propGenes = elem.propertyGenes || {};
+      let propsHtml = '';
+      const propEntries = Object.entries(propGenes);
+      if (propEntries.length > 0) {
+        propsHtml = '<div class="properties-list" style="margin-top:8px;">' + propEntries.map(([k, v]) => {
+          // display numeric formatting for common keys
+          const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
+          return `<div class="property-badge" data-property="${k}">
+                    <span class="property-icon"></span>
+                    <span class="property-value">${val}</span>
+                  </div>`;
+        }).join('') + '</div>';
+      }
+
       card.innerHTML = `
         <div class="loadout-card-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
         <h3>${elem.name}</h3>
         <p class="loadout-card-rarity">${(elem.rarity || 'common').toUpperCase()}</p>
+        ${propsHtml}
       `;
 
       card.addEventListener('click', () => {
