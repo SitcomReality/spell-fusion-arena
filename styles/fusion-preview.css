@@ -84,6 +84,17 @@
     align-items: flex-start;
   }
 
+  .panel-summary-info {
+    flex-direction: column; /* Stack color and text vertically */
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1 1 0%; /* Allow info block to take available space */
+  }
+
+  .panel-summary-text {
+    width: 100%; /* Ensure text container utilizes full width of panel-summary-info */
+  }
+
   .panel-color {
     width: 40px;
     height: 40px;
@@ -104,38 +115,6 @@
   .panel-controls button {
     width: auto;
     white-space: nowrap;
-  }
-
-  /* Make the summary stack so the title gets its own row on small screens */
-  .panel-summary {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  /* Ensure the title row spans full width and doesn't get squeezed */
-  .panel-summary-text {
-    order: 1;
-    width: 100%;
-  }
-
-  /* Put the color + summary info below the title, keep them aligned horizontally */
-  .panel-summary-info {
-    order: 2;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-  }
-
-  /* Keep controls at the bottom of the summary block */
-  .panel-controls {
-    order: 3;
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
   }
 }
 
