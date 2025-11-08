@@ -133,7 +133,10 @@ export class GameState {
     // Remove enemies that reached center (in reverse order to maintain indices)
     for (let i = enemiesToRemove.length - 1; i >= 0; i--) {
       const idx = enemiesToRemove[i];
+      // Mark as dead and flag it so later cleanup won't count it again.
       this.enemies[idx].alive = false;
+      this.enemies[idx]._defeatedCounted = true; // custom flag to avoid double-counting
+      // Count this enemy as defeated for the wave manager now (only once).
       this.waveManager.enemyDefeated();
     }
 
@@ -150,10 +153,13 @@ export class GameState {
 
     // Remove dead entities
     this.projectiles = this.projectiles.filter(p => p.alive);
+    // Only call waveManager.enemyDefeated() and give score for enemies that haven't already been counted.
     this.enemies = this.enemies.filter(e => {
       if (!e.alive) {
-        // NOTE: enemyDefeated is called earlier when enemies are marked removed (to avoid double-callbacks).
-        this.score += 10;
+        if (!e._defeatedCounted) {
+          this.waveManager.enemyDefeated();
+          this.score += 10;
+        }
         // notify HUD of score and decreased enemy count
         try {
           if (window && window.gameInstance && window.gameInstance.hud) {
