@@ -242,7 +242,8 @@ export class FusionUI {
     const cost = getSpellCost(this.selectedElements.length);
 
     // Pass the computed cost into FusionPreview so the Create button shows it with the icon
-    this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell), cost);
+    const affordable = (this.essenceBank >= cost);
+    this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell), cost, affordable);
   }
 
   // NEW: Add spell to inventory (costs Essence)
