@@ -86,9 +86,19 @@ export class GameApp {
       this.gameState.resume();
       this.fusionUI.refresh();
 
+      // Ensure any tutorial lock that was keeping the fusion area disabled is removed
+      // before progressing to the two-element-fusion step so the player can interact with it.
+      try {
+        document.documentElement.classList.remove('tutorial-lock-to-reward', 'tutorial-lock-to-fusion-preview', 'tutorial-lock-to-elements-details');
+      } catch (e) { /* silent */ }
+
       // Progress tutorial on Wave 1 completion
       if (this.tutorial && this.tutorial.isActive && this.gameState.waveManager.currentWave === 1) {
         setTimeout(() => {
+          // Defensive remove again right before jumping to the tutorial step that expects fusion UI to be usable
+          try {
+            document.documentElement.classList.remove('tutorial-lock-to-reward', 'tutorial-lock-to-fusion-preview', 'tutorial-lock-to-elements-details');
+          } catch (e) { /* silent */ }
           this.tutorial.jump('two-element-fusion');
         }, 500);
       }
