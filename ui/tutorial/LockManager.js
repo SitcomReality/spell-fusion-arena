@@ -39,8 +39,11 @@ export const LockManager = {
         document.documentElement.classList.add('tutorial-lock-to-fusion-full');
         break;
       case 6:
-      case 7:
         document.documentElement.classList.add('tutorial-lock-to-equipped');
+        break;
+      case 7:
+        // Final step: do NOT lock equipped UI; allow swap/empty button interaction to finish tutorial.
+        // Intentionally no lock class applied here.
         break;
       default:
         break;

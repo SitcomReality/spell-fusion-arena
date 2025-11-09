@@ -51,18 +51,10 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     });
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
-    // FINAL: Tutorial ends when player clicks swap or empty button to slot their new spell
-    // Use delegation on the static parent (#equipped-spells) as the buttons are dynamically rendered.
-    const equippedSpellsEl = document.getElementById('equipped-spells');
-
-    const finishTutorial = (ev) => {
-      // Check if the click target is the button or a descendant (like an icon inside the button)
-      const target = ev.target.closest('.spell-slot-swap, .spell-slot-empty-btn');
-      if (!target) return;
-
-      console.debug('[Tutorial Debug] Final tutorial trigger fired by delegation on', target.className);
-      
-      // Complete the tutorial
+    // FINAL: Complete when swap or empty slot button is pressed OR when inventory modal opens.
+    // Use document-level capture to avoid missing events due to bubbling issues or dynamic DOM.
+    const finishTutorial = (reason = 'unknown') => {
+      console.debug('[Tutorial Debug] Final tutorial completion via:', reason);
       try {
         if (controller && typeof controller.complete === 'function') controller.complete();
       } catch (e) {}
@@ -75,20 +67,41 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     };
 
-    // Use event delegation on the static parent container (#equipped-spells)
-    equippedSpellsEl.addEventListener('click', finishTutorial);
-
-    // Return cleanup that also logs removal
-    const cleanupFinal = () => {
-      console.debug('[Tutorial Debug] Cleaning up final-step delegation listener for stepIndex', stepIndex);
-      equippedSpellsEl.removeEventListener('click', finishTutorial);
+    const captureClickListener = (ev) => {
+      const target = ev.target && ev.target.closest && ev.target.closest('.spell-slot-swap, .spell-slot-empty-btn');
+      if (!target) return;
+      console.debug('[Tutorial Debug] Document capture click detected on', target.className);
+      finishTutorial('button-press');
     };
-    cleanupFns.push(cleanupFinal);
-    
-    // Log current button counts for debugging context (these listeners are no longer attached directly)
+
+    document.addEventListener('click', captureClickListener, true);
+    cleanupFns.push(() => {
+      document.removeEventListener('click', captureClickListener, true);
+      console.debug('[Tutorial Debug] Removed document capture click listener for final step');
+    });
+
+    // Also observe when inventory modal opens (class flag or overlay element insertion)
+    const modalOpenCheck = () => {
+      if (document.documentElement.classList.contains('inventory-modal-open') ||
+          document.getElementById('inventory-selector-overlay')) {
+        console.debug('[Tutorial Debug] Inventory modal detected open');
+        finishTutorial('inventory-open');
+      }
+    };
+
+    const mo = new MutationObserver(() => modalOpenCheck());
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    cleanupFns.push(() => {
+      try { mo.disconnect(); } catch (e) {}
+      console.debug('[Tutorial Debug] Disconnected MutationObserver for final step');
+    });
+
+    // Initial debug context
     const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap') || []);
     const emptyButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn') || []);
-    console.debug('[Tutorial Debug] Registering final-step listeners (delegated) for stepIndex', stepIndex, 'current swapCount', swapButtons.length, 'current emptyCount', emptyButtons.length);
+    console.debug('[Tutorial Debug] Final-step setup: swapCount', swapButtons.length, 'emptyCount', emptyButtons.length);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
