@@ -35,14 +35,30 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     });
     cleanupFns.push(off);
-  } else if (stepIndex === 3 || stepIndex === 7) {
-    // Spell equipped event
+  } else if (stepIndex === 3) {
+    // Spell equipped event (intermediate equip step) -> advance normally
     const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
       try {
         if (window && window.gameInstance && window.gameInstance.tutorial) {
           window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
+    });
+    cleanupFns.push(off);
+  } else if (stepIndex === 7) {
+    // FINAL: when the player slots their new spell, finish the tutorial completely.
+    const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
+      try {
+        // Ensure the controller cleans up visuals and highlights
+        if (controller && typeof controller.complete === 'function') controller.complete();
+      } catch (e) {}
+      try { LockManager.clearAll(); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = -1;
+          window.gameInstance.tutorial.complete();
         }
       } catch (e) {}
     });
