@@ -86,8 +86,17 @@ export class Callout {
     }
 
     // Position and append
-    if (targetEl && !step.isOverlay) {
-      const pos = this.positioner.place(callout, targetEl, placement);
+    // On small screens the fusion preview may be scrolled inside #fusion-ui;
+    // for the create-spell step prefer positioning relative to the outer #fusion-ui container.
+    let positionTarget = targetEl;
+    try {
+      if (step.id === 'create-spell' && window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+        const fusionUi = document.getElementById('fusion-ui');
+        if (fusionUi) positionTarget = fusionUi;
+      }
+    } catch (e) { /* silent fallback to targetEl */ }
+    if (positionTarget && !step.isOverlay) {
+      const pos = this.positioner.place(callout, positionTarget, placement);
       callout.style.position = 'fixed';
       // If this is the create-spell step on desktop, nudge the callout up a bit so it doesn't cover the Create button.
       if (step.id === 'create-spell' && !(window.matchMedia && window.matchMedia('(max-width: 480px)').matches)) {
