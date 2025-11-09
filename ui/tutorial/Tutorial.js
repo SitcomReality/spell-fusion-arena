@@ -23,7 +23,9 @@
       // Step 4: Start wave - wave-start-panel button will trigger next step (handled by GameApp)
       // Wait for the wave start (which calls waveManager.startNextWave)
     } else if (stepIndex === 5) {
-      // Step 5: Two-element fusion — wait for the Create button to be clicked (tutorial enforces 2-element rule externally)
+      // Step 5: Create 2-element spell
+      // Wait for exactly 2 elements, then create button becomes enabled
+      // When pressed, advance to next step
       this.completionHandlers[stepIndex] = this.fusionUI.fusionPreview.onCreateButtonClick(() => {
         this.showStep(stepIndex + 1);
       });
@@ -34,7 +36,9 @@
       });
     }
   }
+/* ...existing code ... */
 
+/* ...existing code ... */
   lockUIForStep(stepIndex) {
     // Remove all locks first
     document.documentElement.classList.remove(
@@ -64,7 +68,7 @@
       case 4: // Step 5: Start wave (Wave button open)
         document.documentElement.classList.add('tutorial-lock-to-wave');
         break;
-      case 5: // Step 6 (after reward): Create 2-element spell (Fusion area open, strict 2-element rule enforced)
+      case 5: // Step 6 (after removal): Create 2-element spell (Fusion area open, strict 2-element rule enforced)
         document.documentElement.classList.add('tutorial-lock-to-fusion-full');
         break;
       case 6: // Step 7: Allocate focus (Equipped Slots open)

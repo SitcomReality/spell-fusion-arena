@@ -108,12 +108,8 @@ export class GameApp {
       } catch (e) {}
       this.rewardUI.show(waveNumber);
 
-      // Progress tutorial if on wave 1
-      if (this.tutorial && this.tutorial.isActive && waveNumber === 1) {
-        setTimeout(() => {
-          this.tutorial.jump('wave-complete');
-        }, 500);
-      }
+      // Note: removed the separate 'wave-complete' tutorial step; tutorial progression to the
+      // two-element fusion step happens after the reward is selected in the RewardUI callback.
     });
 
     // Handle game over

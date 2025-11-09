@@ -40,7 +40,7 @@ export class StepManager {
         targetSelector: '.wave-start-button',
         position: 'top'
       },
-      // removed 'wave-complete' step (redundant) — reward selection will advance tutorial directly
+      /* wave-complete step removed — progression now continues directly after reward selection */
       {
         id: 'two-element-fusion',
         title: 'Create a 2-Element Spell',
