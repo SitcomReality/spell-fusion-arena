@@ -29,7 +29,7 @@ export class StepManager {
       {
         id: 'equip-spell',
         title: 'Equip Your Spell',
-        description: 'Your created spells appear here. Click the + button in a spell slot to equip one. You can swap spells between slots anytime.',
+        description: 'Click the + button on a spell slot to open your inventory and choose a created spell to equip. You can swap spells between slots anytime.',
         targetSelector: '.spell-slot-empty-btn',
         position: 'bottom'
       },
