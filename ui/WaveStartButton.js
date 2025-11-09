@@ -50,6 +50,14 @@ export class WaveStartButton {
 
     const updateUI = () => {
       const focusBank = readFocusBank();
+      // If tutorial is running and not on the 'start-wave' step, force-disable the start button
+      let tutorialBlocking = false;
+      try {
+        const tut = window && window.gameInstance && window.gameInstance.tutorial;
+        const startStepIdx = tut && tut.stepManager ? tut.stepManager.indexOf('start-wave') : -1;
+        if (tut && tut.isActive && tut.currentStep !== startStepIdx) tutorialBlocking = true;
+      } catch (e) { tutorialBlocking = false; }
+
       if (focusBank > 0) {
         instrEl.innerHTML = `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.`;
         btn.disabled = true;
@@ -57,9 +65,16 @@ export class WaveStartButton {
         // Add a document-level flag which CSS will use to highlight spell-slot headers.
         document.documentElement.classList.add('wave-overlay-focus-blocked');
       } else {
-        instrEl.innerHTML = '';
-        btn.disabled = false;
-        btn.title = '';
+        // If tutorial is blocking, present a short hint and keep button disabled
+        if (tutorialBlocking) {
+          instrEl.innerHTML = 'Tutorial in progress — start wave when prompted by the tutorial.';
+          btn.disabled = true;
+          btn.title = 'Disabled while tutorial is active';
+        } else {
+          instrEl.innerHTML = '';
+          btn.disabled = false;
+          btn.title = '';
+        }
         document.documentElement.classList.remove('wave-overlay-focus-blocked');
       }
     };
