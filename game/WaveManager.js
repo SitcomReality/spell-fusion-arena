@@ -90,8 +90,10 @@ export class WaveManager {
     
     // Spawn boss at the spawn radius
     const angle = Math.PI * 1.5; // come from bottom
-    const x = this.centerX + Math.cos(angle) * CONFIG.enemy.spawnRadius;
-    const y = this.centerY + Math.sin(angle) * CONFIG.enemy.spawnRadius;
+    // Use a dedicated, smaller spawn radius for bosses for quicker engagement
+    const bossSpawnRadius = 320;
+    const x = this.centerX + Math.cos(angle) * bossSpawnRadius;
+    const y = this.centerY + Math.sin(angle) * bossSpawnRadius;
     
     if (bossTypeKey === 'double') {
       // Two bosses side by side
