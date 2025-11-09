@@ -87,6 +87,9 @@ export class MovementHandler {
       this.updateStandard(projectile, dt, enemies);
     }
 
+    // Apply attraction/repulsion forces from vortex or repulsion properties
+    this.applyAttractionRepulsion(projectile, dt, enemies);
+
     // Wave motion perpendicular to velocity (applies to both movement types)
     if (projectile.waveAmplitude) {
       projectile.waveAngle += projectile.waveFrequency * dt;
@@ -94,6 +97,57 @@ export class MovementHandler {
       const waveOffset = Math.sin(projectile.waveAngle) * projectile.waveAmplitude;
       projectile.x += Math.cos(perpAngle) * waveOffset * dt;
       projectile.y += Math.sin(perpAngle) * waveOffset * dt;
+    }
+  }
+
+  static applyAttractionRepulsion(projectile, dt, enemies) {
+    const vortex = projectile.properties.vortex || 0;
+    const repulsion = projectile.properties.repulsion || 0;
+
+    // Only apply if one of the properties is present
+    if (vortex <= 0 && repulsion <= 0) return;
+
+    // Determine range and force based on property strength
+    const isVortex = vortex > repulsion;
+    const force = isVortex ? vortex : repulsion;
+    
+    // Range scales with force: base 80px + 40px per force point
+    const maxRange = 80 + force * 40;
+    const maxRangeSq = maxRange * maxRange;
+
+    // Base force strength (pixels per second^2)
+    const baseForceStrength = 150 * force;
+
+    for (const enemy of enemies) {
+      if (!enemy.alive) continue;
+
+      const dx = enemy.x - projectile.x;
+      const dy = enemy.y - projectile.y;
+      const distSq = dx * dx + dy * dy;
+
+      // Skip if outside range (early exit for performance)
+      if (distSq > maxRangeSq) continue;
+
+      const dist = Math.sqrt(distSq);
+      if (dist < 1) continue; // Avoid division by zero
+
+      // Force decreases with distance (inverse square for realism)
+      const falloff = 1 - (distSq / maxRangeSq);
+      const appliedForce = baseForceStrength * falloff * falloff; // Squared falloff for sharper dropoff
+
+      // Apply force: normalize direction then scale by applied force
+      const forceX = (dx / dist) * appliedForce;
+      const forceY = (dy / dist) * appliedForce;
+
+      if (isVortex) {
+        // Attraction: pull enemy towards projectile (negate direction)
+        enemy.vx -= forceX * dt;
+        enemy.vy -= forceY * dt;
+      } else {
+        // Repulsion: push enemy away from projectile
+        enemy.vx += forceX * dt;
+        enemy.vy += forceY * dt;
+      }
     }
   }
 

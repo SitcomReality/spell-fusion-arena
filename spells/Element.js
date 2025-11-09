@@ -5,6 +5,9 @@ export class Element {
     this.propertyGenes = propertyGenes || {}; // property contribution system
     this.visualEffects = visualEffects;
     this.rarity = rarity; // 'common', 'uncommon', or 'rare'
+    // Default genetic propensities (can be overridden after construction)
+    this.vortexPropensity = 0;
+    this.repulsionPropensity = 0;
   }
 }
 
@@ -384,6 +387,14 @@ Object.assign(ELEMENTS.abyss, { secondaryColor: { r: 100, g: 150, b: 220 }, visu
 Object.assign(ELEMENTS.inferno, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
 Object.assign(ELEMENTS.crystal, { secondaryColor: { r: 100, g: 200, b: 255 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.8, particleColor: 0.95, auraColor: 1.05 } });
 Object.assign(ELEMENTS.electrum, { secondaryColor: { r: 255, g: 255, b: 150 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.7, particleColor: 1.1, auraColor: 0.8 } });
+
+// Add vortex/repulsion genetic propensity to elements (separate from visualEffects)
+Object.assign(ELEMENTS.void, { vortexPropensity: 0.9, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.chaos, { vortexPropensity: 0.0, repulsionPropensity: 0.8 });
+Object.assign(ELEMENTS.wind, { vortexPropensity: 0.0, repulsionPropensity: 0.7 });
+Object.assign(ELEMENTS.inferno, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
+Object.assign(ELEMENTS.arcane, { vortexPropensity: 0.4, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.abyss, { vortexPropensity: 0.6, repulsionPropensity: 0.0 });
 
 export function getUnlockedElements(unlockedKeys) {
   if (!unlockedKeys || unlockedKeys.length === 0) {
