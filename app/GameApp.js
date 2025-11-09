@@ -32,7 +32,7 @@ export class GameApp {
     this.waveStartButton = null;
     this.gameOverUI = null;
     this.rng = null;
-    this.tutorial = new Tutorial();
+    this.tutorial = null;
 
     this.lastTime = 0;
     this.running = true;
@@ -51,6 +51,9 @@ export class GameApp {
   }
 
   startGameWithLoadout(startingElements, seed) {
+    // Check if tutorial has been completed
+    const skipTutorial = Tutorial.hasCompletedTutorial();
+
     // Clean up previous game if any
     this.cleanupGame();
 
@@ -72,6 +75,10 @@ export class GameApp {
       this.gameState.player.equipSpells(spells, focus);
     }, this.gameState);
 
+    // Initialize tutorial
+    this.tutorial = new Tutorial(this.gameState, this.fusionUI);
+    this.tutorial.initialize();
+
     this.rewardUI = new RewardUI((reward) => {
       if (reward.type === 'essence') {
         this.fusionUI.addEssenceToBank(reward.amount);
@@ -81,18 +88,18 @@ export class GameApp {
       }
       this.gameState.resume();
       this.fusionUI.refresh();
+
+      // Progress tutorial on Wave 1 completion
+      if (this.tutorial && this.tutorial.isActive && this.gameState.waveManager.currentWave === 1) {
+        setTimeout(() => {
+          this.tutorial.jump('two-element-fusion');
+        }, 500);
+      }
+
       this.showNextWaveButton();
     }, this.rng, this.gameState);
 
     this.waveStartButton = new WaveStartButton(document.getElementById('canvas-wrapper'));
-
-    // Start tutorial if this is the first game
-    if (this.tutorial.isFirstGame) {
-      // Delay tutorial start to let UI render
-      setTimeout(() => {
-        this.tutorial.start(this.gameState);
-      }, 500);
-    }
 
     this.gameState.waveManager.onWaveComplete((waveNumber) => {
       this.gameState.pause();
@@ -103,6 +110,13 @@ export class GameApp {
         this.fusionUI.addEssenceToBank(autoEssence);
       } catch (e) {}
       this.rewardUI.show(waveNumber);
+
+      // Progress tutorial if on wave 1
+      if (this.tutorial && this.tutorial.isActive && waveNumber === 1) {
+        setTimeout(() => {
+          this.tutorial.jump('wave-complete');
+        }, 500);
+      }
     });
 
     // Handle game over
@@ -122,6 +136,14 @@ export class GameApp {
     } catch (e) {}
 
     this.showNextWaveButton();
+
+    // Start tutorial if not skipped (first game only)
+    if (!skipTutorial) {
+      setTimeout(() => {
+        this.tutorial.start();
+      }, 300);
+    }
+
     this.start();
   }
 
