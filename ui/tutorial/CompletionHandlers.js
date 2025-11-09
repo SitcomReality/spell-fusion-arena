@@ -49,20 +49,48 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
     // FINAL: when the player slots their new spell, finish the tutorial completely.
-    const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
+    // There are multiple ways a player can slot a spell: via the slot equip flow, via the swap button,
+    // or via pressing the empty-slot button to open the inventory. To ensure the final tutorial step
+    // completes reliably and only once, register both the SpellSlotsUI 'onSpellEquipped' and document
+    // click handlers for the relevant buttons. Both paths will call the same finish() helper.
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
       try {
-        // Ensure the controller cleans up visuals and highlights
         if (controller && typeof controller.complete === 'function') controller.complete();
       } catch (e) {}
       try { LockManager.clearAll(); } catch (e) {}
       try {
         if (window && window.gameInstance && window.gameInstance.tutorial) {
+          // keep external tutorial state consistent and call its completion routine
           window.gameInstance.tutorial.currentStep = -1;
           window.gameInstance.tutorial.complete();
         }
       } catch (e) {}
+    };
+
+    // 1) Preferred: when a spell is equipped via the SpellSlotsUI high-level event
+    const offEquip = fusionUI.spellSlotsUI.onSpellEquipped(() => {
+      finish();
     });
-    cleanupFns.push(off);
+    cleanupFns.push(offEquip);
+
+    // 2) Document-level delegated click listener: catches direct clicks on swap/empty buttons.
+    const docHandler = (ev) => {
+      try {
+        const swap = ev.target.closest && ev.target.closest('.spell-slot-swap');
+        const emptyBtn = ev.target.closest && ev.target.closest('.spell-slot-empty-btn');
+        if (swap || emptyBtn) {
+          // Small timeout to allow any subsequent equip logic to run (if applicable),
+          // but still finish the tutorial immediately so callouts/locks are cleared.
+          setTimeout(() => finish(), 0);
+        }
+      } catch (e) { /* ignore */ }
+    };
+    document.addEventListener('click', docHandler, true);
+    // Add cleanup to remove the document listener
+    cleanupFns.push(() => document.removeEventListener('click', docHandler, true));
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
