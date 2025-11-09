@@ -7,6 +7,10 @@ export class SpeedControl {
 
   mount(container) {
     this.container = container;
+    // Create a dedicated wrapper so we don't clobber container.innerHTML (preserve canvases)
+    this.element = document.createElement('div');
+    this.element.className = 'speed-control-wrapper';
+    this.container.appendChild(this.element);
     this.render();
   }
 
@@ -14,7 +18,7 @@ export class SpeedControl {
     if (!this.container) return;
 
     const speeds = [1, 2, 5, 10];
-    this.container.innerHTML = `
+    this.element.innerHTML = `
       <div class="speed-control">
         <div class="speed-control-label">Speed:</div>
         <div class="speed-control-buttons">
@@ -27,7 +31,7 @@ export class SpeedControl {
       </div>
     `;
 
-    const buttons = this.container.querySelectorAll('.speed-btn');
+    const buttons = this.element.querySelectorAll('.speed-btn');
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const speed = parseInt(btn.dataset.speed);
