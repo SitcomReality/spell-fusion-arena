@@ -1,4 +1,6 @@
 // NEW FILE
+import { LockManager } from './LockManager.js';
+
 /**
  * Wires "when this step completes" handlers to external UI components (FusionUI, SpellSlotsUI, etc.)
  * Returns cleanup functions for each registration so the controller can remove previous handlers.
@@ -11,24 +13,29 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     // wait for Add button in ElementDetailsPanel
     const off = fusionUI.detailsPanel.onAddButtonClick(() => {
       controller.showStep(stepIndex + 1);
+      // Ensure the global UI lock advances as well so interactions are properly updated
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 2 || stepIndex === 5) {
     // Create button in FusionPreview
     const off = fusionUI.fusionPreview.onCreateButtonClick(() => {
       controller.showStep(stepIndex + 1);
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 3 || stepIndex === 7) {
     // Spell equipped event
     const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
       controller.showStep(stepIndex + 1);
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
       controller.showStep(stepIndex + 1);
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
     });
     cleanupFns.push(off);
   }
