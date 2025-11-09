@@ -58,7 +58,7 @@ export class StepManager {
       {
         id: 'allocate-focus',
         title: 'Upgrade a Spell Slot',
-        description: 'Click the + button on a spell slot header to spend your Focus. This upgrades the slot and boosts damage.',
+        description: 'Click the + button on a spell slot header to spend 1 Focus to upgrade that slot — upgrades increase the slot\'s firing rate and provide a small damage bonus.',
         targetSelector: '.slot-add-focus',
         position: 'bottom'
       }
