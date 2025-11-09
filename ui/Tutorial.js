@@ -14,7 +14,9 @@ export class Tutorial {
 
     this.currentStep = 0;
     this.currentCallout = null;
+    // support highlighting a single element or multiple elements (array) for different steps
     this.highlightedElement = null;
+    this.highlightedElements = []; // used for multi-target highlights (e.g. .spell-slot-swap)
 
     // Track step completion handlers
     this.completionHandlers = {};
@@ -40,9 +42,15 @@ export class Tutorial {
 
     // Clean previous
     this.callout.remove();
+    // remove single highlighted element if present
     if (this.highlightedElement) {
       this.highlightedElement.classList.remove('tutorial-highlight');
       this.highlightedElement = null;
+    }
+    // remove any multi-target highlights (used for .spell-slot-swap)
+    if (this.highlightedElements && this.highlightedElements.length > 0) {
+      this.highlightedElements.forEach(el => el.classList.remove('tutorial-highlight'));
+      this.highlightedElements = [];
     }
 
     // Remove old completion handler
@@ -58,6 +66,23 @@ export class Tutorial {
       this.highlightedElement = target;
       target.classList.add('tutorial-highlight');
     }
+
+    // Special-case: for the "slot-your-spell" step, highlight all visible .spell-slot-swap buttons
+    try {
+      if (step.id === 'slot-your-spell') {
+        const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap'));
+        // Only highlight those that are visible (not display:none and in document)
+        const visible = swapButtons.filter(el => {
+          if (!el.offsetParent) return false; // not visible
+          const style = window.getComputedStyle(el);
+          return style.display !== 'none' && style.visibility !== 'hidden' && el.getClientRects().length > 0;
+        });
+        visible.forEach(el => {
+          el.classList.add('tutorial-highlight');
+        });
+        this.highlightedElements = visible;
+      }
+    } catch (e) { /* silent fallback */ }
 
     // Create callout (without manual prev/next buttons during flow)
     this.callout.create(step, this.currentStep, this.stepManager.length(), 
@@ -165,6 +190,10 @@ export class Tutorial {
     if (this.highlightedElement) {
       this.highlightedElement.classList.remove('tutorial-highlight');
       this.highlightedElement = null;
+    }
+    if (this.highlightedElements && this.highlightedElements.length > 0) {
+      this.highlightedElements.forEach(el => el.classList.remove('tutorial-highlight'));
+      this.highlightedElements = [];
     }
     // Remove all locks
     document.documentElement.classList.remove(
