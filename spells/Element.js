@@ -637,10 +637,13 @@ Object.assign(ELEMENTS.melody, { secondaryColor: { r: 255, g: 150, b: 255 }, vis
 Object.assign(ELEMENTS.void, { vortexPropensity: 0.9, repulsionPropensity: 0.0 });
 Object.assign(ELEMENTS.chaos, { vortexPropensity: 0.0, repulsionPropensity: 0.8 });
 Object.assign(ELEMENTS.wind, { vortexPropensity: 0.0, repulsionPropensity: 0.7 });
-Object.assign(ELEMENTS.inferno, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
-Object.assign(ELEMENTS.arcane, { vortexPropensity: 0.4, repulsionPropensity: 0.0 });
 Object.assign(ELEMENTS.abyss, { vortexPropensity: 0.6, repulsionPropensity: 0.0 });
 Object.assign(ELEMENTS.eruption, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
+
+/* Guard the assign for 'inferno' which may have been removed/renamed to avoid errors */
+if (ELEMENTS.inferno) {
+  Object.assign(ELEMENTS.inferno, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
+}
 
 // NEW: Genetic propensities for new elements
 Object.assign(ELEMENTS.lunar, { vortexPropensity: 0.3, repulsionPropensity: 0.0 });
