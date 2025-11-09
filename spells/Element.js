@@ -110,7 +110,8 @@ export const ELEMENTS = {
     damage: 12,
     piercing: 4,
     knockback: 4,
-    homing: 2
+    homing: 2,
+	spiral: 6
   }, {
     trail: true,
     trailType: 'swirl',
@@ -207,7 +208,8 @@ export const ELEMENTS = {
     damage: 16,
     piercing: 8,
     chaining: 3,
-    aoe: 3
+    aoe: 3,
+	spiral: 2
   }, {
     trail: true,
     trailType: 'beam',
@@ -395,7 +397,8 @@ export const ELEMENTS = {
     damage: 28,
     aoe: 6,
     dot: 5,
-    piercing: 3
+    piercing: 3,
+	spiral: 1
   }, {
     trail: true,
     trailType: 'spark',
@@ -415,7 +418,8 @@ export const ELEMENTS = {
     damage: 12,
     chaining: 7,
     lifesteal: 6,
-    aoe: 2
+    aoe: 2,
+	spiral: 2
   }, {
     trail: true,
     trailType: 'swirl',
@@ -435,7 +439,8 @@ export const ELEMENTS = {
     damage: 31,
     splitting: 5,
     knockback: 4,
-    repulsion: 4
+    repulsion: 4,
+	spiral: 2
   }, {
     trail: true,
     trailType: 'spark',
@@ -457,7 +462,8 @@ export const ELEMENTS = {
     homing: 3,
     wave: 4,
     knockback: 2,
-    piercing: 2
+    piercing: 2,
+	spiral: 5
   }, {
     trail: true,
     trailType: 'spark',
@@ -519,7 +525,8 @@ export const ELEMENTS = {
     vortex: 4,
     wave: 6,
     dot: 4,
-    splitting: 2
+    splitting: 2,
+	spiral: 4
   }, {
     trail: true,
     trailType: 'smoke',
@@ -541,7 +548,8 @@ export const ELEMENTS = {
     vortex: 8,
     aoe: 8,
     homing: 2,
-    piercing: 4
+    piercing: 4,
+	spiral: 8
   }, {
     trail: true,
     trailType: 'swirl',
@@ -563,7 +571,7 @@ export const ELEMENTS = {
     homing: 5,
     slowing: 7,
     wave: 5,
-    spiral: 3
+    spiral: 5
   }, {
     trail: true,
     trailType: 'swirl',
@@ -584,7 +592,8 @@ export const ELEMENTS = {
     chaining: 8,
     wave: 6,
     aoe: 5,
-    piercing: 2
+    piercing: 2,
+	spiral: 5
   }, {
     trail: true,
     trailType: 'swirl',

@@ -113,10 +113,13 @@ export class Enemy {
     // Perpendicular strafe movement
     if (dist > 0) {
       const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
-      const strafeSpeed = this.speed * 0.6;
+      // Increase lateral movement magnitude and speed for more pronounced zig-zag
+      const strafeSpeed = this.speed * 1.0; // make lateral movement slightly faster
       const strafeDir = this.agilePhase === 0 ? 1 : -1;
-      this.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt;
-      this.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt;
+      // Increase side-to-side distance by applying a larger stride multiplier
+      const lateralMultiplier = 1.25;
+      this.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
+      this.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
     }
   }
 
@@ -314,8 +317,9 @@ export const ENEMY_TYPES = {
   agile: {
     name: 'Agile',
     speed: 35,
-    width: 20,
-    height: 20,
+    // Make agile boss ~50% larger for a more imposing presence
+    width: 30, // 20 * 1.5
+    height: 30,
     pattern: 'blob',
     color: { r: 200, g: 100, b: 150 },
     isBoss: true,
@@ -325,8 +329,9 @@ export const ENEMY_TYPES = {
   double: {
     name: 'Double',
     speed: 22,
-    width: 24,
-    height: 24,
+    // Make each part of the double boss ~50% larger
+    width: 36, // 24 * 1.5
+    height: 36,
     pattern: 'blob',
     color: { r: 150, g: 150, b: 200 },
     isBoss: true,
