@@ -196,19 +196,29 @@
 }
 
 /* Tutorial UI lock states */
-.tutorial-lock-to-elements #element-details-panel,
-.tutorial-lock-to-elements #fusion-ui,
-.tutorial-lock-to-elements #hud {
+
+/* Generic lock mixin for common components */
+.tutorial-locked-component {
   pointer-events: none;
   opacity: 0.4;
 }
 
-.tutorial-lock-to-elements-details #fusion-ui,
-.tutorial-lock-to-elements-details #hud {
+/* Lock set 1: Lock Fusion Creation and Equipped Spells. Keep Element Selection open (Steps 0, 1, 6/7). */
+.tutorial-lock-to-elements #fusion-builder,
+.tutorial-lock-to-elements #fusion-panel,
+.tutorial-lock-to-elements #equipped-spells,
+.tutorial-lock-to-elements #hud,
+.tutorial-lock-to-elements-details #fusion-builder,
+.tutorial-lock-to-elements-details #fusion-panel,
+.tutorial-lock-to-elements-details #equipped-spells,
+.tutorial-lock-to-elements-details #hud,
+.tutorial-lock-to-fusion-full #equipped-spells,
+.tutorial-lock-to-fusion-full #hud {
   pointer-events: none;
   opacity: 0.4;
 }
 
+/* Lock set 2: Lock Element Selection and Equipped Spells. Keep Fusion Preview open (Step 2/3). */
 .tutorial-lock-to-fusion-preview #elements-library,
 .tutorial-lock-to-fusion-preview #element-details-panel,
 .tutorial-lock-to-fusion-preview #equipped-spells,
@@ -217,27 +227,30 @@
   opacity: 0.4;
 }
 
-.tutorial-lock-to-equipped #fusion-ui,
+/* Lock set 3: Lock Element Selection and Fusion Creation. Keep Equipped Spells open (Steps 3/4, 7/8). */
+.tutorial-lock-to-equipped #elements-library,
+.tutorial-lock-to-equipped #element-details-panel,
+.tutorial-lock-to-equipped #fusion-builder,
+.tutorial-lock-to-equipped #fusion-panel,
 .tutorial-lock-to-equipped #hud {
   pointer-events: none;
   opacity: 0.4;
 }
 
-.tutorial-lock-to-wave #fusion-ui,
+/* Lock set 4: Lock everything but Wave Start Button (Step 4/5) */
+.tutorial-lock-to-wave #elements-library,
+.tutorial-lock-to-wave #element-details-panel,
+.tutorial-lock-to-wave #fusion-builder,
+.tutorial-lock-to-wave #fusion-panel,
 .tutorial-lock-to-wave #equipped-spells {
   pointer-events: none;
   opacity: 0.4;
 }
 
+/* Lock set 5: Lock everything but Reward UI (Step 5/6) */
 .tutorial-lock-to-reward #fusion-ui,
 .tutorial-lock-to-reward #equipped-spells,
 .tutorial-lock-to-reward #canvas-and-spells {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.tutorial-lock-to-fusion-full #equipped-spells,
-.tutorial-lock-to-fusion-full #hud {
   pointer-events: none;
   opacity: 0.4;
 }

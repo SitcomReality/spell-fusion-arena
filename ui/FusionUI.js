@@ -192,6 +192,15 @@ export class FusionUI {
   onElementClicked(key, element, cardEl) {
     this.elementsLibrary.markSelectedCard(cardEl);
     this.detailsPanel.show(element, () => this.addElementToFusion(element));
+    
+    // NEW: Handle tutorial progression from step 0 (Select Element) to step 1 (Add to Fusion Slot)
+    try {
+      if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
+        if (window.gameInstance.tutorial.currentStep === 0) {
+          window.gameInstance.tutorial.showStep(1);
+        }
+      }
+    } catch (e) {}
   }
 
   addElementToFusion(element) {

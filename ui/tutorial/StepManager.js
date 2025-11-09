@@ -14,10 +14,10 @@ export class StepManager {
       },
       {
         id: 'add-to-fusion',
-        title: 'Add to Fusion Slot',
-        description: 'The selected element appears here. You can add up to 4 elements to create more powerful spells.',
-        targetSelector: '.fusion-slot',
-        position: 'bottom'
+        title: 'Add Element',
+        description: 'Review the element\'s properties, then click "Add" to include it in your spell recipe. You can add up to 4 elements.',
+        targetSelector: '#element-details-panel .element-add-btn',
+        position: 'left'
       },
       {
         id: 'create-spell',
