@@ -307,13 +307,13 @@ export const ELEMENTS = {
     sizeMultiplier: 1.02
   }, 'rare'),
 
-  inferno: new Element('Inferno', { r: 255, g: 140, b: 40 }, {
+  eruption: new Element('Eruption', { r: 255, g: 100, b: 20 }, {
     speed: 270,
     damage: 33,
-    dot: 6,
     knockback: 6,
     aoe: 5,
-    splitting: 2
+    splitting: 2,
+    repulsion: 3
   }, {
     trail: true,
     trailType: 'spark',
@@ -366,6 +366,237 @@ export const ELEMENTS = {
     impactType: 'spark',
     crackle: true,
     sizeMultiplier: 0.92
+  }, 'rare'),
+
+  // NEW UNCOMMON ELEMENTS
+  lunar: new Element('Lunar', { r: 200, g: 220, b: 240 }, {
+    speed: 200,
+    damage: 16,
+    homing: 4,
+    slowing: 4,
+    wave: 3,
+    spiral: 2
+  }, {
+    trail: true,
+    trailType: 'trail',
+    trailDensity: 6,
+    trailSize: 2,
+    aura: true,
+    auraSize: 28,
+    auraIntensity: 0.45,
+    impactParticles: 16,
+    impactType: 'spark',
+    wispy: true,
+    sizeMultiplier: 0.95
+  }, 'uncommon'),
+
+  solar: new Element('Solar', { r: 255, g: 180, b: 60 }, {
+    speed: 300,
+    damage: 28,
+    aoe: 6,
+    dot: 5,
+    piercing: 3
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 7,
+    trailSize: 4,
+    aura: true,
+    auraSize: 32,
+    auraIntensity: 0.8,
+    impactParticles: 28,
+    impactType: 'spark',
+    beam: true,
+    sizeMultiplier: 1.1
+  }, 'uncommon'),
+
+  love: new Element('Love', { r: 255, g: 150, b: 180 }, {
+    speed: 250,
+    damage: 12,
+    chaining: 7,
+    lifesteal: 6,
+    aoe: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 8,
+    trailSize: 2,
+    aura: true,
+    auraSize: 24,
+    auraIntensity: 0.5,
+    impactParticles: 20,
+    impactType: 'swirl',
+    swirl: true,
+    sizeMultiplier: 0.98
+  }, 'uncommon'),
+
+  hate: new Element('Hate', { r: 100, g: 20, b: 40 }, {
+    speed: 280,
+    damage: 31,
+    splitting: 5,
+    knockback: 4,
+    repulsion: 4
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 10,
+    trailSize: 3,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.7,
+    impactParticles: 26,
+    impactType: 'spark',
+    chaotic: true,
+    sizeMultiplier: 1.05
+  }, 'uncommon'),
+
+  glitch: new Element('Glitch', { r: 150, g: 255, b: 200 }, {
+    speed: 310,
+    damage: 19,
+    chaining: 3,
+    homing: 3,
+    wave: 4,
+    knockback: 2,
+    piercing: 2
+  }, {
+    trail: true,
+    trailType: 'spark',
+    trailDensity: 11,
+    trailSize: 2,
+    aura: true,
+    auraSize: 18,
+    auraIntensity: 0.6,
+    impactParticles: 22,
+    impactType: 'spark',
+    chaotic: true,
+    randomColors: true,
+    sizeMultiplier: 0.9
+  }, 'uncommon'),
+
+  mercury: new Element('Mercury', { r: 200, g: 200, b: 200 }, {
+    speed: 320,
+    damage: 17,
+    homing: 6,
+    wave: 3,
+    piercing: 3,
+    slowing: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 7,
+    trailSize: 2,
+    aura: true,
+    auraSize: 20,
+    auraIntensity: 0.4,
+    impactParticles: 18,
+    impactType: 'swirl',
+    shimmer: true,
+    sizeMultiplier: 0.92
+  }, 'uncommon'),
+
+  toenail: new Element('Toenail', { r: 180, g: 160, b: 140 }, {
+    speed: 130,
+    damage: 36,
+    knockback: 9,
+    aoe: 6,
+    piercing: 4
+  }, {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 3,
+    trailSize: 6,
+    aura: false,
+    impactParticles: 32,
+    impactType: 'smoke',
+    shake: true,
+    sizeMultiplier: 1.35
+  }, 'uncommon'),
+
+  // NEW RARE ELEMENTS
+  entropy: new Element('Entropy', { r: 120, g: 60, b: 120 }, {
+    speed: 210,
+    damage: 28,
+    vortex: 4,
+    wave: 6,
+    dot: 4,
+    splitting: 2
+  }, {
+    trail: true,
+    trailType: 'smoke',
+    trailDensity: 9,
+    trailSize: 3,
+    aura: true,
+    auraSize: 30,
+    auraIntensity: 0.65,
+    impactParticles: 28,
+    impactType: 'swirl',
+    wispy: true,
+    vortex: true,
+    sizeMultiplier: 1.08
+  }, 'rare'),
+
+  singularity: new Element('Singularity', { r: 30, g: 30, b: 50 }, {
+    speed: 180,
+    damage: 34,
+    vortex: 8,
+    aoe: 8,
+    homing: 2,
+    piercing: 4
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 12,
+    trailSize: 3,
+    aura: true,
+    auraSize: 42,
+    auraIntensity: 0.8,
+    impactParticles: 36,
+    impactType: 'swirl',
+    vortex: true,
+    pullParticles: true,
+    sizeMultiplier: 1.25
+  }, 'rare'),
+
+  time: new Element('Time', { r: 220, g: 180, b: 100 }, {
+    speed: 270,
+    damage: 20,
+    homing: 5,
+    slowing: 7,
+    wave: 5,
+    spiral: 3
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 8,
+    trailSize: 2,
+    aura: true,
+    auraSize: 26,
+    auraIntensity: 0.6,
+    impactParticles: 20,
+    impactType: 'spark',
+    swirl: true,
+    sizeMultiplier: 1.0
+  }, 'rare'),
+
+  melody: new Element('Melody', { r: 200, g: 100, b: 200 }, {
+    speed: 260,
+    damage: 16,
+    chaining: 8,
+    wave: 6,
+    aoe: 5,
+    piercing: 2
+  }, {
+    trail: true,
+    trailType: 'swirl',
+    trailDensity: 10,
+    trailSize: 2,
+    aura: true,
+    auraSize: 28,
+    auraIntensity: 0.7,
+    impactParticles: 24,
+    impactType: 'swirl',
+    swirl: true,
+    sizeMultiplier: 0.98
   }, 'rare')
 };
 
@@ -387,6 +618,20 @@ Object.assign(ELEMENTS.abyss, { secondaryColor: { r: 100, g: 150, b: 220 }, visu
 Object.assign(ELEMENTS.inferno, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
 Object.assign(ELEMENTS.crystal, { secondaryColor: { r: 100, g: 200, b: 255 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.8, particleColor: 0.95, auraColor: 1.05 } });
 Object.assign(ELEMENTS.electrum, { secondaryColor: { r: 255, g: 255, b: 150 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.7, particleColor: 1.1, auraColor: 0.8 } });
+Object.assign(ELEMENTS.eruption, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
+
+// NEW: Secondary colors for new elements
+Object.assign(ELEMENTS.lunar, { secondaryColor: { r: 100, g: 150, b: 200 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.9, particleColor: 0.95, auraColor: 1.0 } });
+Object.assign(ELEMENTS.solar, { secondaryColor: { r: 255, g: 220, b: 100 }, visualGenes: { primaryColorInfluence: 1.2, secondaryAffinity: 0.7, particleColor: 1.0, auraColor: 0.9 } });
+Object.assign(ELEMENTS.love, { secondaryColor: { r: 255, g: 200, b: 220 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.95, particleColor: 1.05, auraColor: 1.1 } });
+Object.assign(ELEMENTS.hate, { secondaryColor: { r: 140, g: 10, b: 60 }, visualGenes: { primaryColorInfluence: 1.1, secondaryAffinity: 0.8, particleColor: 0.9, auraColor: 0.7 } });
+Object.assign(ELEMENTS.glitch, { secondaryColor: { r: 100, g: 255, b: 150 }, visualGenes: { primaryColorInfluence: 0.8, secondaryAffinity: 0.85, particleColor: 1.1, auraColor: 0.9 } });
+Object.assign(ELEMENTS.mercury, { secondaryColor: { r: 150, g: 180, b: 200 }, visualGenes: { primaryColorInfluence: 0.95, secondaryAffinity: 0.8, particleColor: 1.05, auraColor: 0.8 } });
+Object.assign(ELEMENTS.toenail, { secondaryColor: { r: 200, g: 140, b: 100 }, visualGenes: { primaryColorInfluence: 1.25, secondaryAffinity: 0.3, particleColor: 0.7, auraColor: 0.4 } });
+Object.assign(ELEMENTS.entropy, { secondaryColor: { r: 180, g: 100, b: 180 }, visualGenes: { primaryColorInfluence: 1.0, secondaryAffinity: 0.85, particleColor: 0.85, auraColor: 1.0 } });
+Object.assign(ELEMENTS.singularity, { secondaryColor: { r: 80, g: 60, b: 120 }, visualGenes: { primaryColorInfluence: 1.1, secondaryAffinity: 0.9, particleColor: 0.8, auraColor: 1.2 } });
+Object.assign(ELEMENTS.time, { secondaryColor: { r: 255, g: 220, b: 150 }, visualGenes: { primaryColorInfluence: 0.95, secondaryAffinity: 0.8, particleColor: 0.95, auraColor: 0.9 } });
+Object.assign(ELEMENTS.melody, { secondaryColor: { r: 255, g: 150, b: 255 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.95, particleColor: 1.0, auraColor: 1.1 } });
 
 // Add vortex/repulsion genetic propensity to elements (separate from visualEffects)
 Object.assign(ELEMENTS.void, { vortexPropensity: 0.9, repulsionPropensity: 0.0 });
@@ -395,6 +640,20 @@ Object.assign(ELEMENTS.wind, { vortexPropensity: 0.0, repulsionPropensity: 0.7 }
 Object.assign(ELEMENTS.inferno, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
 Object.assign(ELEMENTS.arcane, { vortexPropensity: 0.4, repulsionPropensity: 0.0 });
 Object.assign(ELEMENTS.abyss, { vortexPropensity: 0.6, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.eruption, { vortexPropensity: 0.0, repulsionPropensity: 0.6 });
+
+// NEW: Genetic propensities for new elements
+Object.assign(ELEMENTS.lunar, { vortexPropensity: 0.3, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.solar, { vortexPropensity: 0.0, repulsionPropensity: 0.2 });
+Object.assign(ELEMENTS.love, { vortexPropensity: 0.2, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.hate, { vortexPropensity: 0.0, repulsionPropensity: 0.9 });
+Object.assign(ELEMENTS.glitch, { vortexPropensity: 0.5, repulsionPropensity: 0.5 });
+Object.assign(ELEMENTS.mercury, { vortexPropensity: 0.4, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.toenail, { vortexPropensity: 0.0, repulsionPropensity: 0.3 });
+Object.assign(ELEMENTS.entropy, { vortexPropensity: 0.7, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.singularity, { vortexPropensity: 0.95, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.time, { vortexPropensity: 0.2, repulsionPropensity: 0.0 });
+Object.assign(ELEMENTS.melody, { vortexPropensity: 0.1, repulsionPropensity: 0.0 });
 
 export function getUnlockedElements(unlockedKeys) {
   if (!unlockedKeys || unlockedKeys.length === 0) {
