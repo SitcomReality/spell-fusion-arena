@@ -24,6 +24,15 @@ export class Callout {
         else placement = 'bottom';
       } catch (e) { placement = 'bottom'; }
     }
+
+    // NEW: For the "create-spell" step, prefer showing the callout above the fusion preview on mobile
+    // and slightly nudge it upward on desktop so it doesn't obscure the Create button.
+    if (step.id === 'create-spell') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) placement = 'top';
+        else placement = 'top';
+      } catch (e) { placement = 'top'; }
+    }
     callout.dataset.position = placement;
 
     const content = document.createElement('div');
@@ -64,7 +73,14 @@ export class Callout {
     if (targetEl && !step.isOverlay) {
       const pos = this.positioner.place(callout, targetEl, placement);
       callout.style.position = 'fixed';
-      callout.style.top = pos.top;
+      // If this is the create-spell step on desktop, nudge the callout up a bit so it doesn't cover the Create button.
+      if (step.id === 'create-spell' && !(window.matchMedia && window.matchMedia('(max-width: 480px)').matches)) {
+        // subtract 8px from the computed top to move it upward
+        const numericTop = parseFloat(pos.top) || 0;
+        callout.style.top = `${Math.max(8, numericTop - 8)}px`;
+      } else {
+        callout.style.top = pos.top;
+      }
       callout.style.left = pos.left;
       document.body.appendChild(callout);
     } else {
