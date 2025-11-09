@@ -221,6 +221,13 @@ export class SpellSlotsUI {
     `;
 
     const listContainer = overlay.querySelector('#inventory-list');
+    // Add document-level class so other UI (tutorial callouts) can react/ hide when inventory modal is open.
+    document.documentElement.classList.add('inventory-modal-open');
+
+    const removeInventoryFlag = () => {
+      document.documentElement.classList.remove('inventory-modal-open');
+    };
+
     spellInventory.forEach((spell, idx) => {
       const item = document.createElement('div');
       item.className = 'inventory-spell-item';
@@ -238,15 +245,23 @@ export class SpellSlotsUI {
         if (this._spellEquippedHandler) {
           this._spellEquippedHandler();
         }
+        // ensure we remove the document-level flag before removing overlay
+        removeInventoryFlag();
         overlay.remove();
       });
       listContainer.appendChild(item);
     });
 
     const closeBtn = overlay.querySelector('.inventory-selector-close');
-    closeBtn.addEventListener('click', () => overlay.remove());
+    closeBtn.addEventListener('click', () => {
+      removeInventoryFlag();
+      overlay.remove();
+    });
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.remove();
+      if (e.target === overlay) {
+        removeInventoryFlag();
+        overlay.remove();
+      }
     });
 
     document.body.appendChild(overlay);

@@ -196,3 +196,10 @@
   opacity: 1;
   cursor: pointer;
 }
+
+/* When the inventory selector/modal is open, hide tutorial callouts so they don't obscure the modal. */
+.inventory-modal-open .tutorial-callout {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
