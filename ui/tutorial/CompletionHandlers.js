@@ -65,15 +65,20 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     // We will complete this step as soon as the user clicks the highlighted button to open the inventory,
     // rather than waiting for them to select a spell.
     const completeFinalStep = (event) => {
-      console.log(`TUTORIAL STEP 7: Click detected on ${event.target.className}. Completing step.`);
+      console.log(`TUTORIAL STEP 7: Click detected on ${event && event.target ? event.target.className : 'unknown target'}. Completing step.`);
       // Advance to a non-existent step to trigger tutorial completion.
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
     };
     
     // Find all potential targets for this step.
-    const emptySlotButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn'));
-    const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap'));
+    const emptySlotButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn') || []);
+    const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap') || []);
     const allTargets = [...emptySlotButtons, ...swapButtons];
     
     console.log(`TUTORIAL STEP 7: Found ${allTargets.length} potential target buttons.`);
@@ -94,6 +99,27 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     });
 
     console.log(`TUTORIAL STEP 7: Registered ${cleanupFns.length} click handlers on enabled buttons.`);
+
+    // Add resilient delegated/document-level click handler to catch dynamic DOM changes
+    const delegatedHandler = (ev) => {
+      const el = ev.target;
+      if (!el) return;
+      // If the user clicked an inventory item, or clicked a swap/empty button that may have been added later,
+      // finish the tutorial step.
+      if (el.classList && (el.classList.contains('spell-slot-empty-btn') || el.classList.contains('spell-slot-swap') || el.classList.contains('inventory-spell-item') || el.closest && el.closest('.inventory-spell-item'))) {
+        completeFinalStep(ev);
+      }
+    };
+    document.addEventListener('click', delegatedHandler, true); // capture to ensure early detection
+    cleanupFns.push(() => document.removeEventListener('click', delegatedHandler, true));
+
+    // Also listen for the custom event dispatched by FusionUI when a created-spell is requested to be equipped
+    const equipEventHandler = (ev) => {
+      console.log('TUTORIAL STEP 7: Received fusionui:equip-from-created event, completing step.');
+      completeFinalStep(ev);
+    };
+    window.addEventListener('fusionui:equip-from-created', equipEventHandler);
+    cleanupFns.push(() => window.removeEventListener('fusionui:equip-from-created', equipEventHandler));
   }
 
   // Return a single cleanup function that will remove all listeners registered here.
