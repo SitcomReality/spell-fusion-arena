@@ -23,9 +23,10 @@
       // Step 4: Start wave - wave-start-panel button will trigger next step (handled by GameApp)
       // Wait for the wave start (which calls waveManager.startNextWave)
     } else if (stepIndex === 5) {
-      // Step 5: Create 2-element spell
-      // Wait for exactly 2 elements, then create button becomes enabled
-      // When pressed, advance to next step
+      // Step 5: Create 2-element spell - wait for Create on fusion preview (two-element flow)
+      // Allow the player to interact with Elements library & Details while keeping fusion UI focused.
+      // Use the 'fusion-full' lock which mutes equipped-spells/hud but leaves #elements-library and #element-details-panel interactive.
+      document.documentElement.classList.add('tutorial-lock-to-fusion-full');
       this.completionHandlers[stepIndex] = this.fusionUI.fusionPreview.onCreateButtonClick(() => {
         this.showStep(stepIndex + 1);
       });
