@@ -182,15 +182,23 @@ export class RewardUI {
       card.dataset.rarity = elem.rarity || 'common';
 
       const propertyGenes = elem.propertyGenes || {};
-      const propertiesHtml = Object.keys(propertyGenes).length === 0
-        ? '<div class="reward-card-small-desc">No special properties</div>'
-        : '<div class="reward-card-properties">' + Object.entries(propertyGenes).map(([k,v]) =>
-            `<div class="reward-card-property-row">
-               <span class="reward-card-property-icon" data-property="${k}"></span>
-               <span class="reward-card-property-value">${v}</span>
-             </div>`
-          ).join('') + '</div>';
-      
+      // Build properties area using the site's standard property-badge markup
+      let propertiesHtml = '';
+      const propEntries = Object.entries(propertyGenes || {});
+      if (propEntries.length === 0) {
+        propertiesHtml = '<div class="reward-card-small-desc">No special properties</div>';
+      } else {
+        propertiesHtml = '<div class="reward-card-properties">';
+        for (const [k, v] of propEntries) {
+          const displayVal = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
+          propertiesHtml += `<div class="property-badge" data-property="${k}">
+              <span class="property-icon"></span>
+              <span class="property-value">${displayVal}</span>
+            </div>`;
+        }
+        propertiesHtml += '</div>';
+      }
+
       card.innerHTML = `
         <div class="reward-card-header-left"></div>
         <div class="reward-card-header">
