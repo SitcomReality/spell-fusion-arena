@@ -122,7 +122,8 @@ export class Tutorial {
       'tutorial-lock-to-equipped',
       'tutorial-lock-to-wave',
       'tutorial-lock-to-reward',
-      'tutorial-lock-to-fusion-full'
+      'tutorial-lock-to-fusion-full',
+      'tutorial-lock-to-fusion-allow-elements'
     );
 
     // Apply appropriate lock based on step
@@ -142,10 +143,9 @@ export class Tutorial {
       case 4: // Step 5: Start wave (Wave button open)
         document.documentElement.classList.add('tutorial-lock-to-wave');
         break;
-      case 5: // Step 6: Create 2-element spell (allow interacting with fusion preview / fusion-ui)
-        // Use the fusion-preview lock so the fusion UI (preview + builder) remains interactive,
-        // while other areas remain muted.
-        document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
+      case 5: // Step 6: Create 2-element spell - allow elements library and details to be interactive
+        // Use a specialized lock that mutes equipped-spells/HUD but keeps #elements-library and #element-details-panel interactive
+        document.documentElement.classList.add('tutorial-lock-to-fusion-allow-elements');
         break;
       case 6: // Step 7: Allocate focus (Equipped Slots open)
         document.documentElement.classList.add('tutorial-lock-to-equipped');

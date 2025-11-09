@@ -227,6 +227,26 @@
   opacity: 0.4;
 }
 
+/* NEW: Lock for fusion flow but allow interacting with element library/details.
+   This keeps fusion preview and builder interactive while muting equipped-spells and HUD,
+   but does NOT disable #elements-library or #element-details-panel (used for the 2-element tutorial step). */
+.tutorial-lock-to-fusion-allow-elements #equipped-spells,
+.tutorial-lock-to-fusion-allow-elements #hud,
+.tutorial-lock-to-fusion-allow-elements #fusion-ui {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Make sure fusion preview itself remains interactive when using this lock:
+   specifically re-enable pointer events for the preview panel inside #fusion-ui */
+.tutorial-lock-to-fusion-allow-elements #fusion-panel,
+.tutorial-lock-to-fusion-allow-elements .fusion-preview,
+.tutorial-lock-to-fusion-allow-elements #fusion-builder,
+.tutorial-lock-to-fusion-allow-elements .fusion-preview-create {
+  pointer-events: auto;
+  opacity: 1;
+}
+
 /* Lock set 3: Lock Element Selection and Fusion Creation. Keep Equipped Spells open (Steps 3/4, 7/8). */
 .tutorial-lock-to-equipped #elements-library,
 .tutorial-lock-to-equipped #element-details-panel,
