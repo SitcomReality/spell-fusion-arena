@@ -316,8 +316,17 @@ export class FusionUI {
     // If tutorial is active and currently on the Create step, advance to Equip step
     try {
       if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
-        // Step index 3 corresponds to 'equip-spell' in the StepManager
-        window.gameInstance.tutorial.showStep(3);
+        // If the tutorial is currently on the 'two-element-fusion' step, advance to 'allocate-focus'.
+        // Otherwise fall back to the previous behavior of advancing to 'equip-spell'.
+        const tut = window.gameInstance.tutorial;
+        const twoIdx = tut.stepManager.indexOf('two-element-fusion');
+        const allocIdx = tut.stepManager.indexOf('allocate-focus');
+        const equipIdx = tut.stepManager.indexOf('equip-spell');
+        if (twoIdx >= 0 && allocIdx >= 0 && tut.currentStep === twoIdx) {
+          tut.showStep(allocIdx);
+        } else if (equipIdx >= 0) {
+          tut.showStep(equipIdx);
+        }
       }
     } catch (e) { /* silent */ }
 
