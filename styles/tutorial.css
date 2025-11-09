@@ -84,77 +84,7 @@
   margin: 0;
 }
 
-.tutorial-close {
-  width: 24px;
-  height: 24px;
-  border: 1px solid #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
-  color: #64c8ff;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.tutorial-close:hover {
-  background: rgba(74, 158, 255, 0.2);
-  box-shadow: 0 0 8px rgba(74, 158, 255, 0.3);
-}
-
-.tutorial-callout p {
-  font-size: 13px;
-  color: #9db4ff;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.tutorial-callout-controls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.tutorial-prev,
-.tutorial-next {
-  padding: 6px 12px;
-  font-size: 12px;
-  border: 1px solid #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
-  color: #b0d4ff;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.tutorial-prev:hover,
-.tutorial-next:hover {
-  border-color: #64c8ff;
-  background: rgba(100, 200, 255, 0.15);
-  box-shadow: 0 0 8px rgba(100, 200, 255, 0.2);
-}
-
-.tutorial-prev:disabled,
-.tutorial-next:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.tutorial-progress {
-  font-size: 11px;
-  color: #9db4ff;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
+/* controls/close/progress removed — no skip/navigation inside callout */
 
 /* Highlight effect for tutorial targets */
 .tutorial-highlight {
