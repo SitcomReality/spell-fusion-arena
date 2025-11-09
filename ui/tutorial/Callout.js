@@ -33,6 +33,22 @@ export class Callout {
         else placement = 'top';
       } catch (e) { placement = 'top'; }
     }
+
+    // NEW: For the "equip-spell" step, show the callout above the equipped-spells on desktop
+    // (so it points down at the slots). On very small screens move it to the left and point right
+    // so the equipped-spells column remains fully visible.
+    if (step.id === 'equip-spell') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+          placement = 'left';
+        } else {
+          placement = 'top';
+        }
+      } catch (e) {
+        placement = 'top';
+      }
+    }
+
     callout.dataset.position = placement;
 
     const content = document.createElement('div');
