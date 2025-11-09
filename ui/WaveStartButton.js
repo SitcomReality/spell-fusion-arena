@@ -62,7 +62,7 @@ export class WaveStartButton {
 
       // Show boss warning when applicable (takes precedence over empty instruction)
       if (isBossWave) {
-        instrEl.innerHTML = `<strong style="color:#ffb86b">Boss incoming!</strong>`;
+        instrEl.innerHTML = `<div class="boss-warning">Boss incoming!</div>`;
       } else {
         instrEl.innerHTML = '';
       }
@@ -76,7 +76,7 @@ export class WaveStartButton {
       } else {
         // If tutorial is blocking, present a short hint and keep button disabled
         if (tutorialBlocking) {
-          instrEl.innerHTML = (isBossWave ? `<strong style="color:#ffb86b">Boss incoming!</strong><br/>` : '') + 'Tutorial in progress — start wave when prompted by the tutorial.';
+          instrEl.innerHTML = (isBossWave ? `<div class="boss-warning">Boss incoming!</div>` : '') + 'Tutorial in progress — start wave when prompted by the tutorial.';
           btn.disabled = true;
           btn.title = 'Disabled while tutorial is active';
         } else {

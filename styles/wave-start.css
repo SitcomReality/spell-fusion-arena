@@ -46,6 +46,17 @@
   display: inline-block;
 }
 
+/* Boss warning inline text (moved from inline styles to stylesheet).
+   Ensure it appears on its own line and uses theme colors. */
+.wave-start-panel .boss-warning {
+  display: block;
+  color: #ffb86b;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
 .wave-start-button {
   padding: 12px 40px;
   font-size: 16px;
