@@ -37,7 +37,7 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     cleanupFns.push(off);
   } else if (stepIndex === 3 || stepIndex === 7) {
     // Spell equipped event
-    const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
+    const offEquip = fusionUI.spellSlotsUI.onSpellEquipped(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
       try {
@@ -46,24 +46,20 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
         }
       } catch (e) {}
     });
-    cleanupFns.push(off);
+    cleanupFns.push(offEquip);
 
-    // ALSO: consider clicks on slot UI buttons (swap/empty) as completing this step
-    const slotClickHandler = (e) => {
-      const swap = e.target.closest && e.target.closest('.spell-slot-swap');
-      const empty = e.target.closest && e.target.closest('.spell-slot-empty-btn');
-      if (swap || empty) {
-        controller.showStep(stepIndex + 1);
-        try { LockManager.applyForStep(stepIndex + 1); } catch (err) {}
-        try {
-          if (window && window.gameInstance && window.gameInstance.tutorial) {
-            window.gameInstance.tutorial.currentStep = stepIndex + 1;
-          }
-        } catch (err) {}
-      }
-    };
-    document.addEventListener('click', slotClickHandler, true);
-    cleanupFns.push(() => document.removeEventListener('click', slotClickHandler, true));
+    // Also advance the tutorial if the player simply opens the inventory/modal (slot clicked),
+    // which is considered completing the "slot-your-spell" interaction in the tutorial flow.
+    const offInv = fusionUI.spellSlotsUI.onInventoryOpen(() => {
+      controller.showStep(stepIndex + 1);
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
+    });
+    cleanupFns.push(offInv);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
