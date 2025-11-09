@@ -102,7 +102,8 @@ export class Callout {
       if (step.id === 'create-spell' && !(window.matchMedia && window.matchMedia('(max-width: 480px)').matches)) {
         // subtract 8px from the computed top to move it upward
         const numericTop = parseFloat(pos.top) || 0;
-        callout.style.top = `${Math.max(8, numericTop - 8)}px`;
+        // increased nudge to avoid obscuring the Create button on desktop
+        callout.style.top = `${Math.max(8, numericTop - 20)}px`;
       } else {
         callout.style.top = pos.top;
       }
