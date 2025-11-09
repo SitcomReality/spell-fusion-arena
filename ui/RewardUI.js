@@ -1,5 +1,6 @@
 import { ELEMENTS, getLockedElements } from '../spells/Element.js';
 import { Icons } from './Icons.js';
+import VisualPreview from './VisualPreview.js';
 
 export class RewardUI {
   constructor(onRewardChosen, rng = null, gameState = null) {
@@ -93,11 +94,21 @@ export class RewardUI {
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
-      <div class="reward-card-color">${Icons.manaEssenceSVG(40)}</div>
       <h3>Mana Essence</h3>
       <div class="reward-card-small-desc">Use Mana Essence to create spells (more elements → higher cost).</div>
       <div class="reward-card-essence-amount">${Icons.manaEssenceSVG(14)} Amount: <span class="essence-amt"></span> ${Icons.manaEssenceSVG(14)}</div>
     `;
+    // create a simple visual preview for essence
+    try {
+      const preview = VisualPreview.create({ color: { r: 100, g: 200, b: 255 }, visualEffects: { shimmer: true } }, { size: 'medium', interactive: false });
+      preview.classList.add('reward-card-color-preview');
+      essenceCard.insertBefore(preview, essenceCard.firstChild);
+    } catch (e) {
+      const fallback = document.createElement('div');
+      fallback.className = 'reward-card-color';
+      fallback.innerHTML = Icons.manaEssenceSVG(40);
+      essenceCard.insertBefore(fallback, essenceCard.firstChild);
+    }
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
     const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));
     essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity * 0.8}`);
@@ -125,11 +136,20 @@ export class RewardUI {
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
-      <div class="reward-card-color">${Icons.manaEssenceSVG(40)}</div>
       <h3>Mana Essence</h3>
       <div class="reward-card-small-desc">Use Mana Essence to create spells (5 Essence → allows making a 2-element spell).</div>
       <div class="reward-card-essence-amount">${Icons.manaEssenceSVG(14)} Amount: <span class="essence-amt"></span> ${Icons.manaEssenceSVG(14)}</div>
     `;
+    try {
+      const preview = VisualPreview.create({ color: { r: 100, g: 200, b: 255 }, visualEffects: { shimmer: true } }, { size: 'medium', interactive: false });
+      preview.classList.add('reward-card-color-preview');
+      essenceCard.insertBefore(preview, essenceCard.firstChild);
+    } catch (e) {
+      const fallback = document.createElement('div');
+      fallback.className = 'reward-card-color';
+      fallback.innerHTML = Icons.manaEssenceSVG(40);
+      essenceCard.insertBefore(fallback, essenceCard.firstChild);
+    }
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
     essenceCard.style.setProperty('--essence-intensity', `${0.2 + Math.min(1, (this.essenceOffer - 5) / 5) * 0.8}`);
 
@@ -172,7 +192,7 @@ export class RewardUI {
           ).join('') + '</div>';
       
       card.innerHTML = `
-        <div class="reward-card-color"></div>
+        <div class="reward-card-header-left"></div>
         <div class="reward-card-header">
           <h3>${elem.name}</h3>
           <span class="rarity-pill">${(elem.rarity || 'common')}</span>
@@ -180,8 +200,26 @@ export class RewardUI {
         ${propertiesHtml}
       `;
       
-      const colorEl = card.querySelector('.reward-card-color');
-      if (colorEl) colorEl.style.background = `rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})`;
+      // Insert a VisualPreview as the color/header-left visual
+      try {
+        const previewData = {
+          color: elem.color,
+          secondaryColor: elem.secondaryColor,
+          accentColor: elem.accentColor || elem.secondaryColor,
+          properties: elem.propertyGenes,
+          visualEffects: elem.visualEffects
+        };
+        const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+        previewEl.classList.add('reward-card-color-preview');
+        const headerLeft = card.querySelector('.reward-card-header-left');
+        if (headerLeft) headerLeft.appendChild(previewEl);
+      } catch (e) {
+        const fallback = card.querySelector('.reward-card-header-left');
+        if (fallback) {
+          fallback.className = 'reward-card-color';
+          fallback.style.background = `rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})`;
+        }
+      }
       
       // visual intensity based on rarity: common=0.0, uncommon=0.5, rare=1.0
       const rarityMap = { common: 0.0, uncommon: 0.5, rare: 1.0 };
@@ -196,11 +234,20 @@ export class RewardUI {
     const essenceCard = document.createElement('div');
     essenceCard.className = 'reward-card essence-card';
     essenceCard.innerHTML = `
-      <div class="reward-card-color">${Icons.manaEssenceSVG(40)}</div>
       <h3>Mana Essence</h3>
       <div class="reward-card-small-desc">Use Mana Essence to create spells (more elements → higher cost).</div>
       <div class="reward-card-essence-amount">${Icons.manaEssenceSVG(14)} Amount: <span class="essence-amt"></span> ${Icons.manaEssenceSVG(14)}</div>
     `;
+    try {
+      const preview = VisualPreview.create({ color: { r: 100, g: 200, b: 255 }, visualEffects: { shimmer: true } }, { size: 'medium', interactive: false });
+      preview.classList.add('reward-card-color-preview');
+      essenceCard.insertBefore(preview, essenceCard.firstChild);
+    } catch (e) {
+      const fallback = document.createElement('div');
+      fallback.className = 'reward-card-color';
+      fallback.innerHTML = Icons.manaEssenceSVG(40);
+      essenceCard.insertBefore(fallback, essenceCard.firstChild);
+    }
     essenceCard.addEventListener('click', () => this.selectEssence());
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
     const intensity2 = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));

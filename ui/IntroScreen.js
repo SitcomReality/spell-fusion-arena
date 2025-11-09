@@ -1,5 +1,6 @@
 import { ELEMENTS } from '../spells/Element.js';
 import { SeededRandom } from '../game/SeededRandom.js';
+import VisualPreview from './VisualPreview.js';
 
 export class IntroScreen {
   constructor(onGameStart) {
@@ -158,12 +159,35 @@ export class IntroScreen {
         }).join('') + '</div>';
       }
 
+      // Build card structure then insert a VisualPreview in place of the color square
       card.innerHTML = `
-        <div class="loadout-card-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
-        <h3>${elem.name}</h3>
-        <p class="loadout-card-rarity">${(elem.rarity || 'common').toUpperCase()}</p>
-        ${propsHtml}
+        <div class="loadout-card-content">
+          <h3>${elem.name}</h3>
+          <p class="loadout-card-rarity">${(elem.rarity || 'common').toUpperCase()}</p>
+          ${propsHtml}
+        </div>
       `;
+
+      // Create a non-interactive preview for the element
+      try {
+        const previewData = {
+          color: elem.color,
+          secondaryColor: elem.secondaryColor,
+          accentColor: elem.accentColor || elem.secondaryColor,
+          properties: elem.propertyGenes,
+          visualEffects: elem.visualEffects
+        };
+        const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+        previewEl.classList.add('loadout-card-color-preview');
+        // Insert preview at the top of the card
+        card.insertBefore(previewEl, card.firstChild);
+      } catch (e) {
+        // Fallback to original simple color block if preview fails
+        const fallback = document.createElement('div');
+        fallback.className = 'loadout-card-color';
+        fallback.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
+        card.insertBefore(fallback, card.firstChild);
+      }
 
       card.addEventListener('click', () => {
         this.selectedStartingElements.push(elem);
