@@ -163,13 +163,28 @@ export class FusionUI {
         <button class="created-spell-delete" title="Delete spell" aria-label="Delete spell">✕</button>
       `;
 
-      // Delete button handler: remove spell from inventory and re-render
+      // Only show / enable delete when tutorial is completed and the spell is not currently equipped
+      const tutorialCompleted = localStorage.getItem('tutorialCompleted') === 'true';
+      const isEquipped = this.equippedSpells.some(s => s === spell);
       const deleteBtn = item.querySelector('.created-spell-delete');
-      if (deleteBtn) {
+      if (!tutorialCompleted || isEquipped) {
+        // Remove the button from DOM so it is not visible or focusable
+        if (deleteBtn) deleteBtn.remove();
+      } else {
+        // Delete button handler: remove spell from inventory and re-render
         deleteBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          // Remove the spell at this index
-          this.spellInventory.splice(idx, 1);
+          // Defensive: ensure spell is not currently equipped (double-check)
+          const stillEquipped = this.equippedSpells.some(s => s === spell);
+          if (stillEquipped) {
+            // If attempted while equipped (race), prevent deletion
+            return;
+          }
+          // Remove the spell at this index (re-find index in case inventory changed)
+          const realIdx = this.spellInventory.indexOf(spell);
+          if (realIdx >= 0) {
+            this.spellInventory.splice(realIdx, 1);
+          }
           // Re-render slots and created list
           this.renderSpellSlots();
           this.renderCreatedSpells();
