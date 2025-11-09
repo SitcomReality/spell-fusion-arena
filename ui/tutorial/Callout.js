@@ -16,6 +16,14 @@ export class Callout {
         else placement = 'left';
       } catch (e) { placement = 'left'; }
     }
+    // Special placement: for the "add-to-fusion" step, show the callout below the details panel on desktop,
+    // but move it above the panel on very small screens so it doesn't obscure the panel content.
+    if (step.id === 'add-to-fusion') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) placement = 'top';
+        else placement = 'bottom';
+      } catch (e) { placement = 'bottom'; }
+    }
     callout.dataset.position = placement;
 
     const content = document.createElement('div');
@@ -74,4 +82,3 @@ export class Callout {
     }
   }
 }
-
