@@ -8,56 +8,47 @@ import { LockManager } from './LockManager.js';
 export function setupCompletionForStep(stepIndex, controller, fusionUI) {
   const cleanupFns = [];
 
+  // Helper to trigger the full progression pipeline (logs, locks, new handlers)
+  const advanceTutorial = (nextStepIndex) => {
+    try {
+      const tut = window.gameInstance.tutorial;
+      if (tut && tut.isActive) {
+        // Use the Tutorial instance's showStep method to ensure logging, lock updates, 
+        // and new completion handlers are set up correctly.
+        tut.showStep(nextStepIndex);
+      }
+    } catch (e) { 
+      // Fallback: If the global instance is unavailable, rely only on controller for visual state
+      controller.showStep(nextStepIndex);
+      LockManager.applyForStep(nextStepIndex);
+      controller.currentStep = nextStepIndex;
+    }
+  };
+
   // Step mapping is kept minimal: handlers return a cleanup function (or noop)
   if (stepIndex === 1) {
     // wait for Add button in ElementDetailsPanel
     const off = fusionUI.detailsPanel.onAddButtonClick(() => {
-      controller.showStep(stepIndex + 1);
-      // Ensure the global UI lock advances as well so interactions are properly updated
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-      // Keep the top-level Tutorial.currentStep in sync (used by external UI like WaveStartButton)
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial) {
-          window.gameInstance.tutorial.currentStep = stepIndex + 1;
-        }
-      } catch (e) {}
+      advanceTutorial(stepIndex + 1);
     });
     cleanupFns.push(off);
   } else if (stepIndex === 2 || stepIndex === 5) {
     // Create button in FusionPreview
     const off = fusionUI.fusionPreview.onCreateButtonClick(() => {
-      controller.showStep(stepIndex + 1);
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial) {
-          window.gameInstance.tutorial.currentStep = stepIndex + 1;
-        }
-      } catch (e) {}
+      advanceTutorial(stepIndex + 1);
     });
     cleanupFns.push(off);
   } else if (stepIndex === 3) {
     // Spell equipped event
     const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
-      controller.showStep(stepIndex + 1);
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial) {
-          window.gameInstance.tutorial.currentStep = stepIndex + 1;
-        }
-      } catch (e) {}
+      advanceTutorial(stepIndex + 1);
     });
     cleanupFns.push(off);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
       console.log('TUTORIAL STEP 6: Focus allocated. Attempting transition to step 7.');
-      controller.showStep(stepIndex + 1);
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial) {
-          window.gameInstance.tutorial.currentStep = stepIndex + 1;
-        }
-      } catch (e) {}
+      advanceTutorial(stepIndex + 1);
     });
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
@@ -68,8 +59,7 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     const completeFinalStep = (event) => {
       console.log(`TUTORIAL STEP 7: Click detected on ${event.target.className}. Completing step.`);
       // Advance to a non-existent step to trigger tutorial completion.
-      controller.showStep(stepIndex + 1);
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      advanceTutorial(stepIndex + 1);
       console.log('TUTORIAL STEP 7: Successfully initiated completion process.');
     };
     
