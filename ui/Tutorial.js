@@ -135,14 +135,22 @@ export class Tutorial {
     const backBtn = panel.querySelector('.tutorial-btn-back');
 
     nextBtn.addEventListener('click', () => {
+      // Always advance when Next is clicked.
+      // Preserve existing behavior where a user interaction can also auto-advance earlier:
       if (step.action === 'click') {
-        // Wait for user to interact with element
-        this.waitForElementInteraction(step.highlightSelector, () => {
-          this.showStep(stepNumber + 1);
-        });
-      } else {
-        this.showStep(stepNumber + 1);
+        // If target elements exist, keep listening so a user interaction can auto-advance sooner.
+        try {
+          const elements = document.querySelectorAll(step.highlightSelector);
+          if (elements && elements.length > 0) {
+            this.waitForElementInteraction(step.highlightSelector, () => {
+              // Only auto-advance if the overlay still exists and we are still on this step.
+              if (this.currentStep === stepNumber) this.showStep(stepNumber + 1);
+            });
+          }
+        } catch (e) { /* ignore if selector invalid */ }
       }
+      // Regardless of required action, advance when Next is explicitly clicked.
+      this.showStep(stepNumber + 1);
     });
 
     if (skipBtn) {
