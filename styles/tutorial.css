@@ -181,7 +181,6 @@
 }
 
 /* Lock set 2: Lock Element Selection and Equipped Spells. Keep Fusion Preview open (Step 2/3). */
-.tutorial-lock-to-fusion-preview /* Note: keep element selection/details usable; only mute equipped spells & HUD */ 
 .tutorial-lock-to-fusion-preview #equipped-spells,
 .tutorial-lock-to-fusion-preview #hud {
   pointer-events: none;
