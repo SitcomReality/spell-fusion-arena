@@ -43,8 +43,8 @@ export class Callout {
         const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
         // positioner placement (where callout will sit relative to target)
         placement = isMobile ? 'top' : 'left';
-        // data-position controls which side the little pointer triangle is drawn from;
-        // use the opposite-facing token so the pointer aims at the fusion UI.
+        // FORCE the pointer orientation so the small triangle is drawn on the bottom (pointing down)
+        // when on mobile, and on the right (pointing leftwards at the fusion UI) on desktop.
         callout.dataset.position = isMobile ? 'bottom' : 'right';
       } catch (e) { /* silent fallback - keep previously computed placement */ }
     }
