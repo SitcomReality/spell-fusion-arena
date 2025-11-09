@@ -89,7 +89,6 @@ export class SpellSlotsUI {
 
         slot.querySelector('.spell-slot-swap').addEventListener('click', (e) => {
           e.stopPropagation();
-          console.debug('[Tutorial Debug] .spell-slot-swap clicked for slot', i);
           this.showInventorySelector(i, this.getSpellInventory());
         });
 
@@ -174,7 +173,6 @@ export class SpellSlotsUI {
           } else {
             emptyBtn.addEventListener('click', (e) => {
               e.stopPropagation();
-              console.debug('[Tutorial Debug] .spell-slot-empty-btn clicked for slot', i);
               this.showInventorySelector(i, spellInventory);
             });
           }
