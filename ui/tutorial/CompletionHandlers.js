@@ -48,20 +48,36 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     });
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
-    // FINAL: when the player slots their new spell, finish the tutorial completely.
-    const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
-          // Conclude the tutorial. The tutorial.complete() method will handle:
-          // 1. Setting isActive = false
-          // 2. Calling controller.complete() (visuals/localStorage)
-          // 3. Calling LockManager.clearAll()
-          // 4. Calling _completionCleanup() (which runs 'off' function below, removing this listener)
-          window.gameInstance.tutorial.complete();
-        }
-      } catch (e) {}
-    });
-    cleanupFns.push(off);
+    // FINAL: Tutorial ends when player clicks swap or empty button to slot their new spell
+    const cleanupSwapClick = () => {
+      const swapButtons = document.querySelectorAll('.spell-slot-swap');
+      const emptyButtons = document.querySelectorAll('.spell-slot-empty-btn');
+      
+      const finishTutorial = () => {
+        try {
+          if (controller && typeof controller.complete === 'function') controller.complete();
+        } catch (e) {}
+        try { LockManager.clearAll(); } catch (e) {}
+        try {
+          if (window && window.gameInstance && window.gameInstance.tutorial) {
+            window.gameInstance.tutorial.isActive = false;
+            window.gameInstance.tutorial.currentStep = -1;
+          }
+        } catch (e) {}
+        // Remove all listeners
+        swapButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
+        emptyButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
+      };
+      
+      swapButtons.forEach(btn => btn.addEventListener('click', finishTutorial));
+      emptyButtons.forEach(btn => btn.addEventListener('click', finishTutorial));
+      
+      return () => {
+        swapButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
+        emptyButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
+      };
+    };
+    cleanupFns.push(cleanupSwapClick());
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
