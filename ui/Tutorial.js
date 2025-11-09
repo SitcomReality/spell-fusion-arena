@@ -10,6 +10,10 @@ export class Tutorial {
     // Delegate to the new controller for callouts/highlights/step manager
     this.controller = new TutorialController(gameState, fusionUI);
 
+    // Expose the controller's StepManager so external components (e.g. WaveStartButton)
+    // can query step indices like 'start-wave' to determine whether the tutorial is blocking.
+    this.stepManager = this.controller.stepManager;
+
     this.currentStep = 0;
     this.isActive = false;
     this._completionCleanup = null;
