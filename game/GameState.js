@@ -121,6 +121,23 @@ export class GameState {
       // If enemy reaches center (within a small radius), damage player
       if (dist < enemy.type.width / 2 + this.player.radius) {
         this.player.hp -= 10;
+        // Emit floating damage text at enemy position
+        try {
+          this.particles.push({
+            type: 'floating-text',
+            x: enemy.x,
+            y: enemy.y,
+            vx: 0,
+            vy: -30, // rise up
+            text: '-10',
+            color: { r: 255, g: 80, b: 80 },
+            size: 16,
+            life: 0.9,
+            maxLife: 0.9,
+            opacity: 1
+          });
+        } catch (e) {}
+        
         enemiesToRemove.push(i);
         
         // Update HUD

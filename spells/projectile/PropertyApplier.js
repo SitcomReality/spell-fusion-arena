@@ -11,6 +11,22 @@ export class PropertyApplier {
       if (Math.random() < procChance) {
         // Heal player for 1 HP per proc, as per prompt
         gameState.player.receiveHealing(1);
+        // Emit floating heal text at projectile position (where effect happened)
+        try {
+          gameState.particles.push({
+            type: 'floating-text',
+            x: projectile.x,
+            y: projectile.y,
+            vx: 0,
+            vy: -28,
+            text: '+1',
+            color: { r: 160, g: 255, b: 160 },
+            size: 14,
+            life: 0.8,
+            maxLife: 0.8,
+            opacity: 1
+          });
+        } catch (e) {}
       }
     }
 
