@@ -14,7 +14,6 @@ export class SpellSlotsUI {
     // NEW: Callbacks for tutorial
     this._spellEquippedHandler = null;
     this._focusAllocatedHandler = null;
-    this._inventoryOpenHandler = null;
   }
 
   mount() {
@@ -201,25 +200,12 @@ export class SpellSlotsUI {
     };
   }
 
-  // NEW: Register callback when inventory/modal is opened (useful for tutorial progression)
-  onInventoryOpen(callback) {
-    this._inventoryOpenHandler = callback;
-    return () => {
-      this._inventoryOpenHandler = null;
-    };
-  }
-
   // NEW: Show inventory selector modal when empty slot is clicked
   showInventorySelector(slotIndex, spellInventory) {
     if (spellInventory.length === 0) {
       alert('No spells in inventory. Create a spell first!');
       return;
     }
-
-    // Notify any listeners that the inventory/modal is opening (tutorial wants to observe this)
-    try {
-      if (this._inventoryOpenHandler) this._inventoryOpenHandler(slotIndex);
-    } catch (e) { /* silent */ }
 
     const overlay = document.createElement('div');
     overlay.id = 'inventory-selector-overlay';

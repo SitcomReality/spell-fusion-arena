@@ -35,9 +35,9 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     });
     cleanupFns.push(off);
-  } else if (stepIndex === 3 || stepIndex === 7) {
+  } else if (stepIndex === 3) {
     // Spell equipped event
-    const offEquip = fusionUI.spellSlotsUI.onSpellEquipped(() => {
+    const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
       try {
@@ -46,20 +46,7 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
         }
       } catch (e) {}
     });
-    cleanupFns.push(offEquip);
-
-    // Also advance the tutorial if the player simply opens the inventory/modal (slot clicked),
-    // which is considered completing the "slot-your-spell" interaction in the tutorial flow.
-    const offInv = fusionUI.spellSlotsUI.onInventoryOpen(() => {
-      controller.showStep(stepIndex + 1);
-      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-      try {
-        if (window && window.gameInstance && window.gameInstance.tutorial) {
-          window.gameInstance.tutorial.currentStep = stepIndex + 1;
-        }
-      } catch (e) {}
-    });
-    cleanupFns.push(offInv);
+    cleanupFns.push(off);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
@@ -72,6 +59,25 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     });
     cleanupFns.push(off);
+  } else if (stepIndex === 7) {
+    // Final step: Slot your new spell.
+    // We will complete this step as soon as the user clicks the highlighted button to open the inventory,
+    // rather than waiting for them to select a spell.
+    const completeFinalStep = () => {
+      // Advance to a non-existent step to trigger tutorial completion.
+      controller.showStep(stepIndex + 1);
+      try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+    };
+    
+    // Find all potential targets for this step.
+    const emptySlotButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn'));
+    const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap'));
+    const allTargets = [...emptySlotButtons, ...swapButtons];
+    
+    allTargets.forEach(btn => {
+      btn.addEventListener('click', completeFinalStep, { once: true });
+      cleanupFns.push(() => btn.removeEventListener('click', completeFinalStep));
+    });
   }
 
   // Return a single cleanup function that will remove all listeners registered here.
