@@ -54,8 +54,14 @@ export class WaveStartButton {
       let tutorialBlocking = false;
       try {
         const tut = window && window.gameInstance && window.gameInstance.tutorial;
-        const startStepIdx = tut && tut.stepManager ? tut.stepManager.indexOf('start-wave') : -1;
-        if (tut && tut.isActive && tut.currentStep !== startStepIdx) tutorialBlocking = true;
+        if (tut && tut.isActive) {
+          // Refactored Tutorial stores current step as `currentStep` and exposes the StepManager
+          // via tutorial.controller.stepManager. Compute the index of 'start-wave' there.
+          const stepManager = tut.controller && tut.controller.stepManager;
+          const startStepIdx = stepManager ? stepManager.indexOf('start-wave') : -1;
+          // If the tutorial is active and the current step is NOT the 'start-wave' step, block.
+          tutorialBlocking = typeof tut.currentStep === 'number' ? (tut.currentStep !== startStepIdx) : true;
+        }
       } catch (e) { tutorialBlocking = false; }
 
       if (focusBank > 0) {
