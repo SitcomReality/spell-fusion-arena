@@ -60,10 +60,12 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     });
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
+    console.log('TUTORIAL STEP 7: Slot your new spell - Setting up completion handlers.');
     // Final step: Slot your new spell.
     // We will complete this step as soon as the user clicks the highlighted button to open the inventory,
     // rather than waiting for them to select a spell.
-    const completeFinalStep = () => {
+    const completeFinalStep = (event) => {
+      console.log(`TUTORIAL STEP 7: Click detected on ${event.target.className}. Completing step.`);
       // Advance to a non-existent step to trigger tutorial completion.
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
@@ -74,10 +76,24 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap'));
     const allTargets = [...emptySlotButtons, ...swapButtons];
     
+    console.log(`TUTORIAL STEP 7: Found ${allTargets.length} potential target buttons.`);
+
     allTargets.forEach(btn => {
-      btn.addEventListener('click', completeFinalStep, { once: true });
-      cleanupFns.push(() => btn.removeEventListener('click', completeFinalStep));
+      // Ensure we only attach to interactive buttons (not disabled empty slots)
+      // Check if it's an empty button that is disabled (only happens when focus is 0)
+      const isEnabledEmptySlot = btn.classList.contains('spell-slot-empty-btn') && !btn.disabled;
+      const isSwapSlot = btn.classList.contains('spell-slot-swap');
+
+      if (isEnabledEmptySlot || isSwapSlot) {
+        btn.addEventListener('click', completeFinalStep, { once: true });
+        cleanupFns.push(() => {
+          console.log(`TUTORIAL STEP 7: Removing click listener from button: ${btn.className}.`);
+          btn.removeEventListener('click', completeFinalStep);
+        });
+      }
     });
+
+    console.log(`TUTORIAL STEP 7: Registered ${cleanupFns.length} click handlers on enabled buttons.`);
   }
 
   // Return a single cleanup function that will remove all listeners registered here.

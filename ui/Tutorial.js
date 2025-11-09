@@ -29,9 +29,11 @@ export class Tutorial {
     this.isActive = true;
     this.currentStep = 0;
     this.showStep(0);
+    console.log('TUTORIAL: Started.');
   }
 
   showStep(stepIndex) {
+    console.log(`TUTORIAL: Showing step index ${stepIndex}.`);
     // clear previous completion handlers
     if (this._completionCleanup) {
       try { this._completionCleanup(); } catch (e) {}

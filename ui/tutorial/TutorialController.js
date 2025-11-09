@@ -58,7 +58,10 @@ export class TutorialController {
     // Special multi-target highlight for swap buttons
     if (step.id === 'slot-your-spell') {
       const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap') || []);
-      const visible = swapButtons.filter(el => el.offsetParent && el.getClientRects().length > 0);
+      // Also include empty buttons for slotting
+      const emptyButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn') || []);
+      const allButtons = [...swapButtons, ...emptyButtons];
+      const visible = allButtons.filter(el => el.offsetParent && el.getClientRects().length > 0);
       visible.forEach(el => el.classList.add('tutorial-highlight'));
       this.highlightedElements = visible;
     }
