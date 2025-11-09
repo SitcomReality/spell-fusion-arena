@@ -34,6 +34,21 @@ export class Callout {
       } catch (e) { placement = 'top'; }
     }
 
+    // NEW: For the "two-element-fusion" tutorial step we want the callout placed near the fusion UI
+    // but visually over the canvas so it doesn't obscure the fusion UI controls:
+    // - Desktop: place the callout to the left of the fusion UI and show the pointer on the right.
+    // - Mobile (<=480px): place the callout above the fusion UI and show the pointer pointing down.
+    if (step.id === 'two-element-fusion') {
+      try {
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
+        // positioner placement (where callout will sit relative to target)
+        placement = isMobile ? 'top' : 'left';
+        // data-position controls which side the little pointer triangle is drawn from;
+        // use the opposite-facing token so the pointer aims at the fusion UI.
+        callout.dataset.position = isMobile ? 'bottom' : 'right';
+      } catch (e) { /* silent fallback - keep previously computed placement */ }
+    }
+
     // NEW: For the "equip-spell" step, show the callout above the equipped-spells on desktop
     // (so it points down at the slots). On very small screens move it to the left and point right
     // so the equipped-spells column remains fully visible.
@@ -49,7 +64,7 @@ export class Callout {
       }
     }
 
-    callout.dataset.position = placement;
+    if (!callout.dataset.position) callout.dataset.position = placement;
 
     const content = document.createElement('div');
     content.className = 'tutorial-callout-content';
@@ -90,6 +105,11 @@ export class Callout {
     // for the create-spell step prefer positioning relative to the outer #fusion-ui container.
     let positionTarget = targetEl;
     try {
+      // For two-element fusion we prefer to position relative to the fusion UI container
+      if (step.id === 'two-element-fusion') {
+        const fusionUi = document.getElementById('fusion-ui');
+        if (fusionUi) positionTarget = fusionUi;
+      }
       if (step.id === 'create-spell' && window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
         const fusionUi = document.getElementById('fusion-ui');
         if (fusionUi) positionTarget = fusionUi;
