@@ -29,6 +29,10 @@ export const LockManager = {
       case 2:
         document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
         break;
+      // Ensure the "Create Your Spell" step (index 3 in the step flow) leaves the fusion preview/panel enabled
+      case 3:
+        document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
+        break;
       case 3:
         document.documentElement.classList.add('tutorial-lock-to-equipped');
         break;
