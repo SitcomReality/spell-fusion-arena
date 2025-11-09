@@ -11,6 +11,9 @@ export class SpellSlotsUI {
     this.getFocusBank = callbacks.getFocusBank || (() => 0);
     this.getSpellInventory = callbacks.getSpellInventory || (() => []);
     this.container = null;
+    // NEW: Callbacks for tutorial
+    this._spellEquippedHandler = null;
+    this._focusAllocatedHandler = null;
   }
 
   mount() {
@@ -31,13 +34,10 @@ export class SpellSlotsUI {
       wrapper.dataset.slot = i;
 
       const slot = document.createElement('div');
-      // Ensure we read the focus amount before using it to build the slot
       const focus = slotFocus[i] || 0;
-      // Mark slot as inactive when it has 0 Focus so CSS can style & disable empty button
       slot.className = 'spell-slot' + (focus < 1 ? ' inactive-slot' : '');
       slot.setAttribute('data-focus', String(focus));
 
-      // HTML template parts for focus display and add button (used in both equipped/empty states)
       let headerContentHtml = `
           <div class="spell-slot-header">
             <span class="spell-slot-focus-display"></span>
@@ -60,13 +60,11 @@ export class SpellSlotsUI {
       if (equippedSpells[i]) {
         const spell = equippedSpells[i];
         const color = spell.color;
-        // build properties markup (small badges) including damage and speed
         const propEntries = Object.entries(spell.properties || {});
         const propsHtml = propEntries.length === 0
           ? ''
           : '<div class="spell-slot-properties">' + propEntries
             .map(([k,v]) => {
-              // format numeric values
               const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
               return `<div class="property-badge" data-property="${k}">
                         <span class="property-icon"></span>
@@ -89,23 +87,23 @@ export class SpellSlotsUI {
         
         appendFocusDisplay(slot);
 
-        // Wire up the swap button (was unequip)
         slot.querySelector('.spell-slot-swap').addEventListener('click', (e) => {
           e.stopPropagation();
-          // Change from unequip to show inventory selector modal
           this.showInventorySelector(i, this.getSpellInventory());
         });
 
-        // Wire up the add focus button if it exists
         const addFocusBtn = slot.querySelector('.slot-add-focus');
         if (addFocusBtn) {
           addFocusBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.onAllocateFocus(i);
+            // NEW: Trigger tutorial completion
+            if (this._focusAllocatedHandler) {
+              this._focusAllocatedHandler();
+            }
           });
         }
 
-        // Populate tooltip content with properties
         const tooltipEl = slot.querySelector('.slot-props-tooltip');
         if (tooltipEl) {
           if (propEntries.length === 0) {
@@ -118,7 +116,6 @@ export class SpellSlotsUI {
           }
         }
 
-        // Press-to-show behavior for touch and mouse
         const btn = slot.querySelector('.slot-props-btn');
         let pressTimer = null;
         const showTooltip = (show) => {
@@ -145,7 +142,6 @@ export class SpellSlotsUI {
           btn.addEventListener('mouseleave', () => showTooltip(false));
         }
       } else {
-        // Empty slot: show button to pick from inventory
         slot.innerHTML = `
           ${headerContentHtml}
           <button class="spell-slot-empty-btn" data-slot="${i}">+</button>
@@ -156,22 +152,23 @@ export class SpellSlotsUI {
 
         appendFocusDisplay(slot);
         
-        // Wire up the add focus button if it exists
         const addFocusBtn = slot.querySelector('.slot-add-focus');
         if (addFocusBtn) {
           addFocusBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.onAllocateFocus(i);
+            // NEW: Trigger tutorial completion
+            if (this._focusAllocatedHandler) {
+              this._focusAllocatedHandler();
+            }
           });
         }
 
         const emptyBtn = slot.querySelector('.spell-slot-empty-btn');
         if (emptyBtn) {
           if (focus < 1) {
-            // visually disabled & provide tooltip/title explaining why
             emptyBtn.disabled = true;
             emptyBtn.title = 'Assign Focus to this slot to enable equipping a spell';
-            // ensure it's non-interactive (defensive)
             emptyBtn.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); });
           } else {
             emptyBtn.addEventListener('click', (e) => {
@@ -185,6 +182,22 @@ export class SpellSlotsUI {
       wrapper.appendChild(slot);
       grid.appendChild(wrapper);
     }
+  }
+
+  // NEW: Register callback when spell is equipped
+  onSpellEquipped(callback) {
+    this._spellEquippedHandler = callback;
+    return () => {
+      this._spellEquippedHandler = null;
+    };
+  }
+
+  // NEW: Register callback when focus is allocated
+  onFocusAllocated(callback) {
+    this._focusAllocatedHandler = callback;
+    return () => {
+      this._focusAllocatedHandler = null;
+    };
   }
 
   // NEW: Show inventory selector modal when empty slot is clicked
@@ -221,6 +234,10 @@ export class SpellSlotsUI {
       `;
       item.addEventListener('click', () => {
         this.onEquipFromInventory(slotIndex, spell);
+        // NEW: Trigger tutorial completion
+        if (this._spellEquippedHandler) {
+          this._spellEquippedHandler();
+        }
         overlay.remove();
       });
       listContainer.appendChild(item);

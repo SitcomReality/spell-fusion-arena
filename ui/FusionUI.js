@@ -250,12 +250,23 @@ export class FusionUI {
 
     this.currentSpell = SpellFusion.fuse(...this.selectedElements);
 
-    // Compute the current mana essence cost based on how many elements are in the fusion slots
     const cost = getSpellCost(this.selectedElements.length);
 
-    // Pass the computed cost into FusionPreview so the Create button shows it with the icon
-    const affordable = (this.essenceBank >= cost);
+    // NEW: Handle step 7 tutorial constraint
+    const isInTutorialStep7 = document.documentElement.classList.contains('tutorial-lock-to-fusion-full');
+    const isExactlyTwoElements = this.selectedElements.length === 2;
+    const canCreate = isInTutorialStep7 ? isExactlyTwoElements : true;
+    const affordable = (this.essenceBank >= cost) && canCreate;
+
     this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell), cost, affordable);
+    
+    // NEW: Mark create button for step 7 specific styling
+    if (isInTutorialStep7) {
+      const createBtn = document.querySelector('.fusion-preview-create');
+      if (createBtn) {
+        createBtn.classList.toggle('enabled-for-two-elements', isExactlyTwoElements);
+      }
+    }
   }
 
   // NEW: Add spell to inventory (costs Essence)

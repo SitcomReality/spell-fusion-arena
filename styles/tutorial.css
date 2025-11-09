@@ -194,3 +194,63 @@
     max-width: 90vw;
   }
 }
+
+/* Tutorial UI lock states */
+.tutorial-lock-to-elements #element-details-panel,
+.tutorial-lock-to-elements #fusion-ui,
+.tutorial-lock-to-elements #hud {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-elements-details #fusion-ui,
+.tutorial-lock-to-elements-details #hud {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-fusion-preview #elements-library,
+.tutorial-lock-to-fusion-preview #element-details-panel,
+.tutorial-lock-to-fusion-preview #equipped-spells,
+.tutorial-lock-to-fusion-preview #hud {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-equipped #fusion-ui,
+.tutorial-lock-to-equipped #hud {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-wave #fusion-ui,
+.tutorial-lock-to-wave #equipped-spells {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-reward #fusion-ui,
+.tutorial-lock-to-reward #equipped-spells,
+.tutorial-lock-to-reward #canvas-and-spells {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.tutorial-lock-to-fusion-full #equipped-spells,
+.tutorial-lock-to-fusion-full #hud {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Step 7 specific: disable create button unless exactly 2 elements */
+.tutorial-lock-to-fusion-full .fusion-preview-create {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tutorial-lock-to-fusion-full .fusion-preview-create.enabled-for-two-elements {
+  pointer-events: auto;
+  opacity: 1;
+  cursor: pointer;
+}

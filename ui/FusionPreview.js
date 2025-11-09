@@ -5,6 +5,7 @@ export class FusionPreview {
   constructor() {
     this.panel = new DetailPanel();
     this.onClear = null;
+    this._createButtonClickHandler = null;
   }
 
   mount(container) {
@@ -46,15 +47,11 @@ export class FusionPreview {
       value: Math.round(v * 100) / 100
     }));
 
-    // Prepare create button label: include mana essence icon and numeric cost when provided.
     let createLabel = 'Create';
     if (typeof cost === 'number') {
-      // Put icon before the numeric cost to keep it compact
       createLabel = `Create ${Icons.manaEssenceSVG(14)} ${cost}`;
     }
 
-    // Render using the detail panel, but pass an error flag that will be applied
-    // via a CSS class on the container so styles can adjust the whole panel.
     this.panel.render(
       spell.name,
       color,
@@ -64,16 +61,17 @@ export class FusionPreview {
           className: 'fusion-preview-create' + (affordable ? '' : ' unaffordable'),
           label: createLabel,
           onClick: () => {
-            // Defensive: prevent creation if not affordable
             if (!affordable) return;
             if (onCreate) onCreate();
+            // Trigger tutorial completion
+            if (this._createButtonClickHandler) {
+              this._createButtonClickHandler();
+            }
           }
         }
       ]
     );
 
-    // Add a top-level class to the panel container so CSS can mute the entire panel
-    // while leaving the unaffordable Create button styled differently.
     const panelEl = this.panel.container.querySelector('.detail-panel');
     if (panelEl) {
       if (!affordable) {
@@ -86,5 +84,13 @@ export class FusionPreview {
 
   setOnClear(callback) {
     this.onClear = callback;
+  }
+
+  // Register a callback when the create button is clicked
+  onCreateButtonClick(callback) {
+    this._createButtonClickHandler = callback;
+    return () => {
+      this._createButtonClickHandler = null;
+    };
   }
 }

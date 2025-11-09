@@ -3,6 +3,7 @@ import { DetailPanel } from '../DetailPanel.js';
 export class ElementDetailsPanel {
   constructor() {
     this.panel = new DetailPanel();
+    this._addButtonClickHandler = null;
   }
 
   mount(container) {
@@ -28,9 +29,21 @@ export class ElementDetailsPanel {
           label: 'Add',
           onClick: () => {
             if (onAdd) onAdd(element);
+            // Trigger tutorial completion
+            if (this._addButtonClickHandler) {
+              this._addButtonClickHandler();
+            }
           }
         }
       ]
     );
+  }
+
+  onAddButtonClick(callback) {
+    this._addButtonClickHandler = callback;
+    // Return cleanup function
+    return () => {
+      this._addButtonClickHandler = null;
+    };
   }
 }
