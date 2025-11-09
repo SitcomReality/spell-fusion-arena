@@ -27,10 +27,7 @@ export const LockManager = {
         document.documentElement.classList.add('tutorial-lock-to-elements-details');
         break;
       case 2:
-        // For the "Create Your Spell" step ensure the fusion builder remains usable while
-        // other panels (equipped spells / HUD) are muted. Use the fusion-full lock which
-        // specifically keeps fusion-related UI available.
-        document.documentElement.classList.add('tutorial-lock-to-fusion-full');
+        document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
         break;
       case 3:
         document.documentElement.classList.add('tutorial-lock-to-equipped');
