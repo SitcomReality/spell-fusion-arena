@@ -11,7 +11,7 @@ import { SeededRandom } from '../game/SeededRandom.js';
 import { ELEMENTS } from '../spells/Element.js';
 import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
-import { Tutorial } from '../ui/tutorial/Tutorial.js';
+import { Tutorial } from '../ui/Tutorial.js';
 
 export class GameApp {
   constructor() {
