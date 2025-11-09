@@ -11,6 +11,7 @@ import { SeededRandom } from '../game/SeededRandom.js';
 import { ELEMENTS } from '../spells/Element.js';
 import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
+import { Tutorial } from '../ui/Tutorial.js';
 
 export class GameApp {
   constructor() {
@@ -31,6 +32,7 @@ export class GameApp {
     this.waveStartButton = null;
     this.gameOverUI = null;
     this.rng = null;
+    this.tutorial = new Tutorial();
 
     this.lastTime = 0;
     this.running = true;
@@ -83,6 +85,14 @@ export class GameApp {
     }, this.rng, this.gameState);
 
     this.waveStartButton = new WaveStartButton(document.getElementById('canvas-wrapper'));
+
+    // Start tutorial if this is the first game
+    if (this.tutorial.isFirstGame) {
+      // Delay tutorial start to let UI render
+      setTimeout(() => {
+        this.tutorial.start(this.gameState);
+      }, 500);
+    }
 
     this.gameState.waveManager.onWaveComplete((waveNumber) => {
       this.gameState.pause();
