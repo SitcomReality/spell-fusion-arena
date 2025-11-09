@@ -40,14 +40,7 @@ export class StepManager {
         targetSelector: '.wave-start-button',
         position: 'top'
       },
-      {
-        id: 'wave-complete',
-        title: 'Wave Complete!',
-        description: 'You\'ve earned 1 Focus and Mana Essence. Use Essence to create stronger spells.',
-        targetSelector: '#reward-overlay',
-        position: 'center',
-        isOverlay: true
-      },
+      // removed 'wave-complete' step (redundant) — reward selection will advance tutorial directly
       {
         id: 'two-element-fusion',
         title: 'Create a 2-Element Spell',
