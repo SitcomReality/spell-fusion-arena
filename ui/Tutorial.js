@@ -51,7 +51,8 @@ export class Tutorial {
   }
 
   jump(stepId) {
-    this.controller.jump(stepId);
+    const idx = this.stepManager.indexOf(stepId);
+    if (idx >= 0) this.showStep(idx);
   }
 
   skip() {
