@@ -12,6 +12,13 @@ export class RewardUI {
   }
 
   show(waveNumber) {
+    // Special tutorial reward for wave 1: only offer 5 Mana Essence and explanatory text
+    if (waveNumber === 1) {
+      this.essenceOffer = 5;
+      this.renderWaveOneIntro(waveNumber);
+      return;
+    }
+    
     // Get locked elements based on current game state's unlocked elements
     const unlockedKeys = this.gameState ? this.gameState.unlockedElementKeys : [];
     const lockedElements = getLockedElements(unlockedKeys);
@@ -94,6 +101,37 @@ export class RewardUI {
     essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
     const intensity = Math.min(1, Math.max(0, (this.essenceOffer - 5) / (10 - 5)));
     essenceCard.style.setProperty('--essence-intensity', `${0.2 + intensity * 0.8}`);
+
+    essenceCard.addEventListener('click', () => this.selectEssence());
+    choicesContainer.appendChild(essenceCard);
+  }
+
+  // Special tutorial panel for wave 1 that explains Focus & Mana Essence and only offers 5 ME
+  renderWaveOneIntro(waveNumber) {
+    this.container = document.createElement('div');
+    this.container.id = 'reward-overlay';
+    this.container.innerHTML = `
+      <div class="reward-modal">
+        <h2>Wave ${waveNumber} Complete!</h2>
+        <p class="reward-subtitle">You received: 1 ${Icons.focusSVG(14)} Focus — Focus can be spent to upgrade a spell slot (one Focus per wave).</p>
+        <p class="reward-subtitle">You also get 5 ${Icons.manaEssenceSVG(14)} Mana Essence — Mana Essence is used to create spells; with 5 Essence you can make a 2-element fusion for the next wave.</p>
+        <p class="reward-subtitle">Normally you may choose to unlock an element or take Mana Essence, but for this first wave we've granted 5 Essence to get you started.</p>
+        <div class="reward-choices" id="reward-choices"></div>
+      </div>
+    `;
+    document.body.appendChild(this.container);
+    const choicesContainer = document.getElementById('reward-choices');
+
+    const essenceCard = document.createElement('div');
+    essenceCard.className = 'reward-card essence-card';
+    essenceCard.innerHTML = `
+      <div class="reward-card-color">${Icons.manaEssenceSVG(40)}</div>
+      <h3>Mana Essence</h3>
+      <div class="reward-card-small-desc">Use Mana Essence to create spells (5 Essence → allows making a 2-element spell).</div>
+      <div class="reward-card-essence-amount">${Icons.manaEssenceSVG(14)} Amount: <span class="essence-amt"></span> ${Icons.manaEssenceSVG(14)}</div>
+    `;
+    essenceCard.querySelector('.essence-amt').textContent = `${this.essenceOffer}`;
+    essenceCard.style.setProperty('--essence-intensity', `${0.2 + Math.min(1, (this.essenceOffer - 5) / 5) * 0.8}`);
 
     essenceCard.addEventListener('click', () => this.selectEssence());
     choicesContainer.appendChild(essenceCard);
