@@ -227,6 +227,24 @@
   opacity: 0.4;
 }
 
+/* Special override for the 'fusion-full' tutorial step:
+   This step requires the Elements library and Element Details panel to be interactive
+   while keeping other areas muted. Make the elements & details fully interactive and
+   restore opacity so users can pick and add elements during the 2-element fusion step. */
+.tutorial-lock-to-fusion-full #elements-library,
+.tutorial-lock-to-fusion-full #element-details-panel {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+/* Keep equipped spells and HUD muted during fusion-full to focus attention on fusion area */
+.tutorial-lock-to-fusion-full #equipped-spells,
+.tutorial-lock-to-fusion-full #hud,
+.tutorial-lock-to-fusion-full #fusion-builder {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 /* Lock set 3: Lock Element Selection and Fusion Creation. Keep Equipped Spells open (Steps 3/4, 7/8). */
 .tutorial-lock-to-equipped #elements-library,
 .tutorial-lock-to-equipped #element-details-panel,
