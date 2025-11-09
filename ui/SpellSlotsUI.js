@@ -1,4 +1,5 @@
 import { Icons } from './Icons.js';
+import VisualPreview from './VisualPreview.js';
 
 export class SpellSlotsUI {
   constructor(container, callbacks = {}) {
@@ -72,9 +73,10 @@ export class SpellSlotsUI {
                       </div>`;
             }).join('') + '</div>';
 
+        // Build slot DOM without color background; we'll insert a VisualPreview tile instead.
         slot.innerHTML = `
           ${headerContentHtml}
-          <div class="spell-slot-content" style="background: rgb(${color.r}, ${color.g}, ${color.b})">
+          <div class="spell-slot-content">
             <button class="slot-props-btn" aria-label="Show properties">i</button>
             <div class="slot-props-tooltip" aria-hidden="true"></div>
             ${propsHtml}
@@ -84,7 +86,29 @@ export class SpellSlotsUI {
             <span class="spell-slot-name">${spell.name}</span>
           </div>
         `;
-        
+
+        // Insert VisualPreview into the content area to represent the spell visually.
+        try {
+          const previewData = {
+            color: spell.color,
+            secondaryColor: spell.secondaryColor,
+            accentColor: spell.accentColor || spell.secondaryColor,
+            properties: spell.properties,
+            visualEffects: spell.visualEffects
+          };
+          const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+          previewEl.classList.add('slot-visual-preview');
+          const contentEl = slot.querySelector('.spell-slot-content');
+          if (contentEl) {
+            // Insert preview at the start of content so other controls overlay it.
+            contentEl.insertBefore(previewEl, contentEl.firstChild);
+          }
+        } catch (e) {
+          // Fallback: color the content background if preview creation fails
+          const contentEl = slot.querySelector('.spell-slot-content');
+          if (contentEl) contentEl.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
+        }
+
         appendFocusDisplay(slot);
 
         slot.querySelector('.spell-slot-swap').addEventListener('click', (e) => {
@@ -232,13 +256,31 @@ export class SpellSlotsUI {
       const item = document.createElement('div');
       item.className = 'inventory-spell-item';
       const color = spell.color;
+      // Use VisualPreview for inventory color preview, fallback to color square if needed
       item.innerHTML = `
-        <div class="inventory-spell-color" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></div>
         <div class="inventory-spell-info">
           <div class="inventory-spell-name">${spell.name}</div>
           <div class="inventory-spell-desc">Damage: ${Math.round(spell.properties.damage)}, Speed: ${Math.round(spell.properties.speed)}</div>
         </div>
       `;
+      try {
+        const previewData = {
+          color: spell.color,
+          secondaryColor: spell.secondaryColor,
+          accentColor: spell.accentColor || spell.secondaryColor,
+          properties: spell.properties,
+          visualEffects: spell.visualEffects
+        };
+        const previewEl = VisualPreview.create(previewData, { size: 'small', interactive: false });
+        previewEl.classList.add('inventory-spell-color');
+        item.insertBefore(previewEl, item.firstChild);
+      } catch (e) {
+        const colorEl = document.createElement('div');
+        colorEl.className = 'inventory-spell-color';
+        colorEl.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
+        item.insertBefore(colorEl, item.firstChild);
+      }
+
       item.addEventListener('click', () => {
         this.onEquipFromInventory(slotIndex, spell);
         // NEW: Trigger tutorial completion
