@@ -1,4 +1,5 @@
 import { PixelBody } from './PixelBody.js';
+import { CONFIG } from '../config.js';
 
 export class Enemy {
   constructor(x, y, type) {
@@ -61,6 +62,32 @@ export class Enemy {
         this.y += (dy / dist) * this.speed * dt;
       }
     }
+    
+    // Clamp boss positions so knockback cannot push them further than the spawn radius.
+    // Also damp their knockback velocity when hitting the limit to avoid repeated strong bounces.
+    try {
+      if (this.type && this.type.isBoss) {
+        const maxR = (CONFIG && CONFIG.enemy && CONFIG.enemy.spawnRadius) ? CONFIG.enemy.spawnRadius : 360;
+        const toCenterX = this.x - centerX;
+        const toCenterY = this.y - centerY;
+        const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+        if (curDist > maxR) {
+          // Project back onto circle at maxR
+          const nx = (toCenterX / curDist) * maxR;
+          const ny = (toCenterY / curDist) * maxR;
+          this.x = centerX + nx;
+          this.y = centerY + ny;
+
+          // Damp any active knockback velocities to avoid repeated overshoot
+          if (this.knockbackVx !== undefined && this.knockbackVy !== undefined) {
+            this.knockbackVx *= 0.3;
+            this.knockbackVy *= 0.3;
+            // shorten knockback timer a bit
+            this.knockbackTimer = Math.max(0, (this.knockbackTimer || 0) - 0.05);
+          }
+        }
+      }
+    } catch (e) { /* silent fallback */ }
     
     if (!this.pixelBody.intact) {
       this.alive = false;
