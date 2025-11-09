@@ -86,6 +86,13 @@ export class GameApp {
       this.gameState.resume();
       this.fusionUI.refresh();
 
+      // Ensure fusion UI scrolls to the top after picking a reward so the elements library is visible
+      try {
+        if (this.fusionUI && this.fusionUI.container) {
+          this.fusionUI.container.scrollTo?.({ top: 0, behavior: 'smooth' });
+        }
+      } catch (e) { /* silent */ }
+
       // Progress tutorial on Wave 1 completion
       if (this.tutorial && this.tutorial.isActive && this.gameState.waveManager.currentWave === 1) {
         setTimeout(() => {

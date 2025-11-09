@@ -298,6 +298,13 @@ export class FusionUI {
     // Update created spells list
     this.renderCreatedSpells();
 
+    // Ensure the fusion UI is scrolled back to the top so the Elements library is visible on mobile
+    try {
+      if (this.container) {
+        this.container.scrollTo?.({ top: 0, behavior: 'smooth' });
+      }
+    } catch (e) { /* silent */ }
+
     // Update HUD to reflect essence spent
     try {
       if (window && window.gameInstance && window.gameInstance.hud) {
