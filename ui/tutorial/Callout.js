@@ -118,6 +118,15 @@ export class Callout {
     // for the create-spell step prefer positioning relative to the outer #fusion-ui container.
     let positionTarget = targetEl;
     try {
+      // For the final "allocate-focus" step we want the callout anchored to the equipped-spells
+      // container so on narrow viewports it will sit to the left of the slot column (pointer on the right)
+      // instead of being positioned relative to an inner button which could push it over the slots.
+      if (step.id === 'allocate-focus') {
+        const eq = document.getElementById('equipped-spells');
+        if (eq) positionTarget = eq;
+        // Ensure pointer placement is set so the callout appears to the left of the slots.
+        callout.dataset.position = 'left';
+      }
       // For two-element fusion we prefer to position relative to the fusion UI container
       if (step.id === 'two-element-fusion') {
         const fusionUi = document.getElementById('fusion-ui');
