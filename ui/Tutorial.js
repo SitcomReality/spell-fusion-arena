@@ -32,6 +32,12 @@ export class Tutorial {
   }
 
   showStep(stepIndex) {
+    // If we've advanced past the last step, ensure the Tutorial instance performs cleanup
+    // so its isActive flag is cleared (controller.complete alone didn't update Tutorial.isActive).
+    if (stepIndex >= this.stepManager.length()) {
+      this.complete();
+      return;
+    }
     const step = this.controller.stepManager.get(stepIndex);
     const stepId = step ? step.id : 'COMPLETED';
     console.log(`TUTORIAL: Showing step index ${stepIndex}. ID: ${stepId}`);
