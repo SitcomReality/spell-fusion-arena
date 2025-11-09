@@ -103,11 +103,12 @@ export class Tutorial {
     } else if (stepIndex === 6) {
       // Step 6: Allocate focus - wait for .slot-add-focus button click
       this.completionHandlers[stepIndex] = this.fusionUI.spellSlotsUI.onFocusAllocated(() => {
-        this.complete();
+        // After allocating focus, advance to the new reminder step (slot-your-spell)
+        this.showStep(stepIndex + 1);
       });
     } else if (stepIndex === 7) {
-      // Step 7: Allocate focus - wait for .slot-add-focus button click
-      this.completionHandlers[stepIndex] = this.fusionUI.spellSlotsUI.onFocusAllocated(() => {
+      // Step 7 (NEW): Slot your new spell - wait for a spell to be equipped into a slot
+      this.completionHandlers[stepIndex] = this.fusionUI.spellSlotsUI.onSpellEquipped(() => {
         this.complete();
       });
     }
@@ -142,12 +143,13 @@ export class Tutorial {
       case 4: // Step 5: Start wave (Wave button open)
         document.documentElement.classList.add('tutorial-lock-to-wave');
         break;
-      case 5: // Step 6: Create 2-element spell (allow interacting with fusion preview / fusion-ui)
-        // Use the fusion-preview lock so the fusion UI (preview + builder) remains interactive,
-        // while other areas remain muted.
-        document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
+      case 5: // Step 6: Create 2-element spell (Fusion area open, strict 2-element rule enforced)
+        document.documentElement.classList.add('tutorial-lock-to-fusion-full');
         break;
       case 6: // Step 7: Allocate focus (Equipped Slots open)
+        document.documentElement.classList.add('tutorial-lock-to-equipped');
+        break;
+      case 7: // Step 8 (NEW): Slot your new spell - same focus on equipped slots
         document.documentElement.classList.add('tutorial-lock-to-equipped');
         break;
     }

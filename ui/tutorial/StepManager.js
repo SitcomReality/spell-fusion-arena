@@ -54,6 +54,14 @@ export class StepManager {
         description: 'Click + to add Focus to a spell slot. Focus boosts a slot\'s damage and firing rate; adding it to a locked slot will unlock it.',
         targetSelector: '.slot-add-focus',
         position: 'bottom'
+      },
+      // NEW final reminder step: slot your new spell
+      {
+        id: 'slot-your-spell',
+        title: 'Slot Your New Spell',
+        description: 'Remember to slot your new spell in. You can swap your created spells into any unlocked spell slots at any time.',
+        targetSelector: '.spell-slot-empty-btn',
+        position: 'bottom'
       }
     ];
   }
