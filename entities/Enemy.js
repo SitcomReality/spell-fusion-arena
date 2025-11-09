@@ -12,7 +12,6 @@ export class Enemy {
     
     this.pixelBody = new PixelBody(type.width, type.height, type.pattern);
     
-    // Status effects
     this.statusEffects = {
       burning: { active: false, duration: 0, damage: 0, color: null },
       poison: { active: false, duration: 0, damage: 0, color: null },
@@ -21,19 +20,23 @@ export class Enemy {
     this.burnTickTimer = 0;
     this.poisonTickTimer = 0;
     
-    this.particleRequests = []; // Stores particles to be emitted by GameState
-    
-    // Optional spawn delay (seconds). When >0 the enemy will exist but not move/approach until it counts down.
+    this.particleRequests = [];
     this.spawnDelay = 0;
+    
+    // Boss-specific properties
+    this.bossNumber = 0;
+    this.doubleBossId = null;
+    
+    // Agile boss: movement state
+    this.agilePhase = 0;
+    this.agilePhaseTimer = 0;
   }
   
   update(dt, centerX, centerY) {
     if (!this.alive) return;
 
-    // If this enemy has a spawnDelay, count it down and skip behavior until it reaches zero.
     if (this.spawnDelay && this.spawnDelay > 0) {
       this.spawnDelay -= dt;
-      // Once spawnDelay elapses, ensure speed resets to base in case status effects were applied earlier.
       if (this.spawnDelay <= 0) {
         this.spawnDelay = 0;
         this.speed = this.baseSpeed;
@@ -42,20 +45,51 @@ export class Enemy {
       }
     }
     
-    // Update status effects
     this.updateStatusEffects(dt);
     
     const dx = centerX - this.x;
     const dy = centerY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     
+    // Handle agile boss movement
+    if (this.type.bossType === 'agile') {
+      this.updateAgileBossMovement(dt, centerX, centerY, dx, dy, dist);
+    } else {
+      // Standard movement towards center
+      if (dist > 5) {
+        this.x += (dx / dist) * this.speed * dt;
+        this.y += (dy / dist) * this.speed * dt;
+      }
+    }
+    
+    if (!this.pixelBody.intact) {
+      this.alive = false;
+    }
+  }
+
+  updateAgileBossMovement(dt, centerX, centerY, dx, dy, dist) {
+    // Phase-based movement: move towards center while strafing left/right
+    this.agilePhaseTimer += dt;
+    
+    // Phase duration: 1 second per phase
+    if (this.agilePhaseTimer >= 1.0) {
+      this.agilePhase = (this.agilePhase + 1) % 2; // alternate between left/right
+      this.agilePhaseTimer = 0;
+    }
+    
+    // Base movement towards center
     if (dist > 5) {
       this.x += (dx / dist) * this.speed * dt;
       this.y += (dy / dist) * this.speed * dt;
     }
     
-    if (!this.pixelBody.intact) {
-      this.alive = false;
+    // Perpendicular strafe movement
+    if (dist > 0) {
+      const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
+      const strafeSpeed = this.speed * 0.6;
+      const strafeDir = this.agilePhase === 0 ? 1 : -1;
+      this.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt;
+      this.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt;
     }
   }
 
@@ -236,5 +270,40 @@ export const ENEMY_TYPES = {
     height: 24,
     pattern: 'square',
     color: { r: 80, g: 80, b: 180 }
+  },
+
+  // Boss types
+  mammoth: {
+    name: 'Mammoth',
+    speed: 8,
+    width: 48,
+    height: 48,
+    pattern: 'square',
+    color: { r: 100, g: 80, b: 60 },
+    isBoss: true,
+    bossType: 'mammoth'
+  },
+
+  agile: {
+    name: 'Agile',
+    speed: 35,
+    width: 20,
+    height: 20,
+    pattern: 'blob',
+    color: { r: 200, g: 100, b: 150 },
+    isBoss: true,
+    bossType: 'agile'
+  },
+
+  double: {
+    name: 'Double',
+    speed: 22,
+    width: 24,
+    height: 24,
+    pattern: 'blob',
+    color: { r: 150, g: 150, b: 200 },
+    isBoss: true,
+    bossType: 'double',
+    isDoublePart: true // flag for the individual parts
   }
 };
