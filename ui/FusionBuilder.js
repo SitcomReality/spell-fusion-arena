@@ -1,4 +1,5 @@
 import { Icons } from './Icons.js';
+import VisualPreview from './VisualPreview.js';
 
 export class FusionBuilder {
   constructor(options = {}) {
@@ -67,16 +68,40 @@ export class FusionBuilder {
         // unlocked slot
         if (this.selectedElements[i]) {
           const elem = this.selectedElements[i];
-          slot.innerHTML = `
-            <div class="fusion-slot-content" style="background: rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})">
-              <span>${elem.name}</span>
-              <button class="fusion-slot-remove">×</button>
-            </div>
-          `;
-          slot.querySelector('.fusion-slot-remove').addEventListener('click', (e) => {
+          // Build content container and insert a VisualPreview tile instead of a flat color background
+          const content = document.createElement('div');
+          content.className = 'fusion-slot-content';
+
+          // Create a preview for the element (fallback to a simple color block if preview creation fails)
+          try {
+            const previewData = {
+              color: elem.color,
+              secondaryColor: elem.secondaryColor,
+              accentColor: elem.accentColor || elem.secondaryColor,
+              properties: elem.propertyGenes,
+              visualEffects: elem.visualEffects
+            };
+            const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+            previewEl.classList.add('fusion-slot-preview');
+            content.appendChild(previewEl);
+          } catch (e) {
+            content.style.background = `rgb(${elem.color.r}, ${elem.color.g}, ${elem.color.b})`;
+          }
+
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = elem.name;
+          content.appendChild(nameSpan);
+
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'fusion-slot-remove';
+          removeBtn.textContent = '×';
+          removeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.onSlotRemove(i);
           });
+          content.appendChild(removeBtn);
+
+          slot.appendChild(content);
         } else {
           // Show faded mana essence icon + cost for empty fusion slot
           const cost = COSTS[i] || 0;
