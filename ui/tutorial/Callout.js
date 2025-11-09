@@ -35,7 +35,7 @@ export class Callout {
     }
 
     // NEW: For the "two-element-fusion" tutorial step we want the callout placed near the fusion UI
-    // but visually over the canvas so it doesn't obscure the fusion UI controls:
+    // but visually over the canvas so it doesn't obscure the fusion UI:
     // - Desktop: place the callout to the left of the fusion UI and show the pointer on the right.
     // - Mobile (<=480px): place the callout above the fusion UI and show the pointer pointing down.
     if (step.id === 'two-element-fusion') {
@@ -43,9 +43,8 @@ export class Callout {
         const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
         // positioner placement (where callout will sit relative to target)
         placement = isMobile ? 'top' : 'left';
-        // FORCE the pointer orientation so the small triangle is drawn on the bottom (pointing down)
-        // when on mobile, and on the right (pointing leftwards at the fusion UI) on desktop.
-        callout.dataset.position = isMobile ? 'bottom' : 'right';
+        // Make the pointer side match the placement (same behavior as select-element)
+        callout.dataset.position = placement;
       } catch (e) { /* silent fallback - keep previously computed placement */ }
     }
 
