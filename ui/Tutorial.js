@@ -13,6 +13,8 @@ export class Tutorial {
     // Expose the controller's StepManager so external components (e.g. WaveStartButton)
     // can query step indices like 'start-wave' to determine whether the tutorial is blocking.
     this.stepManager = this.controller.stepManager;
+    // Expose the active callout so external systems (GameApp / WaveStartButton) can remove it when needed.
+    this.callout = this.controller.callout;
 
     this.currentStep = 0;
     this.isActive = false;
