@@ -189,6 +189,18 @@
   opacity: 0.4;
 }
 
+/* Explicit override: ensure the fusion preview panel (#fusion-panel) is enabled and fully visible
+   whenever we apply the 'tutorial-lock-to-fusion-preview' class. This prevents other broader
+   lock rules from accidentally muting or disabling the fusion preview during the "Create Your Spell" step. */
+.tutorial-lock-to-fusion-preview #fusion-panel,
+.tutorial-lock-to-fusion-preview #fusion-panel * {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  /* Make sure the panel doesn't inherit a muted look from broader rules */
+  filter: none !important;
+  transform: none !important;
+}
+
 /* Lock set 3: Lock Element Selection and Fusion Creation. Keep Equipped Spells open (Steps 3/4, 7/8). */
 .tutorial-lock-to-equipped #elements-library,
 .tutorial-lock-to-equipped #element-details-panel,
