@@ -43,7 +43,13 @@ export class TutorialController {
     this.callout.remove();
     this._clearHighlights();
 
-    const target = document.querySelector(step.targetSelector);
+    // For the initial "select-element" step, highlight the whole elements library container
+    let target = null;
+    if (step.id === 'select-element') {
+      target = document.getElementById('elements-library') || document.querySelector(step.targetSelector);
+    } else {
+      target = document.querySelector(step.targetSelector);
+    }
     if (target && !step.isOverlay) {
       this.highlightedElement = target;
       target.classList.add('tutorial-highlight');
