@@ -78,3 +78,24 @@
     }
   }
 /* ...existing code ... */
+
+/* ...existing code ... */
+  setupStep(stepIndex) {
+    const step = this.stepManager.get(stepIndex);
+
+    // Lock/unlock UI areas based on step
+    this.lockUIForStep(stepIndex);
+
+    // For the initial 'select-element' step highlight the whole library container
+    let target = null;
+    if (step.id === 'select-element') {
+      target = document.getElementById('elements-library') || document.querySelector(step.targetSelector);
+    } else {
+      target = document.querySelector(step.targetSelector);
+    }
+    if (target && !step.isOverlay) {
+      this.highlightedElement = target;
+      target.classList.add('tutorial-highlight');
+    }
+  }
+/* ...existing code ... */
