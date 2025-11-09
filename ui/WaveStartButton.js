@@ -48,6 +48,8 @@ export class WaveStartButton {
       return 0;
     };
 
+    const isBossWave = (waveNumber % 5 === 0);
+
     const updateUI = () => {
       const focusBank = readFocusBank();
       // If tutorial is running and not on the 'start-wave' step, force-disable the start button
@@ -58,8 +60,15 @@ export class WaveStartButton {
         if (tut && tut.isActive && tut.currentStep !== startStepIdx) tutorialBlocking = true;
       } catch (e) { tutorialBlocking = false; }
 
+      // Show boss warning when applicable (takes precedence over empty instruction)
+      if (isBossWave) {
+        instrEl.innerHTML = `<strong style="color:#ffb86b">Boss incoming!</strong>`;
+      } else {
+        instrEl.innerHTML = '';
+      }
+
       if (focusBank > 0) {
-        instrEl.innerHTML = `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.`;
+        instrEl.innerHTML += `${focusSVG}You have ${focusBank} unspent Focus — spend it to upgrade a spell slot before starting the next wave.`;
         btn.disabled = true;
         btn.title = 'Spend your unspent Focus on a spell slot before starting the wave';
         // Add a document-level flag which CSS will use to highlight spell-slot headers.
@@ -67,11 +76,12 @@ export class WaveStartButton {
       } else {
         // If tutorial is blocking, present a short hint and keep button disabled
         if (tutorialBlocking) {
-          instrEl.innerHTML = 'Tutorial in progress — start wave when prompted by the tutorial.';
+          instrEl.innerHTML = (isBossWave ? `<strong style="color:#ffb86b">Boss incoming!</strong><br/>` : '') + 'Tutorial in progress — start wave when prompted by the tutorial.';
           btn.disabled = true;
           btn.title = 'Disabled while tutorial is active';
         } else {
-          instrEl.innerHTML = '';
+          // If no special instruction beyond boss, keep what we already set
+          if (!isBossWave) instrEl.innerHTML = '';
           btn.disabled = false;
           btn.title = '';
         }
