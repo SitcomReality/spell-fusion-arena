@@ -51,9 +51,6 @@ export class GameApp {
   }
 
   startGameWithLoadout(startingElements, seed) {
-    // Check if tutorial has been completed
-    const skipTutorial = Tutorial.hasCompletedTutorial();
-
     // Clean up previous game if any
     this.cleanupGame();
 
@@ -137,12 +134,10 @@ export class GameApp {
 
     this.showNextWaveButton();
 
-    // Start tutorial if not skipped (first game only)
-    if (!skipTutorial) {
-      setTimeout(() => {
-        this.tutorial.start();
-      }, 300);
-    }
+    // Always start the tutorial for each new game (even if previously completed)
+    setTimeout(() => {
+      this.tutorial.start();
+    }, 300);
 
     this.start();
   }
