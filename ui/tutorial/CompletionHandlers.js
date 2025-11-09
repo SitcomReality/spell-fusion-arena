@@ -50,6 +50,7 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
+      console.log('TUTORIAL STEP 6: Focus allocated. Attempting transition to step 7.');
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
       try {
@@ -59,34 +60,6 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     });
     cleanupFns.push(off);
-
-    // Fallback: some UI variations may not trigger the above handler reliably
-    // (dynamic rendering, event binding order). Install a delegated click listener
-    // that will complete the step when any .slot-add-focus button is pressed.
-    const delegatedHandler = (ev) => {
-      try {
-        const btn = ev.target.closest && ev.target.closest('.slot-add-focus');
-        if (!btn) return;
-        // Ignore clicks on disabled/inactive controls
-        if (btn.disabled) return;
-
-        // Advance tutorial
-        controller.showStep(stepIndex + 1);
-        try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
-        try {
-          if (window && window.gameInstance && window.gameInstance.tutorial) {
-            window.gameInstance.tutorial.currentStep = stepIndex + 1;
-          }
-        } catch (e) {}
-      } catch (e) {
-        // swallow errors - non-critical
-      }
-    };
-
-    document.addEventListener('click', delegatedHandler, true);
-    cleanupFns.push(() => {
-      try { document.removeEventListener('click', delegatedHandler, true); } catch (e) {}
-    });
   } else if (stepIndex === 7) {
     console.log('TUTORIAL STEP 7: Slot your new spell - Setting up completion handlers.');
     // Final step: Slot your new spell.
@@ -97,6 +70,7 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       // Advance to a non-existent step to trigger tutorial completion.
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      console.log('TUTORIAL STEP 7: Successfully initiated completion process.');
     };
     
     // Find all potential targets for this step.

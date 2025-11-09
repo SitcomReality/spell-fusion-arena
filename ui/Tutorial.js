@@ -17,7 +17,6 @@ export class Tutorial {
     this.callout = this.controller.callout;
 
     this.currentStep = 0;
-    this.isActive = false;
     this._completionCleanup = null;
   }
 
@@ -33,7 +32,9 @@ export class Tutorial {
   }
 
   showStep(stepIndex) {
-    console.log(`TUTORIAL: Showing step index ${stepIndex}.`);
+    const step = this.controller.stepManager.get(stepIndex);
+    const stepId = step ? step.id : 'COMPLETED';
+    console.log(`TUTORIAL: Showing step index ${stepIndex}. ID: ${stepId}`);
     // clear previous completion handlers
     if (this._completionCleanup) {
       try { this._completionCleanup(); } catch (e) {}
