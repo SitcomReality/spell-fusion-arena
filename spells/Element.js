@@ -615,10 +615,7 @@ Object.assign(ELEMENTS.poison, { secondaryColor: { r: 100, g: 180, b: 60 }, visu
 Object.assign(ELEMENTS.void, { secondaryColor: { r: 100, g: 80, b: 160 }, visualGenes: { primaryColorInfluence: 1.0, secondaryAffinity: 0.9, particleColor: 0.8, auraColor: 1.2 } });
 Object.assign(ELEMENTS.chaos, { secondaryColor: { r: 255, g: 150, b: 100 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.85, particleColor: 1.1, auraColor: 1.0 } });
 Object.assign(ELEMENTS.abyss, { secondaryColor: { r: 100, g: 150, b: 220 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.75, particleColor: 0.85, auraColor: 0.95 } });
-// Only assign inferno extras if the element exists (some renames/remove operations may have removed it)
-if (ELEMENTS.inferno) {
-  Object.assign(ELEMENTS.inferno, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
-}
+// Object.assign(ELEMENTS.inferno, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
 Object.assign(ELEMENTS.crystal, { secondaryColor: { r: 100, g: 200, b: 255 }, visualGenes: { primaryColorInfluence: 0.85, secondaryAffinity: 0.8, particleColor: 0.95, auraColor: 1.05 } });
 Object.assign(ELEMENTS.electrum, { secondaryColor: { r: 255, g: 255, b: 150 }, visualGenes: { primaryColorInfluence: 0.9, secondaryAffinity: 0.7, particleColor: 1.1, auraColor: 0.8 } });
 Object.assign(ELEMENTS.eruption, { secondaryColor: { r: 255, g: 80, b: 50 }, visualGenes: { primaryColorInfluence: 1.3, secondaryAffinity: 0.6, particleColor: 0.9, auraColor: 0.8 } });
