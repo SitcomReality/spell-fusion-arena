@@ -7,7 +7,9 @@ export class MovementHandler {
     const wave = properties.wave || 0;
     const homing = properties.homing || 0;
 
-    if (spiral > 0.5 && spiral > (wave + homing)) {
+    // Trigger spiral mode if spiral is meaningful (>0.5) and is greater than
+    // the average influence of homing and wave (more permissive than requiring > (wave+homing)).
+    if (spiral > 0.5 && spiral > ((homing * 0.5) + (wave * 0.5))) {
       this.initSpiral(projectile, targetX, targetY);
     } else {
       this.initStandard(projectile, targetX, targetY);
