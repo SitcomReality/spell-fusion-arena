@@ -63,6 +63,20 @@ export class Callout {
       }
     }
 
+    // NEW: For the "allocate-focus" final tutorial step, use the same placement as "equip-spell"
+    // so the callout does not obscure the #equipped-spells panel on desktop or mobile.
+    if (step.id === 'allocate-focus') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+          placement = 'left';
+        } else {
+          placement = 'top';
+        }
+      } catch (e) {
+        placement = 'top';
+      }
+    }
+
     if (!callout.dataset.position) callout.dataset.position = placement;
 
     const content = document.createElement('div');
