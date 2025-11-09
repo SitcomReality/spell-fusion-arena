@@ -77,6 +77,20 @@ export class Callout {
       }
     }
 
+    // NEW: For the "slot-your-spell" final reminder step, match the same placement/anchoring
+    // as the "allocate-focus" step so it does not cover the equipped-spells panel.
+    if (step.id === 'slot-your-spell') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+          placement = 'left'; // sits to the left of the slots on mobile, pointer should point right
+        } else {
+          placement = 'top'; // sits above the slots on desktop, pointer should point down
+        }
+      } catch (e) {
+        placement = 'top';
+      }
+    }
+
     if (!callout.dataset.position) callout.dataset.position = placement;
 
     const content = document.createElement('div');
