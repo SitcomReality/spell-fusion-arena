@@ -12,6 +12,7 @@ import { ELEMENTS } from '../spells/Element.js';
 import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
 import { Tutorial } from '../ui/Tutorial.js';
+import { SpeedControl } from '../ui/SpeedControl.js';
 
 export class GameApp {
   constructor() {
@@ -31,6 +32,7 @@ export class GameApp {
     this.rewardUI = null;
     this.waveStartButton = null;
     this.gameOverUI = null;
+    this.speedControl = null;
     this.rng = null;
     this.tutorial = null;
 
@@ -76,6 +78,12 @@ export class GameApp {
     this.tutorial = new Tutorial(this.gameState, this.fusionUI);
     this.tutorial.initialize();
 
+    // Initialize speed control
+    this.speedControl = new SpeedControl((speed) => {
+      this.gameState.setSpeedMultiplier(speed);
+    });
+    this.speedControl.mount(document.getElementById('canvas-wrapper'));
+
     this.rewardUI = new RewardUI((reward) => {
       if (reward.type === 'essence') {
         this.fusionUI.addEssenceToBank(reward.amount);
@@ -114,9 +122,6 @@ export class GameApp {
         this.fusionUI.addEssenceToBank(autoEssence);
       } catch (e) {}
       this.rewardUI.show(waveNumber);
-
-      // Note: removed the separate 'wave-complete' tutorial step; tutorial progression to the
-      // two-element fusion step happens after the reward is selected in the RewardUI callback.
     });
 
     // Handle game over
@@ -175,6 +180,9 @@ export class GameApp {
     if (this.rewardUI) {
       this.rewardUI.hide();
       this.rewardUI = null;
+    }
+    if (this.speedControl && this.speedControl.container) {
+      this.speedControl.container.innerHTML = '';
     }
     // Clear canvas
     if (this.renderer) {
