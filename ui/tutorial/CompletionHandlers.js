@@ -52,14 +52,17 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     cleanupFns.push(off);
   } else if (stepIndex === 7) {
     // FINAL: Tutorial ends when player clicks swap or empty button to slot their new spell
-    // Attach listeners to current swap/empty buttons and log when they fire so we can trace why tutorial isn't completing.
-    const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap') || []);
-    const emptyButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn') || []);
-
-    console.debug('[Tutorial Debug] Registering final-step listeners for stepIndex', stepIndex, 'swapCount', swapButtons.length, 'emptyCount', emptyButtons.length);
+    // Use delegation on the static parent (#equipped-spells) as the buttons are dynamically rendered.
+    const equippedSpellsEl = document.getElementById('equipped-spells');
 
     const finishTutorial = (ev) => {
-      console.debug('[Tutorial Debug] Final tutorial trigger fired by', ev?.currentTarget?.className || ev?.target || ev);
+      // Check if the click target is the button or a descendant (like an icon inside the button)
+      const target = ev.target.closest('.spell-slot-swap, .spell-slot-empty-btn');
+      if (!target) return;
+
+      console.debug('[Tutorial Debug] Final tutorial trigger fired by delegation on', target.className);
+      
+      // Complete the tutorial
       try {
         if (controller && typeof controller.complete === 'function') controller.complete();
       } catch (e) {}
@@ -72,17 +75,20 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       } catch (e) {}
     };
 
-    // Attach listeners
-    swapButtons.forEach(btn => btn.addEventListener('click', finishTutorial));
-    emptyButtons.forEach(btn => btn.addEventListener('click', finishTutorial));
+    // Use event delegation on the static parent container (#equipped-spells)
+    equippedSpellsEl.addEventListener('click', finishTutorial);
 
     // Return cleanup that also logs removal
     const cleanupFinal = () => {
-      console.debug('[Tutorial Debug] Cleaning up final-step listeners for stepIndex', stepIndex);
-      swapButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
-      emptyButtons.forEach(btn => btn.removeEventListener('click', finishTutorial));
+      console.debug('[Tutorial Debug] Cleaning up final-step delegation listener for stepIndex', stepIndex);
+      equippedSpellsEl.removeEventListener('click', finishTutorial);
     };
     cleanupFns.push(cleanupFinal);
+    
+    // Log current button counts for debugging context (these listeners are no longer attached directly)
+    const swapButtons = Array.from(document.querySelectorAll('.spell-slot-swap') || []);
+    const emptyButtons = Array.from(document.querySelectorAll('.spell-slot-empty-btn') || []);
+    console.debug('[Tutorial Debug] Registering final-step listeners (delegated) for stepIndex', stepIndex, 'current swapCount', swapButtons.length, 'current emptyCount', emptyButtons.length);
   } else if (stepIndex === 6) {
     // Focus allocated
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
