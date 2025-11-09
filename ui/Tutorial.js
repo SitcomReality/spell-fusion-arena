@@ -96,13 +96,14 @@ export class Tutorial {
       // Step 4: Start wave - wave-start-panel button will trigger next step (handled by GameApp)
       // Wait for the wave start (which calls waveManager.startNextWave)
     } else if (stepIndex === 5) {
-      // Step 5: Reward UI - handled by GameApp's rewardUI when reward is selected
-    } else if (stepIndex === 6) {
-      // Step 6: Create 2-element spell
-      // Wait for exactly 2 elements, then create button becomes enabled
-      // When pressed, advance to step 8
+      // Step 5: Create 2-element spell - wait for Create on fusion preview (two-element flow)
       this.completionHandlers[stepIndex] = this.fusionUI.fusionPreview.onCreateButtonClick(() => {
         this.showStep(stepIndex + 1);
+      });
+    } else if (stepIndex === 6) {
+      // Step 6: Allocate focus - wait for .slot-add-focus button click
+      this.completionHandlers[stepIndex] = this.fusionUI.spellSlotsUI.onFocusAllocated(() => {
+        this.complete();
       });
     } else if (stepIndex === 7) {
       // Step 7: Allocate focus - wait for .slot-add-focus button click
@@ -141,13 +142,12 @@ export class Tutorial {
       case 4: // Step 5: Start wave (Wave button open)
         document.documentElement.classList.add('tutorial-lock-to-wave');
         break;
-      case 5: // Step 6: Reward (Reward UI open)
-        document.documentElement.classList.add('tutorial-lock-to-reward');
+      case 5: // Step 6: Create 2-element spell (allow interacting with fusion preview / fusion-ui)
+        // Use the fusion-preview lock so the fusion UI (preview + builder) remains interactive,
+        // while other areas remain muted.
+        document.documentElement.classList.add('tutorial-lock-to-fusion-preview');
         break;
-      case 6: // Step 7: Create 2-element spell (Fusion area open, strict 2-element rule enforced)
-        document.documentElement.classList.add('tutorial-lock-to-fusion-full');
-        break;
-      case 7: // Step 8: Allocate focus (Equipped Slots open)
+      case 6: // Step 7: Allocate focus (Equipped Slots open)
         document.documentElement.classList.add('tutorial-lock-to-equipped');
         break;
     }
