@@ -15,6 +15,12 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
       controller.showStep(stepIndex + 1);
       // Ensure the global UI lock advances as well so interactions are properly updated
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      // Keep the top-level Tutorial.currentStep in sync (used by external UI like WaveStartButton)
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 2 || stepIndex === 5) {
@@ -22,6 +28,11 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     const off = fusionUI.fusionPreview.onCreateButtonClick(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 3 || stepIndex === 7) {
@@ -29,6 +40,11 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     const off = fusionUI.spellSlotsUI.onSpellEquipped(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
     });
     cleanupFns.push(off);
   } else if (stepIndex === 6) {
@@ -36,6 +52,11 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     const off = fusionUI.spellSlotsUI.onFocusAllocated(() => {
       controller.showStep(stepIndex + 1);
       try { LockManager.applyForStep(stepIndex + 1); } catch (e) {}
+      try {
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.currentStep = stepIndex + 1;
+        }
+      } catch (e) {}
     });
     cleanupFns.push(off);
   }
