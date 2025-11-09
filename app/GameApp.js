@@ -186,6 +186,13 @@ export class GameApp {
     const nextWaveNumber = this.gameState.waveManager.currentWave + 1;
     this.gameState.showWaveStart();
     this.waveStartButton.show(nextWaveNumber, () => {
+      // Ensure any active tutorial callout is removed so it doesn't obscure the canvas during the wave
+      try {
+        if (this.tutorial && this.tutorial.isActive && this.tutorial.callout) {
+          this.tutorial.callout.remove();
+        }
+      } catch (e) { /* silent fallback */ }
+
       this.gameState.waveManager.startNextWave();
       this.gameState.startWave();
       try {
