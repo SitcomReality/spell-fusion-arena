@@ -1,4 +1,5 @@
 import { DetailPanel } from '../DetailPanel.js';
+import VisualPreview from '../VisualPreview.js';
 
 export class ElementDetailsPanel {
   constructor() {
@@ -37,6 +38,25 @@ export class ElementDetailsPanel {
         }
       ]
     );
+
+    // Replace the simple .panel-color block with a VisualPreview tile for richer visuals.
+    try {
+      const previewData = {
+        color: element.color,
+        secondaryColor: element.secondaryColor,
+        accentColor: element.accentColor || element.secondaryColor,
+        properties: element.propertyGenes,
+        visualEffects: element.visualEffects
+      };
+      const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+      previewEl.classList.add('panel-color-preview');
+      const colorEl = this.panel.container.querySelector('.panel-color');
+      if (colorEl && colorEl.parentNode) {
+        colorEl.parentNode.replaceChild(previewEl, colorEl);
+      }
+    } catch (e) {
+      // If preview creation fails, leave the default color block as-is.
+    }
   }
 
   onAddButtonClick(callback) {

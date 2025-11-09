@@ -1,5 +1,6 @@
 import { DetailPanel } from './DetailPanel.js';
 import { Icons } from './Icons.js';
+import VisualPreview from './VisualPreview.js';
 
 export class FusionPreview {
   constructor() {
@@ -71,6 +72,25 @@ export class FusionPreview {
         }
       ]
     );
+
+    // Replace the small .panel-color block with a VisualPreview tile that represents the fused spell.
+    try {
+      const previewData = {
+        color: spell.color,
+        secondaryColor: spell.secondaryColor,
+        accentColor: spell.accentColor || spell.secondaryColor,
+        properties: spell.properties,
+        visualEffects: spell.visualEffects
+      };
+      const previewEl = VisualPreview.create(previewData, { size: 'medium', interactive: false });
+      previewEl.classList.add('panel-color-preview');
+      const colorEl = this.panel.container.querySelector('.panel-color');
+      if (colorEl && colorEl.parentNode) {
+        colorEl.parentNode.replaceChild(previewEl, colorEl);
+      }
+    } catch (e) {
+      // Fallback: leave the original color block in place if preview creation fails.
+    }
 
     const panelEl = this.panel.container.querySelector('.detail-panel');
     if (panelEl) {
