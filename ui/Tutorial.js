@@ -114,6 +114,23 @@ export class Tutorial {
     const callout = document.createElement('div');
     callout.className = 'tutorial-callout';
     callout.dataset.position = step.position;
+    
+    // Determine placement. For the initial "select-element" step ensure the
+    // callout does NOT cover the elements library: on desktop place it to the LEFT,
+    // on very small screens (<480px) place it TOP (above) so it sits over the canvas.
+    let placement = step.position || 'right';
+    if (step.id === 'select-element') {
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+          placement = 'top';
+        } else {
+          placement = 'left';
+        }
+      } catch (e) {
+        placement = 'left';
+      }
+    }
+    callout.dataset.position = placement;
 
     const content = document.createElement('div');
     content.className = 'tutorial-callout-content';
