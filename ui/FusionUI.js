@@ -313,6 +313,14 @@ export class FusionUI {
     // Update created spells list
     this.renderCreatedSpells();
 
+    // If tutorial is active and currently on the Create step, advance to Equip step
+    try {
+      if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
+        // Step index 3 corresponds to 'equip-spell' in the StepManager
+        window.gameInstance.tutorial.showStep(3);
+      }
+    } catch (e) { /* silent */ }
+
     // Ensure the fusion UI is scrolled back to the top so the Elements library is visible on mobile
     try {
       if (this.container) {
