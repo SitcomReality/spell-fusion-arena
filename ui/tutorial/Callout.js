@@ -91,6 +91,18 @@ export class Callout {
       }
     }
 
+    // NEW: Position the "start-wave" callout lower on the canvas and point up at the wave panel.
+    // Anchor to the canvas wrapper so it sits over the canvas (not over the fusion UI), and nudge it down.
+    if (step.id === 'start-wave') {
+      try {
+        placement = 'bottom'; // place callout below the target so the pointer faces up
+        callout.dataset.position = 'bottom';
+        // prefer anchoring to the canvas wrapper so callout sits over canvas area near the wave panel
+        const canvasWrapper = document.getElementById('canvas-wrapper');
+        if (canvasWrapper) positionTarget = canvasWrapper;
+      } catch (e) { /* silent fallback */ }
+    }
+
     if (!callout.dataset.position) callout.dataset.position = placement;
 
     const content = document.createElement('div');
@@ -150,12 +162,24 @@ export class Callout {
         const fusionUi = document.getElementById('fusion-ui');
         if (fusionUi) positionTarget = fusionUi;
       }
+
+      // For start-wave, nudge the computed position lower so the callout sits toward the bottom of the canvas
+      if (step.id === 'start-wave') {
+        // ensure positionTarget is the canvas wrapper (set above) or fallback to targetEl
+        positionTarget = positionTarget || document.getElementById('canvas-wrapper') || targetEl;
+      }
     } catch (e) { /* silent fallback to targetEl */ }
     if (positionTarget && !step.isOverlay) {
       const pos = this.positioner.place(callout, positionTarget, placement);
       callout.style.position = 'fixed';
-      // If this is the create-spell step on desktop, nudge the callout up a bit so it doesn't cover the Create button.
-      if (step.id === 'create-spell' && !(window.matchMedia && window.matchMedia('(max-width: 480px)').matches)) {
+      // Nudge the callout slightly further down so it appears lower on the canvas and points up at the wave panel.
+      if (step.id === 'start-wave') {
+        const numericTop = parseFloat(pos.top) || 0;
+        // Larger nudge on desktop, smaller on mobile
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
+        const nudge = isMobile ? 40 : 80;
+        callout.style.top = `${Math.min(window.innerHeight - 8, numericTop + nudge)}px`;
+      } else if (step.id === 'create-spell' && !(window.matchMedia && window.matchMedia('(max-width: 480px)').matches)) {
         // subtract 8px from the computed top to move it upward
         const numericTop = parseFloat(pos.top) || 0;
         // increased nudge to avoid obscuring the Create button on desktop
