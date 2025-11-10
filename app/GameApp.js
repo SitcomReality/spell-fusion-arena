@@ -181,8 +181,15 @@ export class GameApp {
       this.rewardUI.hide();
       this.rewardUI = null;
     }
-    if (this.speedControl && this.speedControl.container) {
-      this.speedControl.container.innerHTML = '';
+    // Remove only the speed-control wrapper element that the SpeedControl appended
+    // instead of clearing the whole canvas-wrapper (which would remove the canvases).
+    if (this.speedControl) {
+      try {
+        if (this.speedControl.element && this.speedControl.element.parentNode) {
+          this.speedControl.element.remove();
+        }
+      } catch (e) { /* silent */ }
+      this.speedControl = null;
     }
     // Clear canvas
     if (this.renderer) {
