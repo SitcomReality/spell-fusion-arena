@@ -1,4 +1,3 @@
-// New: centralized enemy type definitions (moved from previous Enemy.js)
 export const ENEMY_TYPES = {
   grunt: {
     name: 'Grunt',
@@ -63,4 +62,4 @@ export const ENEMY_TYPES = {
 };
 
 export default ENEMY_TYPES;
-```
+
