@@ -134,7 +134,7 @@ export class Callout {
     skipBtn.style.background = 'transparent';
     skipBtn.style.color = '#dfefff';
     skipBtn.style.cursor = 'pointer';
-    skipBtn.addEventListener('click', (e) => {
+    skipBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       try {
         // Prefer the authoritative Tutorial instance on the global gameInstance.
@@ -145,7 +145,8 @@ export class Callout {
           window.tutorial.complete();
         } else {
           // As a last resort, clear any locks and remove callouts directly.
-          const lm = (await import('./LockManager.js')).LockManager; // try dynamic import (unlikely)
+          const lmModule = await import('./LockManager.js').catch(() => null);
+          const lm = lmModule && lmModule.LockManager;
           if (lm && lm.clearAll) lm.clearAll();
         }
       } catch (err) {
