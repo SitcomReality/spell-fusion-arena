@@ -38,6 +38,9 @@ export class SplittingHandler {
       childProjectile.generation = parentProjectile.generation + 1;
       childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.6;
 
+      // Child should be half the visual size of its parent
+      childProjectile.radius = (parentProjectile.radius || 0) * 0.5;
+
       childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
       childProjectile.properties = childProjectile.spell.properties;
 
