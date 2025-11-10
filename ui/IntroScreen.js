@@ -78,7 +78,20 @@ export class IntroScreen {
   }
 
   rollElementPool(count) {
-    const allElements = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
+    let allElements = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
+
+    // Defensive fallback: if ELEMENTS hasn't been populated yet (async load), provide a small inline pool
+    // so the intro loadout selection won't crash. This avoids depending on async module load timing.
+    if (!allElements || allElements.length === 0) {
+      const fallback = [
+        { key: 'fire', elem: { name: 'Fire', color: { r: 255, g: 100, b: 50 }, propertyGenes: { speed: 280, damage: 20 }, visualEffects: { trail: true }, rarity: 'common' } },
+        { key: 'frost', elem: { name: 'Frost', color: { r: 120, g: 220, b: 255 }, propertyGenes: { speed: 240, damage: 18 }, visualEffects: { trail: true }, rarity: 'common' } },
+        { key: 'stone', elem: { name: 'Stone', color: { r: 130, g: 110, b: 60 }, propertyGenes: { speed: 140, damage: 35 }, visualEffects: { trail: true }, rarity: 'common' } },
+        { key: 'nature', elem: { name: 'Nature', color: { r: 100, g: 220, b: 100 }, propertyGenes: { speed: 220, damage: 14 }, visualEffects: { trail: true }, rarity: 'common' } }
+      ];
+      allElements = fallback;
+    }
+
     const pool = [];
 
     // Weight by rarity: common=60, uncommon=30, rare=10
