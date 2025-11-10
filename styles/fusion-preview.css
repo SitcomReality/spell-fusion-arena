@@ -117,6 +117,19 @@
   border-color: rgba(50,50,50,0.6);
 }
 
+/* Notice shown in fusion preview when spell will use spiral movement */
+.fusion-spiral-note {
+  background: linear-gradient(90deg, rgba(120, 80, 200, 0.12), rgba(100, 160, 255, 0.06));
+  border: 1px solid rgba(122, 80, 200, 0.18);
+  color: #dcd7ff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .panel-summary {

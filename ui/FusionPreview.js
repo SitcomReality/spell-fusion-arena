@@ -73,6 +73,24 @@ export class FusionPreview {
       ]
     );
 
+    // Show a clear note in the panel if this spell will use spiral movement
+    try {
+      const spiral = props.spiral || 0;
+      const wave = props.wave || 0;
+      const homing = props.homing || 0;
+      const willSpiral = (spiral > 0.5) && (spiral > ((homing * 0.5) + (wave * 0.5)));
+      if (willSpiral && this.panel && this.panel.container) {
+        const body = this.panel.container.querySelector('.panel-body');
+        if (body) {
+          const note = document.createElement('div');
+          note.className = 'fusion-spiral-note';
+          note.textContent = 'Will fire as a spiralling projectile';
+          // Insert at top so it's immediately visible above properties
+          body.insertBefore(note, body.firstChild);
+        }
+      }
+    } catch (e) { /* silent fallback */ }
+
     // Replace the small .panel-color block with a VisualPreview tile that represents the fused spell.
     try {
       const previewData = {
