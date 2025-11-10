@@ -1,4 +1,5 @@
 import { Projectile } from '../../spells/Projectile.js';
+import { MovementHandler } from '../../spells/projectile/MovementHandler.js';
 
 export class SplittingHandler {
   constructor(game) {
@@ -36,6 +37,12 @@ export class SplittingHandler {
 
         childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
         childProjectile.properties = childProjectile.spell.properties;
+
+        // Re-init movement so the child uses the weakened spell's properties (speed, spiral, homing, etc.)
+        try {
+          MovementHandler.initMovement(childProjectile, targetX, targetY);
+          MovementHandler.initWaveProperties(childProjectile);
+        } catch (e) { /* silent fallback */ }
 
         game.projectiles.push(childProjectile);
       }
