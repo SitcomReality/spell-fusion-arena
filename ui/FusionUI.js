@@ -117,6 +117,10 @@ export class FusionUI {
     this.fusionPreview.mount(document.getElementById('fusion-panel'));
     this.spellSlotsUI.mount();
 
+    // By default keep the fusion panel hidden until a spell that will spiral is shown.
+    const fusionPanelEl = document.getElementById('fusion-panel');
+    if (fusionPanelEl) fusionPanelEl.style.display = 'none';
+
     // Wire the external Clear button to clear fusion selection
     const clearBtn = this.container.querySelector('.fusion-clear-btn');
     if (clearBtn) {
@@ -269,6 +273,8 @@ export class FusionUI {
   updateFusionPreview(forceEmpty = false) {
     if (forceEmpty || this.selectedElements.length === 0) {
       this.fusionPreview.showMessage(`Add an element to create a spell`);
+      // Hide fusion panel when there's nothing to preview
+      try { document.getElementById('fusion-panel').style.display = 'none'; } catch (e) {}
       return;
     }
 
@@ -290,6 +296,21 @@ export class FusionUI {
       if (createBtn) {
         createBtn.classList.toggle('enabled-for-two-elements', isExactlyTwoElements);
       }
+    }
+
+    // Show the fusion panel only when the fused spell will behave as a spiralling projectile.
+    // Mirror the MovementHandler spiral decision: spiral > 0.5 && spiral > ((homing*0.5) + (wave*0.5))
+    try {
+      const props = this.currentSpell.properties || {};
+      const spiralVal = props.spiral || 0;
+      const homingVal = props.homing || 0;
+      const waveVal = props.wave || 0;
+      const willSpiral = (spiralVal > 0.5) && (spiralVal > ((homingVal * 0.5) + (waveVal * 0.5)));
+      const fusionPanelEl2 = document.getElementById('fusion-panel');
+      if (fusionPanelEl2) fusionPanelEl2.style.display = willSpiral ? '' : 'none';
+    } catch (e) {
+      // silent fallback: leave panel hidden if anything goes wrong
+      try { document.getElementById('fusion-panel').style.display = 'none'; } catch (e2) {}
     }
   }
 
