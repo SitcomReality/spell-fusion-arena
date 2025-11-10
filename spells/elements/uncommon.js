@@ -1,3 +1,5 @@
+import { EXTRA_UNCOMMON_ELEMENTS } from './more_uncommon.js';
+
 export const UNCOMMON_ELEMENTS = {
   blood: {
     name: 'Blood',
@@ -153,5 +155,7 @@ export const UNCOMMON_ELEMENTS = {
   }
 };
 
-export default UNCOMMON_ELEMENTS;
+/* Merge in extra uncommon elements so imports elsewhere get a single unified object */
+Object.assign(UNCOMMON_ELEMENTS, EXTRA_UNCOMMON_ELEMENTS);
 
+export default UNCOMMON_ELEMENTS;
