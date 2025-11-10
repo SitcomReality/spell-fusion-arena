@@ -11,41 +11,43 @@ export class SplittingHandler {
     const splittingPotency = (parentProjectile.properties.splitting || 0) * parentProjectile.potencyMultiplier;
     if (splittingPotency <= 0) return;
 
-    const maxRolls = Math.max(1, Math.ceil(splittingPotency));
-    const baseChance = Math.min(0.9, 0.12 + (splittingPotency * 0.12));
+    // Previous behavior used multiple independent rolls with a modest base chance.
+    // New behavior: use a stronger, potency-scaled single chance (closer to chaining's reliability)
+    // and when it procs spawn a minimum of 2 children (distinct from chaining which redirects).
+    const baseChance = Math.min(0.95, 0.25 + splittingPotency * 0.25); // higher, potency-scaled chance
 
-    for (let r = 0; r < maxRolls; r++) {
-      const rollModifier = 1 - (r / Math.max(1, maxRolls)) * 0.25;
-      const rollChance = Math.max(0.02, Math.min(0.95, baseChance * rollModifier));
+    if (Math.random() > baseChance) return;
 
-      if (Math.random() <= rollChance) {
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 6 + Math.random() * 12;
-        const targetX = collisionEnemy.x + Math.cos(angle) * distance + (Math.random() - 0.5) * 40;
-        const targetY = collisionEnemy.y + Math.sin(angle) * distance + (Math.random() - 0.5) * 40;
+    // Determine how many children to spawn: at least 2, scale with potency
+    const spawnCount = Math.max(2, Math.round(splittingPotency));
 
-        const childProjectile = new Projectile(
-          collisionEnemy.x,
-          collisionEnemy.y,
-          parentProjectile.spell,
-          targetX,
-          targetY
-        );
+    for (let i = 0; i < spawnCount; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 6 + Math.random() * 12;
+      const targetX = collisionEnemy.x + Math.cos(angle) * distance + (Math.random() - 0.5) * 40;
+      const targetY = collisionEnemy.y + Math.sin(angle) * distance + (Math.random() - 0.5) * 40;
 
-        childProjectile.generation = parentProjectile.generation + 1;
-        childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.6;
+      const childProjectile = new Projectile(
+        collisionEnemy.x,
+        collisionEnemy.y,
+        parentProjectile.spell,
+        targetX,
+        targetY
+      );
 
-        childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
-        childProjectile.properties = childProjectile.spell.properties;
+      childProjectile.generation = parentProjectile.generation + 1;
+      childProjectile.potencyMultiplier = parentProjectile.potencyMultiplier * 0.6;
 
-        // Re-init movement so the child uses the weakened spell's properties (speed, spiral, homing, etc.)
-        try {
-          MovementHandler.initMovement(childProjectile, targetX, targetY);
-          MovementHandler.initWaveProperties(childProjectile);
-        } catch (e) { /* silent fallback */ }
+      childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
+      childProjectile.properties = childProjectile.spell.properties;
 
-        game.projectiles.push(childProjectile);
-      }
+      // Re-init movement so the child uses the weakened spell's properties (speed, spiral, homing, etc.)
+      try {
+        MovementHandler.initMovement(childProjectile, targetX, targetY);
+        MovementHandler.initWaveProperties(childProjectile);
+      } catch (e) { /* silent fallback */ }
+
+      game.projectiles.push(childProjectile);
     }
   }
 
