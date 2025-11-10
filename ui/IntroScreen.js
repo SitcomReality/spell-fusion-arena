@@ -1,6 +1,7 @@
 import { ELEMENTS } from '../spells/Element.js';
 import { SeededRandom } from '../game/SeededRandom.js';
 import VisualPreview from './VisualPreview.js';
+import { ELEMENTS_READY } from '../spells/Element.js';
 
 export class IntroScreen {
   constructor(onGameStart) {
@@ -33,10 +34,16 @@ export class IntroScreen {
     document.body.appendChild(this.container);
 
     const newGameBtn = document.getElementById('new-game-btn');
-    newGameBtn.addEventListener('click', () => this.startNewGame());
+    // Ensure elements are loaded before starting the new-game flow to avoid races.
+    newGameBtn.addEventListener('click', async () => {
+      try {
+        await ELEMENTS_READY;
+      } catch (e) { /* silent */ }
+      this.startNewGame();
+    });
   }
 
-  startNewGame() {
+  async startNewGame() {
     // Generate a random seed for this game session
     const seed = Math.floor(Math.random() * 0x7FFFFFFF);
     this.rng = new SeededRandom(seed);
@@ -78,20 +85,7 @@ export class IntroScreen {
   }
 
   rollElementPool(count) {
-    let allElements = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
-
-    // Defensive fallback: if ELEMENTS hasn't been populated yet (async load), provide a small inline pool
-    // so the intro loadout selection won't crash. This avoids depending on async module load timing.
-    if (!allElements || allElements.length === 0) {
-      const fallback = [
-        { key: 'fire', elem: { name: 'Fire', color: { r: 255, g: 100, b: 50 }, propertyGenes: { speed: 280, damage: 20 }, visualEffects: { trail: true }, rarity: 'common' } },
-        { key: 'frost', elem: { name: 'Frost', color: { r: 120, g: 220, b: 255 }, propertyGenes: { speed: 240, damage: 18 }, visualEffects: { trail: true }, rarity: 'common' } },
-        { key: 'stone', elem: { name: 'Stone', color: { r: 130, g: 110, b: 60 }, propertyGenes: { speed: 140, damage: 35 }, visualEffects: { trail: true }, rarity: 'common' } },
-        { key: 'nature', elem: { name: 'Nature', color: { r: 100, g: 220, b: 100 }, propertyGenes: { speed: 220, damage: 14 }, visualEffects: { trail: true }, rarity: 'common' } }
-      ];
-      allElements = fallback;
-    }
-
+    const allElements = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
     const pool = [];
 
     // Weight by rarity: common=60, uncommon=30, rare=10

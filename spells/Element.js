@@ -112,7 +112,8 @@ async function _loadElements() {
 }
 
 // Immediately attempt to load grouped elements.
-_loadElements().catch(() => { /* silent */ });
+// _loadElements already returns a Promise since it's async; expose that promise for consumers.
+export const ELEMENTS_READY = _loadElements().catch(() => { /* silent */ });
 
 // Utility functions (unchanged API surface)
 export function getUnlockedElements(unlockedKeys) {
