@@ -31,6 +31,9 @@ export class Enemy {
     // Agile boss: movement state
     this.agilePhase = 0;
     this.agilePhaseTimer = 0;
+    
+    // Boss wobble timer used to apply gentle lateral motion for non-agile bosses
+    this.bossWobbleTimer = 0;
   }
   
   update(dt, centerX, centerY) {
@@ -62,6 +65,20 @@ export class Enemy {
         this.y += (dy / dist) * this.speed * dt;
       }
     }
+    
+    // Gentle lateral wobble for bosses that aren't the aggressive 'agile' type.
+    // This creates a subtle left/right motion so Mammoth/Double feel less static.
+    try {
+      if (this.type && this.type.isBoss && this.type.bossType !== 'agile') {
+        this.bossWobbleTimer += dt;
+        const wobbleFreq = 1.2; // cycles per second
+        const wobbleAmpByType = this.type.bossType === 'mammoth' ? 10 : 6; // larger mammoth wobble
+        const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
+        const wobbleOffset = Math.sin(this.bossWobbleTimer * Math.PI * 2 * wobbleFreq) * wobbleAmpByType;
+        this.x += Math.cos(perpAngle) * wobbleOffset * dt;
+        this.y += Math.sin(perpAngle) * wobbleOffset * dt;
+      }
+    } catch (e) { /* silent */ }
     
     // Clamp boss positions so knockback cannot push them further than the spawn radius.
     // Also damp their knockback velocity when hitting the limit to avoid repeated strong bounces.
@@ -114,10 +131,10 @@ export class Enemy {
     if (dist > 0) {
       const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
       // Increase lateral movement magnitude and speed for more pronounced zig-zag
-      const strafeSpeed = this.speed * 1.0; // make lateral movement slightly faster
+      // Make agile boss sway much more dramatically (larger lateral multiplier & slightly faster strafe)
+      const strafeSpeed = this.speed * 1.15;
       const strafeDir = this.agilePhase === 0 ? 1 : -1;
-      // Increase side-to-side distance by applying a larger stride multiplier
-      const lateralMultiplier = 1.25;
+      const lateralMultiplier = 2.0; // was 1.25 -> larger left/right motion
       this.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
       this.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
     }
