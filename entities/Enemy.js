@@ -105,8 +105,7 @@ export class Enemy {
   }
 }
 
-/* Re-export ENEMY_TYPES for backwards compatibility */
-export { ENEMY_TYPES };
+export { ENEMY_TYPES }; // re-export centralized enemy type definitions for backwards compatibility
 
 export const ENEMY_TYPES = {
   grunt: {
