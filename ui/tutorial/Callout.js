@@ -117,6 +117,48 @@ export class Callout {
     `;
     callout.appendChild(content);
 
+    // Add Skip Tutorial button so users can terminate the tutorial early and unlock full UI.
+    // This is intentionally simple and calls the global tutorial instance if present.
+    const controlsBar = document.createElement('div');
+    controlsBar.className = 'tutorial-callout-controls';
+    controlsBar.style.display = 'flex';
+    controlsBar.style.justifyContent = 'flex-end';
+    controlsBar.style.gap = '8px';
+
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'tutorial-skip-btn';
+    skipBtn.textContent = 'Skip Tutorial';
+    skipBtn.title = 'End the tutorial and unlock the full UI';
+    skipBtn.style.padding = '6px 10px';
+    skipBtn.style.border = '1px solid rgba(255,255,255,0.06)';
+    skipBtn.style.background = 'transparent';
+    skipBtn.style.color = '#dfefff';
+    skipBtn.style.cursor = 'pointer';
+    skipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      try {
+        // Prefer the authoritative Tutorial instance on the global gameInstance.
+        if (window && window.gameInstance && window.gameInstance.tutorial) {
+          window.gameInstance.tutorial.complete();
+        } else if (window && window.tutorial) {
+          // fallback global
+          window.tutorial.complete();
+        } else {
+          // As a last resort, clear any locks and remove callouts directly.
+          const lm = (await import('./LockManager.js')).LockManager; // try dynamic import (unlikely)
+          if (lm && lm.clearAll) lm.clearAll();
+        }
+      } catch (err) {
+        // best-effort fallback: remove tutorial-related classes and callout element
+        try { document.documentElement.classList.remove('tutorial-lock-to-elements','tutorial-lock-to-elements-details','tutorial-lock-to-fusion-preview','tutorial-lock-to-equipped','tutorial-lock-to-wave','tutorial-lock-to-reward','tutorial-lock-to-fusion-full'); } catch(e){}
+      } finally {
+        this.remove();
+      }
+    });
+
+    controlsBar.appendChild(skipBtn);
+    callout.appendChild(controlsBar);
+
     // No close or nav buttons to attach (tutorial flow controlled externally).
 
     // Position and append
