@@ -36,7 +36,40 @@ export class PropertyApplier {
       const dy = enemy.y - projectile.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist > 0) {
-        const knockbackForce = 150 * props.knockback;
+        // Base knockback force
+        let knockbackForce = 150 * props.knockback;
+
+        // If target is a boss, reduce knockback power based on distance from center (player)
+        try {
+          if (enemy.type && enemy.type.isBoss && gameState && gameState.centerX !== undefined) {
+            const toCenterX = enemy.x - gameState.centerX;
+            const toCenterY = enemy.y - gameState.centerY;
+            const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+            const spawnR = (gameState && gameState.width && gameState.height) ? (gameState.waveManager ? (gameState.waveManager.rng ? (gameState.waveManager.rng, (gameState.waveManager && gameState.waveManager.rng) && undefined) : undefined) : undefined) : undefined;
+            // Fallback to CONFIG spawnRadius if waveManager data unavailable
+          }
+        } catch (e) { /* silent */ }
+
+        // Compute reduction multiplier (default no reduction)
+        let reduction = 0;
+        try {
+          // Prefer CONFIG value if available
+          const spawnRadius = (typeof CONFIG !== 'undefined' && CONFIG.enemy && CONFIG.enemy.spawnRadius) ? CONFIG.enemy.spawnRadius : 360;
+          if (enemy.type && enemy.type.isBoss && gameState && gameState.centerX !== undefined) {
+            const toCenterX = enemy.x - gameState.centerX;
+            const toCenterY = enemy.y - gameState.centerY;
+            const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+            const distFrac = Math.max(0, Math.min(1, curDist / spawnRadius));
+            if (enemy.type.bossType === 'agile' || enemy.type.bossType === 'double') {
+              reduction = 0.5; // 50% reduction at spawn edge
+            } else if (enemy.type.bossType === 'mammoth') {
+              reduction = 1.0; // 100% reduction at spawn edge (no knockback at edge)
+            }
+            const multiplier = 1 - (reduction * distFrac); // linear from center (1) -> edge (1-reduction)
+            knockbackForce *= multiplier;
+          }
+        } catch (e) { /* silent fallback - no reduction */ }
+
         enemy.knockbackVx = (dx / dist) * knockbackForce;
         enemy.knockbackVy = (dy / dist) * knockbackForce;
         enemy.knockbackTimer = 0.2;
