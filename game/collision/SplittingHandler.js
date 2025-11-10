@@ -41,6 +41,14 @@ export class SplittingHandler {
       childProjectile.spell = this.createWeakenedSpell(parentProjectile.spell, childProjectile.potencyMultiplier);
       childProjectile.properties = childProjectile.spell.properties;
 
+      // Ensure child inherits 100% of the parent's actual speed magnitude
+      try {
+        const parentSpeed = Math.sqrt(parentProjectile.vx * parentProjectile.vx + parentProjectile.vy * parentProjectile.vy) || (parentProjectile.spell.properties && parentProjectile.spell.properties.speed) || 0;
+        if (childProjectile.spell && childProjectile.spell.properties) {
+          childProjectile.spell.properties.speed = parentSpeed;
+        }
+      } catch (e) { /* silent */ }
+
       // Re-init movement so the child uses the weakened spell's properties (speed, spiral, homing, etc.)
       try {
         MovementHandler.initMovement(childProjectile, targetX, targetY);
