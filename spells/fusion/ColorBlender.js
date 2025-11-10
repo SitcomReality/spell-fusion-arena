@@ -102,61 +102,128 @@ export const ColorBlender = {
       auraColor: 0.7
     });
 
-    // Blend primary colors normally
-    const blendedPrimary = this.blend(...primaryColors);
-    const primaryResult = blendedPrimary.primary;
+    // Convert all to HSL up-front
+    const primHslList = primaryColors.map(c => this.rgbToHsl(c));
+    const secHslList = secondaryColors.map(c => this.rgbToHsl(c));
 
-    // Blend secondary colors with weighting based on visual genes
-    let secondaryHueSum = 0, secondarySatSum = 0, secondaryLightSum = 0;
-    let secondaryWeightSum = 0;
+    // Compute saturation influence: stronger contribution from high-sat elements,
+    // but preserve order influence: earlier elements bias primary, later bias secondary.
+    let weightedHuePrimary = 0, weightedSatPrimary = 0, weightedLightPrimary = 0, weightPrimSum = 0;
+    let weightedHueSecondary = 0, weightedSatSecondary = 0, weightedLightSecondary = 0, weightSecSum = 0;
 
     for (let i = 0; i < elements.length; i++) {
-      const genes = visualGenes[i];
-      const influence = (genes.secondaryAffinity || 0.5) * (genes.primaryColorInfluence || 1.0);
-      const secHsl = this.rgbToHsl(secondaryColors[i]);
-      
-      // Position matters: earlier elements have stronger influence
-      const positionMultiplier = 1 / (1 + i * 0.3);
-      const weight = influence * positionMultiplier;
+      const p = primHslList[i];
+      const s = secHslList[i];
+      const genes = visualGenes[i] || {};
+      // position weight: earlier elements favor primary, later favor secondary
+      const posPrim = 1.2 - (i / Math.max(1, elements.length)) * 0.6; // in [~0.6..1.2]
+      const posSec  = 0.8 + (i / Math.max(1, elements.length)) * 0.6; // in [0.8..1.4]
+      // saturation multiplier: more saturated colors should influence final saturation more
+      const satBoostPrim = 0.5 + p.s * (genes.primaryColorInfluence || 1.0);
+      const satBoostSec  = 0.5 + s.s * (genes.secondaryAffinity || 0.5);
 
-      secondaryHueSum += secHsl.h * weight;
-      secondarySatSum += secHsl.s * weight;
-      secondaryLightSum += secHsl.l * weight;
-      secondaryWeightSum += weight;
+      const wPrim = posPrim * satBoostPrim;
+      const wSec = posSec * satBoostSec;
+
+      // accumulate primary mix
+      weightedHuePrimary += (p.h * wPrim);
+      weightedSatPrimary += (p.s * wPrim);
+      weightedLightPrimary += (p.l * wPrim);
+      weightPrimSum += wPrim;
+
+      // accumulate secondary mix
+      weightedHueSecondary += (s.h * wSec);
+      weightedSatSecondary += (s.s * wSec);
+      weightedLightSecondary += (s.l * wSec);
+      weightSecSum += wSec;
     }
 
-    let secondaryResult = primaryResult;
-    if (secondaryWeightSum > 0) {
-      const secondaryHsl = {
-        h: (secondaryHueSum / secondaryWeightSum) % 360,
-        s: Math.min(1.0, secondarySatSum / secondaryWeightSum),
-        l: Math.min(0.75, secondaryLightSum / secondaryWeightSum)
-      };
-      secondaryResult = this.hslToRgb(secondaryHsl);
-    }
+    // finalize HSL averages (clamp/normalize)
+    const primaryHsl = {
+      h: weightPrimSum > 0 ? (weightedHuePrimary / weightPrimSum) % 360 : primHslList[0].h,
+      s: Math.min(1, weightPrimSum > 0 ? (weightedSatPrimary / weightPrimSum) : primHslList[0].s),
+      l: Math.min(1, weightPrimSum > 0 ? (weightedLightPrimary / weightPrimSum) : primHslList[0].l)
+    };
 
-    // Generate accent from the element with highest secondary affinity
-    let accentColor = null;
-    let maxSecondaryAffinity = 0;
-    let accentElementIdx = -1;
-    for (let i = 0; i < visualGenes.length; i++) {
-      if ((visualGenes[i].secondaryAffinity || 0) > maxSecondaryAffinity) {
-        maxSecondaryAffinity = visualGenes[i].secondaryAffinity || 0;
-        accentElementIdx = i;
+    const secondaryHsl = {
+      h: weightSecSum > 0 ? (weightedHueSecondary / weightSecSum) % 360 : secHslList[0].h,
+      s: Math.min(1, weightSecSum > 0 ? (weightedSatSecondary / weightSecSum) : secHslList[0].s),
+      l: Math.min(1, weightSecSum > 0 ? (weightedLightSecondary / weightSecSum) : secHslList[0].l)
+    };
+
+    // Combine an overall saturation modifier so that very desaturated ingredient sets
+    // produce a final desaturated outcome; strong saturated ingredients can rescue saturation.
+    const avgInputSat = (primHslList.reduce((s, x) => s + x.s, 0) + secHslList.reduce((s, x) => s + x.s, 0)) / (primHslList.length + secHslList.length);
+    // scale factor in [0.6..1.15] so desaturated pools bias down, saturated pools can boost slightly
+    const satScale = 0.6 + Math.pow(avgInputSat, 1.2) * 0.55;
+    primaryHsl.s = Math.min(1, primaryHsl.s * satScale);
+    secondaryHsl.s = Math.min(1, secondaryHsl.s * (0.9 + (1 - avgInputSat) * 0.1)); // slightly lower influence for secondary
+
+    // Strict black/white thresholding:
+    // If the resulting saturation is extremely low and lightness is near extremes, snap to pure black or white.
+    const BLACK_WHITE_SAT_THRESHOLD = 0.06; // very desaturated
+    const BLACK_LIGHTNESS_THRESHOLD = 0.12; // dark enough -> black
+    const WHITE_LIGHTNESS_THRESHOLD = 0.88; // light enough -> white
+
+    let primaryRgb = this.hslToRgb(primaryHsl);
+    // Check for black/white snapping using primary result (drives final dominant color)
+    const primLum = primaryHsl.l;
+    const primSat = primaryHsl.s;
+    if (primSat < BLACK_WHITE_SAT_THRESHOLD) {
+      if (primLum <= BLACK_LIGHTNESS_THRESHOLD) {
+        primaryRgb = { r: 0, g: 0, b: 0 };
+      } else if (primLum >= WHITE_LIGHTNESS_THRESHOLD) {
+        primaryRgb = { r: 255, g: 255, b: 255 };
+      } else {
+        // Slightly desaturate toward gray but do not fully snap
+        const gray = Math.round(primaryHsl.l * 255);
+        primaryRgb = { r: gray, g: gray, b: gray };
       }
     }
-    if (accentElementIdx >= 0) {
-      const accentHsl = this.rgbToHsl(secondaryColors[accentElementIdx]);
-      accentHsl.s = Math.min(1.0, accentHsl.s * 1.2);
-      accentHsl.l = Math.min(0.7, accentHsl.l * 1.1);
+
+    // For secondary, prefer a slightly lower saturation and allow ordering to cause secondary
+    // to sometimes be a muted variant of primary if elements are similar.
+    const secRgbCandidate = this.hslToRgb(secondaryHsl);
+    let secondaryRgb = secRgbCandidate;
+
+    const secLum = secondaryHsl.l;
+    const secSat = secondaryHsl.s;
+    if (secSat < BLACK_WHITE_SAT_THRESHOLD) {
+      if (secLum <= BLACK_LIGHTNESS_THRESHOLD) {
+        secondaryRgb = { r: 0, g: 0, b: 0 };
+      } else if (secLum >= WHITE_LIGHTNESS_THRESHOLD) {
+        secondaryRgb = { r: 255, g: 255, b: 255 };
+      } else {
+        const gray = Math.round(secondaryHsl.l * 255);
+        secondaryRgb = { r: gray, g: gray, b: gray };
+      }
+    }
+
+    // Accent: pick the element with the most contrasting hue to primary (as before),
+    // but penalize accent selection if its saturation is very low (prefer vivid accents).
+    let accentColor = null;
+    let maxHueDiff = 0;
+    let accentIndex = -1;
+    for (let i = 0; i < primHslList.length; i++) {
+      let hueDiff = Math.abs(primHslList[i].h - primaryHsl.h);
+      if (hueDiff > 180) hueDiff = 360 - hueDiff;
+      // boost for saturated candidates
+      const satFactor = 1 + primHslList[i].s;
+      const score = hueDiff * satFactor;
+      if (score > maxHueDiff) {
+        maxHueDiff = score;
+        accentIndex = i;
+      }
+    }
+    if (accentIndex >= 0) {
+      const accentHsl = { ...primHslList[accentIndex] };
+      // accent should be slightly more saturated/light adjusted for visibility
+      accentHsl.s = Math.min(1.0, accentHsl.s * 1.25);
+      accentHsl.l = Math.min(0.85, accentHsl.l * 1.05);
       accentColor = this.hslToRgb(accentHsl);
     }
 
-    return {
-      primary: primaryResult,
-      secondary: secondaryResult,
-      accent: accentColor
-    };
+    return { primary: primaryRgb, secondary: secondaryRgb, accent: accentColor };
   },
 
   rgbToHsl(rgb) {
