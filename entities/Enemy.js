@@ -1,5 +1,16 @@
 import { PixelBody } from './PixelBody.js';
 import { CONFIG } from '../config.js';
+import { updatePosition, updateAgileBossMovement } from './EnemyMovement.js';
+import {
+  updateStatusEffects,
+  applySlowing,
+  applyBurning,
+  applyPoison,
+  takeBurnDamage,
+  takePoisonDamage,
+  emitDoTParticles
+} from './EnemyStatus.js';
+import { ENEMY_TYPES } from './EnemyTypes.js';
 
 export class Enemy {
   constructor(x, y, type) {
@@ -10,9 +21,9 @@ export class Enemy {
     this.speed = type.speed;
     this.baseSpeed = type.speed;
     this.color = type.color;
-    
+
     this.pixelBody = new PixelBody(type.width, type.height, type.pattern);
-    
+
     this.statusEffects = {
       burning: { active: false, duration: 0, damage: 0, color: null },
       poison: { active: false, duration: 0, damage: 0, color: null },
@@ -20,276 +31,82 @@ export class Enemy {
     };
     this.burnTickTimer = 0;
     this.poisonTickTimer = 0;
-    
+
     this.particleRequests = [];
     this.spawnDelay = 0;
-    
-    // Boss-specific properties
+
     this.bossNumber = 0;
     this.doubleBossId = null;
-    
-    // Agile boss: movement state
+
     this.agilePhase = 0;
     this.agilePhaseTimer = 0;
-    
-    // Boss wobble timer used to apply gentle lateral motion for non-agile bosses
+
     this.bossWobbleTimer = 0;
   }
-  
+
   update(dt, centerX, centerY) {
     if (!this.alive) return;
 
-    if (this.spawnDelay && this.spawnDelay > 0) {
-      this.spawnDelay -= dt;
-      if (this.spawnDelay <= 0) {
-        this.spawnDelay = 0;
-        this.speed = this.baseSpeed;
-      } else {
-        return;
-      }
-    }
-    
-    this.updateStatusEffects(dt);
-    
-    const dx = centerX - this.x;
-    const dy = centerY - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    
-    // Handle agile boss movement
-    if (this.type.bossType === 'agile') {
-      this.updateAgileBossMovement(dt, centerX, centerY, dx, dy, dist);
-    } else {
-      // Standard movement towards center
-      if (dist > 5) {
-        this.x += (dx / dist) * this.speed * dt;
-        this.y += (dy / dist) * this.speed * dt;
-      }
-    }
-    
-    // Gentle lateral wobble for bosses that aren't the aggressive 'agile' type.
-    // This creates a subtle left/right motion so Mammoth/Double feel less static.
-    try {
-      if (this.type && this.type.isBoss && this.type.bossType !== 'agile') {
-        this.bossWobbleTimer += dt;
-        const wobbleFreq = 1.2; // cycles per second
-        const wobbleAmpByType = this.type.bossType === 'mammoth' ? 10 : 6; // larger mammoth wobble
-        const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
-        const wobbleOffset = Math.sin(this.bossWobbleTimer * Math.PI * 2 * wobbleFreq) * wobbleAmpByType;
-        this.x += Math.cos(perpAngle) * wobbleOffset * dt;
-        this.y += Math.sin(perpAngle) * wobbleOffset * dt;
-      }
-    } catch (e) { /* silent */ }
-    
-    // Clamp boss positions so knockback cannot push them further than the spawn radius.
-    // Also damp their knockback velocity when hitting the limit to avoid repeated strong bounces.
-    try {
-      if (this.type && this.type.isBoss) {
-        const maxR = (CONFIG && CONFIG.enemy && CONFIG.enemy.spawnRadius) ? CONFIG.enemy.spawnRadius : 360;
-        const toCenterX = this.x - centerX;
-        const toCenterY = this.y - centerY;
-        const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
-        if (curDist > maxR) {
-          // Project back onto circle at maxR
-          const nx = (toCenterX / curDist) * maxR;
-          const ny = (toCenterY / curDist) * maxR;
-          this.x = centerX + nx;
-          this.y = centerY + ny;
+    // Movement & spawn handling delegated to movement module
+    updatePosition(this, dt, centerX, centerY);
 
-          // Damp any active knockback velocities to avoid repeated overshoot
-          if (this.knockbackVx !== undefined && this.knockbackVy !== undefined) {
-            this.knockbackVx *= 0.3;
-            this.knockbackVy *= 0.3;
-            // shorten knockback timer a bit
-            this.knockbackTimer = Math.max(0, (this.knockbackTimer || 0) - 0.05);
-          }
-        }
-      }
-    } catch (e) { /* silent fallback */ }
-    
-    if (!this.pixelBody.intact) {
-      this.alive = false;
-    }
-  }
-
-  updateAgileBossMovement(dt, centerX, centerY, dx, dy, dist) {
-    // Phase-based movement: move towards center while strafing left/right
-    this.agilePhaseTimer += dt;
-    
-    // Phase duration: 1 second per phase
-    if (this.agilePhaseTimer >= 1.0) {
-      this.agilePhase = (this.agilePhase + 1) % 2; // alternate between left/right
-      this.agilePhaseTimer = 0;
-    }
-    
-    // Base movement towards center
-    if (dist > 5) {
-      this.x += (dx / dist) * this.speed * dt;
-      this.y += (dy / dist) * this.speed * dt;
-    }
-    
-    // Perpendicular strafe movement
-    if (dist > 0) {
-      const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
-      // Increase lateral movement magnitude and speed for more pronounced zig-zag
-      // Make agile boss sway much more dramatically (larger lateral multiplier & slightly faster strafe)
-      const strafeSpeed = this.speed * 1.15;
-      const strafeDir = this.agilePhase === 0 ? 1 : -1;
-      const lateralMultiplier = 2.0; // was 1.25 -> larger left/right motion
-      this.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
-      this.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
-    }
-  }
-
-  updateStatusEffects(dt) {
-    // Update slowing
-    if (this.statusEffects.slowing.active) {
-      this.statusEffects.slowing.duration -= dt;
-      if (this.statusEffects.slowing.duration <= 0) {
-        this.statusEffects.slowing.active = false;
-        this.speed = this.baseSpeed;
-      } else {
-        this.speed = this.baseSpeed * (1 - this.statusEffects.slowing.slowAmount);
-      }
-    }
-
-    // Update burning
-    if (this.statusEffects.burning.active) {
-      this.statusEffects.burning.duration -= dt;
-      this.burnTickTimer -= dt;
-      
-      if (this.statusEffects.burning.duration <= 0) {
-        this.statusEffects.burning.active = false;
-      } else if (this.burnTickTimer <= 0) {
-        this.takeBurnDamage(this.statusEffects.burning.damage);
-        this.emitDoTParticles('burning', this.statusEffects.burning.color);
-        this.burnTickTimer = 0.3; // Burn ticks every 0.3 seconds
-      }
-    }
-
-    // Update poison
-    if (this.statusEffects.poison.active) {
-      this.statusEffects.poison.duration -= dt;
-      this.poisonTickTimer -= dt;
-      
-      if (this.statusEffects.poison.duration <= 0) {
-        this.statusEffects.poison.active = false;
-      } else if (this.poisonTickTimer <= 0) {
-        this.takePoisonDamage(this.statusEffects.poison.damage);
-        this.emitDoTParticles('poison', this.statusEffects.poison.color);
-        this.poisonTickTimer = 0.25; // Poison ticks every 0.25 seconds
-      }
-    }
+    // Status effects delegated to status module
+    updateStatusEffects(this, dt);
   }
 
   applySlowing(duration, slowAmount) {
-    if (!this.statusEffects.slowing.active || this.statusEffects.slowing.duration < duration) {
-      this.statusEffects.slowing.active = true;
-      this.statusEffects.slowing.duration = duration;
-      this.statusEffects.slowing.slowAmount = Math.min(slowAmount, 0.8); // Cap at 80% slow
-    }
+    applySlowing(this, duration, slowAmount);
   }
 
   applyBurning(duration, damagePerTick, color) {
-    if (!this.statusEffects.burning.active || this.statusEffects.burning.duration < duration) {
-      this.statusEffects.burning.active = true;
-      this.statusEffects.burning.duration = duration;
-      this.statusEffects.burning.damage = damagePerTick;
-      this.statusEffects.burning.color = color;
-      this.burnTickTimer = 0;
-    }
+    applyBurning(this, duration, damagePerTick, color);
   }
 
   applyPoison(duration, damagePerTick, color) {
-    if (!this.statusEffects.poison.active || this.statusEffects.poison.duration < duration) {
-      this.statusEffects.poison.active = true;
-      this.statusEffects.poison.duration = duration;
-      this.statusEffects.poison.damage = damagePerTick;
-      this.statusEffects.poison.color = color;
-      this.poisonTickTimer = 0;
-    }
+    applyPoison(this, duration, damagePerTick, color);
   }
 
   takeBurnDamage(damage) {
-    const localX = this.x;
-    const localY = this.y;
-    // Damage in small bursts for DoT effect
-    this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 3);
+    takeBurnDamage(this, damage);
   }
 
   takePoisonDamage(damage) {
-    const localX = this.x;
-    const localY = this.y;
-    // Poison is more precise/small
-    this.pixelBody.damage(this.type.width / 2, this.type.height / 2, this.type.width / 4);
+    takePoisonDamage(this, damage);
   }
-  
+
   emitDoTParticles(type, color) {
-    // Generate particles derived from the DoT effect color
-    if (!color) return;
-    
-    // Make DoT effects visibly more profuse:
-    // - burning: many small energetic sparks
-    // - poison (or other non-burning DoT): more smoke/acid puffs
-    const isBurn = type === 'burning';
-    const minCount = isBurn ? 3 : 2;
-    const maxCount = isBurn ? 6 : 4;
-    const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1));
-    
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = (isBurn ? 20 : 8) + Math.random() * (isBurn ? 40 : 16);
-      const particleType = isBurn ? 'spark' : 'smoke';
-      const size = isBurn ? (1 + Math.random() * 1.5) : (1.5 + Math.random() * 1.5);
-      const life = (isBurn ? 0.25 : 0.35) + Math.random() * (isBurn ? 0.35 : 0.45);
-      
-      // Spread particles across a slightly larger area so DoT looks more active
-      const spreadX = (Math.random() - 0.5) * this.type.width * (isBurn ? 0.5 : 0.7);
-      const spreadY = (Math.random() - 0.5) * this.type.height * (isBurn ? 0.5 : 0.7);
-      
-      this.particleRequests.push({
-        x: this.x + spreadX,
-        y: this.y + spreadY,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - (isBurn ? Math.random() * 10 : 0),
-        color: color,
-        life: life,
-        maxLife: life,
-        size: size,
-        type: particleType,
-        opacity: isBurn ? 0.95 : 0.85
-      });
-    }
+    emitDoTParticles(this, type, color);
   }
 
   takeDamageFromSource(sourceX, sourceY, destructionRadius, destructionType = 'explosive') {
     const localX = sourceX - (this.x - this.type.width / 2);
     const localY = sourceY - (this.y - this.type.height / 2);
-    
+
     const destroyed = this.pixelBody.damage(
       localX,
       localY,
       destructionRadius,
       destructionType
     );
-    
+
     return destroyed > 0;
   }
-  
+
   takeDamage(projectile) {
-    // Standard projectile damage application
     const destructionRadius = projectile.radius * 2;
-    // Note: Projectiles currently don't pass destructionType dynamically, using default 'explosive'
-    
     const destroyed = this.takeDamageFromSource(
-      projectile.x, 
-      projectile.y, 
-      destructionRadius, 
+      projectile.x,
+      projectile.y,
+      destructionRadius,
       'explosive'
     );
-    
+
     return destroyed > 0;
   }
 }
+
+/* Re-export ENEMY_TYPES for backwards compatibility */
+export { ENEMY_TYPES };
 
 export const ENEMY_TYPES = {
   grunt: {
