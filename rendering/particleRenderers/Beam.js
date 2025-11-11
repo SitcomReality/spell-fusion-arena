@@ -18,5 +18,3 @@ export function renderBeamParticle(ctx, particle, alpha) {
   ctx.lineTo(particle.x + particle.vx * 0.1, particle.y + particle.vy * 0.1);
   ctx.stroke();
 }
-```
-This plan adds a new file to the `rendering/particleRenderers` directory, which will contain a function to render beam-like particles.
