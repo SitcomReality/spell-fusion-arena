@@ -35,6 +35,7 @@ export class GameApp {
     this.speedControl = null;
     this.rng = null;
     this.tutorial = null;
+    this.autoEnabled = false;
 
     this.lastTime = 0;
     this.running = true;
@@ -168,10 +169,15 @@ export class GameApp {
       this.tutorial = null;
     }
 
-    // Initialize speed control
-    this.speedControl = new SpeedControl((speed) => {
-      this.gameState.setSpeedMultiplier(speed);
-    });
+    // Initialize speed control with auto toggle
+    this.speedControl = new SpeedControl(
+      (speed) => {
+        this.gameState.setSpeedMultiplier(speed);
+      },
+      (autoEnabled) => {
+        this.autoEnabled = autoEnabled;
+      }
+    );
     this.speedControl.mount(document.getElementById('canvas-wrapper'));
 
     this.rewardUI = new RewardUI((reward) => {
@@ -292,6 +298,65 @@ export class GameApp {
     }
   }
 
+  // NEW: Auto-advance to next wave
+  autoStartWave() {
+    if (!this.autoEnabled || !this.waveStartButton) return;
+    const nextWaveNumber = this.gameState.waveManager.currentWave + 1;
+    if (this.gameState.waveStartPending) {
+      // Simulate click on the wave start button
+      try {
+        if (this.tutorial && this.tutorial.isActive && this.tutorial.callout) {
+          this.tutorial.callout.remove();
+        }
+      } catch (e) { /* silent */ }
+      this.gameState.waveManager.startNextWave();
+      this.gameState.startWave();
+      this.waveStartButton.hide();
+      try {
+        if (this.hud) this.hud.setWave(this.gameState.waveManager.currentWave);
+        if (this.hud) this.hud.setEnemies(0);
+      } catch (e) {}
+    }
+  }
+
+  // NEW: Auto-select a random reward
+  autoSelectReward() {
+    if (!this.autoEnabled || !this.rewardUI) return;
+    if (!this.rewardUI.container) return;
+
+    // Find all reward cards
+    const cards = this.rewardUI.container.querySelectorAll('.reward-card');
+    if (cards.length === 0) return;
+
+    // Pick a random card and click it
+    const randomCard = cards[Math.floor(Math.random() * cards.length)];
+    if (randomCard.dataset.key) {
+      // Element card
+      this.rewardUI.selectElement(randomCard.dataset.key);
+    } else if (randomCard.classList.contains('essence-card')) {
+      // Essence card
+      this.rewardUI.selectEssence();
+    }
+  }
+
+  // NEW: Auto-allocate unspent focus to random slots
+  autoAllocateFocus() {
+    if (!this.autoEnabled || !this.fusionUI) return;
+
+    let focusRemaining = this.fusionUI.focusBank;
+    const maxIterations = 10; // Prevent infinite loop
+    let iterations = 0;
+
+    while (focusRemaining > 0 && iterations < maxIterations) {
+      // Pick a random slot (0-3)
+      const slotIndex = Math.floor(Math.random() * 4);
+      // Allocate one focus to this slot
+      this.fusionUI.allocateFocusToSlot(slotIndex);
+      focusRemaining--;
+      iterations++;
+    }
+  }
+
   showNextWaveButton() {
     const nextWaveNumber = this.gameState.waveManager.currentWave + 1;
     this.gameState.showWaveStart();
@@ -309,6 +374,11 @@ export class GameApp {
         if (this.hud) this.hud.setWave(this.gameState.waveManager.currentWave);
         if (this.hud) this.hud.setEnemies(0);
       } catch (e) {}
+
+      // NEW: Auto-start wave if auto is enabled
+      if (this.autoEnabled) {
+        setTimeout(() => this.autoStartWave(), 500);
+      }
     });
   }
 
