@@ -143,8 +143,17 @@ export class GameApp {
     }
 
     // Initialize tutorial
-    this.tutorial = new Tutorial(this.gameState, this.fusionUI);
-    this.tutorial.initialize();
+    // Only initialize and start the tutorial for new games. If we are restoring from a savedState
+    // assume the player has already completed (or skipped) the tutorial and mark it as completed
+    // so the UI is not locked.
+    if (!savedState) {
+      this.tutorial = new Tutorial(this.gameState, this.fusionUI);
+      this.tutorial.initialize();
+    } else {
+      // Treat loaded games as if the player skipped the tutorial.
+      try { localStorage.setItem('tutorialCompleted', 'true'); } catch (e) { /* silent */ }
+      this.tutorial = null;
+    }
 
     // Initialize speed control
     this.speedControl = new SpeedControl((speed) => {
@@ -210,10 +219,12 @@ export class GameApp {
 
     this.showNextWaveButton();
 
-    // Always start the tutorial for each new game (even if previously completed)
-    setTimeout(() => {
-      this.tutorial.start();
-    }, 300);
+    // Start the tutorial only for fresh/new games.
+    if (this.tutorial) {
+      setTimeout(() => {
+        this.tutorial.start();
+      }, 300);
+    }
 
     this.start();
   }
