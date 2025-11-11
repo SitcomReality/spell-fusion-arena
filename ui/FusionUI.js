@@ -223,4 +223,34 @@ export class FusionUI {
     this.fusionController.updateFusionPreview();
     this.inventoryManager.renderCreatedSpells(document.getElementById('created-spells-list'));
   }
+
+  // Add setters so external callers can restore state safely (used by GameApp when loading)
+  set essenceBank(amount) {
+    this.state.essenceBank = Number(amount) || 0;
+    try { if (window && window.gameInstance && window.gameInstance.hud) window.gameInstance.hud.setEssence(this.state.essenceBank); } catch (e) {}
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+  }
+
+  set focusBank(amount) {
+    this.state.focusBank = Number(amount) || 0;
+    try { if (window && window.gameInstance && window.gameInstance.hud) window.gameInstance.hud.setFocus(this.state.focusBank); } catch (e) {}
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+  }
+
+  set spellInventory(arr) {
+    this.state.spellInventory = Array.isArray(arr) ? [...arr] : [];
+    this.inventoryManager.renderCreatedSpells(document.getElementById('created-spells-list'));
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+  }
+
+  set equippedSpells(arr) {
+    this.state.equippedSpells = Array.isArray(arr) ? [...arr] : [null, null, null, null];
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+  }
+
+  set spellSlotFocus(arr) {
+    this.state.spellSlotFocus = Array.isArray(arr) ? [...arr] : [1,0,0,0];
+    // Recompute player equip in GameApp happens elsewhere; just update UI
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+  }
 }
