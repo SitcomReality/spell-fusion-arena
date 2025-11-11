@@ -43,7 +43,16 @@ export class FusionController {
   mount(els) {
     if (els.elementsLibraryEl) this.elementsLibrary.mount(els.elementsLibraryEl);
     if (els.elementDetailsEl) this.detailsPanel.mount(els.elementDetailsEl);
-    if (els.fusionBuilderEl) this.fusionBuilder.mount(els.fusionBuilderEl);
+    if (els.fusionBuilderEl) {
+      this.fusionBuilder = new FusionBuilder({
+        totalSlots: 4,
+        unlockedSlots: 4,
+        onSlotRemove: (idx) => this.removeElement(idx),
+        onUnlockSlot: () => {},
+        getEssence: () => this.essenceBank
+      });
+      this.fusionBuilder.mount(els.fusionBuilderEl);
+    }
     if (els.fusionPanelEl) this.fusionPreview.mount(els.fusionPanelEl);
     this.spellSlotsUI.mount();
     // wire preview clear
@@ -130,6 +139,7 @@ export class FusionController {
     this.spellInventory.push(spell);
     this.clearFusion();
     this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
+    this.updateCreatedSpellsList();
     try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
@@ -164,5 +174,13 @@ export class FusionController {
     // If any empty slot exists, equip there, else do nothing (UI handles selection)
     const emptyIndex = this.equippedSpells.findIndex(s => !s);
     if (emptyIndex >= 0) this.equipSpellFromInventory(emptyIndex, spell);
+  }
+
+  updateCreatedSpellsList() {
+    try {
+      if (window && window.gameInstance && window.gameInstance.fusionUI) {
+        window.gameInstance.fusionUI.renderCreatedSpells();
+      }
+    } catch (e) {}
   }
 }
