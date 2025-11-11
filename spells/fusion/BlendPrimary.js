@@ -1,1 +1,87 @@
-```javascript\nimport { ColorUtils } from './colorUtils.js';\n\n// Primary blending logic extracted from previous monolith.\n// Handles 1..N color inputs and computes a pleasing primary, accent, secondary.\nexport const BlendPrimary = {\n  blend(...colors) {\n    if (!colors || colors.length === 0) return {\n      primary: { r: 200, g: 200, b: 200 },\n      accent: null,\n      secondary: null\n    };\n    if (colors.length === 1) {\n      const hsl = ColorUtils.rgbToHsl(colors[0]);\n      hsl.s *= 0.85;\n      hsl.l = Math.min(0.65, hsl.l * 0.95);\n      return { primary: ColorUtils.hslToRgb(hsl), accent: null, secondary: null };\n    }\n\n    const primaryHsl = ColorUtils.rgbToHsl(colors[0]);\n    const allHsl = colors.map(c => ColorUtils.rgbToHsl(c));\n\n    let totalHue = primaryHsl.h * 2.5;\n    let totalSat = 0;\n    let totalLight = 0;\n    let weightSum = 2.5;\n\n    for (let i = 0; i < allHsl.length; i++) {\n      const weight = i === 0 ? 2.5 : 0.8;\n      if (i > 0) {\n        let hueDiff = allHsl[i].h - primaryHsl.h;\n        if (hueDiff > 180) hueDiff -= 360;\n        if (hueDiff < -180) hueDiff += 360;\n        totalHue += (primaryHsl.h + hueDiff) * weight;\n        weightSum += weight;\n      }\n      totalSat += allHsl[i].s;\n      totalLight += allHsl[i].l;\n    }\n\n    const finalHue = (totalHue / weightSum) % 360;\n    const baseSat = totalSat / colors.length;\n    const baseLight = totalLight / colors.length;\n    const saturationBoost = Math.min(0.3, (colors.length - 1) * 0.12);\n    const finalSat = Math.min(1.0, baseSat + saturationBoost);\n    const lightnessBoost = Math.min(0.15, (colors.length - 1) * 0.05);\n    const finalLight = Math.min(0.7, baseLight + lightnessBoost);\n\n    const primaryColor = ColorUtils.hslToRgb({ h: finalHue, s: finalSat, l: finalLight });\n\n    let accentColor = null;\n    let secondaryColor = null;\n\n    if (colors.length >= 2) {\n      let maxHueDiff = 0;\n      let accentIndex = 1;\n      for (let i = 1; i < allHsl.length; i++) {\n        let hueDiff = Math.abs(allHsl[i].h - primaryHsl.h);\n        if (hueDiff > 180) hueDiff = 360 - hueDiff;\n        if (hueDiff > maxHueDiff) {\n          maxHueDiff = hueDiff;\n          accentIndex = i;\n        }\n      }\n      const accentHsl = { ...allHsl[accentIndex] };\n      accentHsl.s = Math.min(1.0, accentHsl.s * 1.3);\n      accentHsl.l = Math.min(0.65, accentHsl.l * 1.15);\n      accentColor = ColorUtils.hslToRgb(accentHsl);\n\n      if (colors.length >= 3) {\n        let secHue = 0, secSat = 0, secLight = 0;\n        for (let i = 1; i < allHsl.length; i++) {\n          secHue += allHsl[i].h;\n          secSat += allHsl[i].s;\n          secLight += allHsl[i].l;\n        }\n        const count = colors.length - 1;\n        secondaryColor = ColorUtils.hslToRgb({\n          h: (secHue / count) % 360,\n          s: Math.min(1.0, (secSat / count) * 1.2),\n          l: Math.min(0.6, (secLight / count) * 1.1)\n        });\n      }\n    }\n\n    return { primary: primaryColor, accent: accentColor, secondary: secondaryColor };\n  }\n};\n\n\n```
+import { ColorUtils } from './colorUtils.js';
+
+// Primary blending logic extracted from previous monolith.
+// Handles 1..N color inputs and computes a pleasing primary, accent, secondary.
+export const BlendPrimary = {
+  blend(...colors) {
+    if (!colors || colors.length === 0) return {
+      primary: { r: 200, g: 200, b: 200 },
+      accent: null,
+      secondary: null
+    };
+    if (colors.length === 1) {
+      const hsl = ColorUtils.rgbToHsl(colors[0]);
+      hsl.s *= 0.85;
+      hsl.l = Math.min(0.65, hsl.l * 0.95);
+      return { primary: ColorUtils.hslToRgb(hsl), accent: null, secondary: null };
+    }
+
+    const primaryHsl = ColorUtils.rgbToHsl(colors[0]);
+    const allHsl = colors.map(c => ColorUtils.rgbToHsl(c));
+
+    let totalHue = primaryHsl.h * 2.5;
+    let totalSat = 0;
+    let totalLight = 0;
+    let weightSum = 2.5;
+
+    for (let i = 0; i < allHsl.length; i++) {
+      const weight = i === 0 ? 2.5 : 0.8;
+      if (i > 0) {
+        let hueDiff = allHsl[i].h - primaryHsl.h;
+        if (hueDiff > 180) hueDiff -= 360;
+        if (hueDiff < -180) hueDiff += 360;
+        totalHue += (primaryHsl.h + hueDiff) * weight;
+        weightSum += weight;
+      }
+      totalSat += allHsl[i].s;
+      totalLight += allHsl[i].l;
+    }
+
+    const finalHue = (totalHue / weightSum) % 360;
+    const baseSat = totalSat / colors.length;
+    const baseLight = totalLight / colors.length;
+    const saturationBoost = Math.min(0.3, (colors.length - 1) * 0.12);
+    const finalSat = Math.min(1.0, baseSat + saturationBoost);
+    const lightnessBoost = Math.min(0.15, (colors.length - 1) * 0.05);
+    const finalLight = Math.min(0.7, baseLight + lightnessBoost);
+
+    const primaryColor = ColorUtils.hslToRgb({ h: finalHue, s: finalSat, l: finalLight });
+
+    let accentColor = null;
+    let secondaryColor = null;
+
+    if (colors.length >= 2) {
+      let maxHueDiff = 0;
+      let accentIndex = 1;
+      for (let i = 1; i < allHsl.length; i++) {
+        let hueDiff = Math.abs(allHsl[i].h - primaryHsl.h);
+        if (hueDiff > 180) hueDiff = 360 - hueDiff;
+        if (hueDiff > maxHueDiff) {
+          maxHueDiff = hueDiff;
+          accentIndex = i;
+        }
+      }
+      const accentHsl = { ...allHsl[accentIndex] };
+      accentHsl.s = Math.min(1.0, accentHsl.s * 1.3);
+      accentHsl.l = Math.min(0.65, accentHsl.l * 1.15);
+      accentColor = ColorUtils.hslToRgb(accentHsl);
+
+      if (colors.length >= 3) {
+        let secHue = 0, secSat = 0, secLight = 0;
+        for (let i = 1; i < allHsl.length; i++) {
+          secHue += allHsl[i].h;
+          secSat += allHsl[i].s;
+          secLight += allHsl[i].l;
+        }
+        const count = colors.length - 1;
+        secondaryColor = ColorUtils.hslToRgb({
+          h: (secHue / count) % 360,
+          s: Math.min(1.0, (secSat / count) * 1.2),
+          l: Math.min(0.6, (secLight / count) * 1.1)
+        });
+      }
+    }
+
+    return { primary: primaryColor, accent: accentColor, secondary: secondaryColor };
+  }
+};
