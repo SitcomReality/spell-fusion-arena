@@ -1,1 +1,103 @@
-import { SpellFusion } from '../../spells/SpellFusion.js';\nimport { getSpellCost } from '../../spells/Element.js';\n\nexport class FusionController {\n  constructor(state, fusionPreview, fusionBuilder) {\n    this.state = state;\n    this.fusionPreview = fusionPreview;\n    this.fusionBuilder = fusionBuilder;\n  }\n\n  addElementToFusion(element, container) {\n    if (this.state.selectedElements.length >= this.state.maxFusionSlots) return;\n    this.state.selectedElements.push(element);\n    this.fusionBuilder.setSelectedElements(this.state.selectedElements);\n    this.updateFusionPreview();\n\n    this.attemptAutoScrollToFusion(container);\n  }\n\n  attemptAutoScrollToFusion(container) {\n    try {\n      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {\n        const COSTS = [1, 5, 10, 20];\n        const currentEssence = Number(this.state.essenceBank || 0);\n\n        let affordableSlots = 0;\n        for (let i = 0; i < Math.min(this.state.maxFusionSlots, COSTS.length); i++) {\n          if (currentEssence >= (COSTS[i] || 0)) affordableSlots++;\n        }\n\n        if (this.state.selectedElements.length === affordableSlots && affordableSlots > 0) {\n          const fusionSections = container.querySelectorAll('.fusion-section');\n          const targetSection = fusionSections[1] || fusionSections[0];\n          if (targetSection) {\n            const offsetTop = targetSection.offsetTop;\n            container.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });\n          }\n        }\n      }\n    } catch (e) { /* silent fallback */ }\n  }\n\n  removeElement(index) {\n    this.state.selectedElements.splice(index, 1);\n    this.fusionBuilder.setSelectedElements(this.state.selectedElements);\n    this.updateFusionPreview();\n  }\n\n  clearFusion() {\n    this.state.selectedElements = [];\n    this.state.currentSpell = null;\n    this.fusionBuilder.setSelectedElements(this.state.selectedElements);\n    this.updateFusionPreview(true);\n  }\n\n  updateFusionPreview(forceEmpty = false) {\n    if (forceEmpty || this.state.selectedElements.length === 0) {\n      this.fusionPreview.showMessage(`Add an element to create a spell`);\n      return;\n    }\n\n    this.state.currentSpell = SpellFusion.fuse(...this.state.selectedElements);\n\n    const cost = getSpellCost(this.state.selectedElements.length);\n    const isInTutorialStep7 = document.documentElement.classList.contains('tutorial-lock-to-fusion-full');\n    const isExactlyTwoElements = this.state.selectedElements.length === 2;\n    const canCreate = isInTutorialStep7 ? isExactlyTwoElements : true;\n    const affordable = (this.state.essenceBank >= cost) && canCreate;\n\n    this.fusionPreview.showSpell(this.state.currentSpell, () => {\n      // Create spell will be called from outside\n    }, cost, affordable);\n\n    if (isInTutorialStep7) {\n      const createBtn = document.querySelector('.fusion-preview-create');\n      if (createBtn) {\n        createBtn.classList.toggle('enabled-for-two-elements', isExactlyTwoElements);\n      }\n    }\n  }\n\n  createSpell() {\n    const elementCount = this.state.selectedElements.length;\n    const cost = getSpellCost(elementCount);\n\n    if (!this.state.deductEssence(cost)) {\n      alert(`Need ${cost} Mana Essence to create this spell (have ${this.state.essenceBank})`);\n      return false;\n    }\n\n    this.state.spellInventory.push(this.state.currentSpell);\n    this.clearFusion();\n    return true;\n  }\n\n  getCurrentSpell() {\n    return this.state.currentSpell;\n  }\n\n  getSelectedElements() {\n    return this.state.selectedElements;\n  }\n}\n\n\n```
+import { SpellFusion } from '../../spells/SpellFusion.js';
+import { getSpellCost } from '../../spells/Element.js';
+
+export class FusionController {
+  constructor(state, fusionPreview, fusionBuilder) {
+    this.state = state;
+    this.fusionPreview = fusionPreview;
+    this.fusionBuilder = fusionBuilder;
+  }
+
+  addElementToFusion(element, container) {
+    if (this.state.selectedElements.length >= this.state.maxFusionSlots) return;
+    this.state.selectedElements.push(element);
+    this.fusionBuilder.setSelectedElements(this.state.selectedElements);
+    this.updateFusionPreview();
+
+    this.attemptAutoScrollToFusion(container);
+  }
+
+  attemptAutoScrollToFusion(container) {
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+        const COSTS = [1, 5, 10, 20];
+        const currentEssence = Number(this.state.essenceBank || 0);
+
+        let affordableSlots = 0;
+        for (let i = 0; i < Math.min(this.state.maxFusionSlots, COSTS.length); i++) {
+          if (currentEssence >= (COSTS[i] || 0)) affordableSlots++;
+        }
+
+        if (this.state.selectedElements.length === affordableSlots && affordableSlots > 0) {
+          const fusionSections = container.querySelectorAll('.fusion-section');
+          const targetSection = fusionSections[1] || fusionSections[0];
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop;
+            container.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });
+          }
+        }
+      }
+    } catch (e) { /* silent fallback */ }
+  }
+
+  removeElement(index) {
+    this.state.selectedElements.splice(index, 1);
+    this.fusionBuilder.setSelectedElements(this.state.selectedElements);
+    this.updateFusionPreview();
+  }
+
+  clearFusion() {
+    this.state.selectedElements = [];
+    this.state.currentSpell = null;
+    this.fusionBuilder.setSelectedElements(this.state.selectedElements);
+    this.updateFusionPreview(true);
+  }
+
+  updateFusionPreview(forceEmpty = false) {
+    if (forceEmpty || this.state.selectedElements.length === 0) {
+      this.fusionPreview.showMessage(`Add an element to create a spell`);
+      return;
+    }
+
+    this.state.currentSpell = SpellFusion.fuse(...this.state.selectedElements);
+
+    const cost = getSpellCost(this.state.selectedElements.length);
+    const isInTutorialStep7 = document.documentElement.classList.contains('tutorial-lock-to-fusion-full');
+    const isExactlyTwoElements = this.state.selectedElements.length === 2;
+    const canCreate = isInTutorialStep7 ? isExactlyTwoElements : true;
+    const affordable = (this.state.essenceBank >= cost) && canCreate;
+
+    this.fusionPreview.showSpell(this.state.currentSpell, () => {
+      // Create spell will be called from outside
+    }, cost, affordable);
+
+    if (isInTutorialStep7) {
+      const createBtn = document.querySelector('.fusion-preview-create');
+      if (createBtn) {
+        createBtn.classList.toggle('enabled-for-two-elements', isExactlyTwoElements);
+      }
+    }
+  }
+
+  createSpell() {
+    const elementCount = this.state.selectedElements.length;
+    const cost = getSpellCost(elementCount);
+
+    if (!this.state.deductEssence(cost)) {
+      alert(`Need ${cost} Mana Essence to create this spell (have ${this.state.essenceBank})`);
+      return false;
+    }
+
+    this.state.spellInventory.push(this.state.currentSpell);
+    this.clearFusion();
+    return true;
+  }
+
+  getCurrentSpell() {
+    return this.state.currentSpell;
+  }
+
+  getSelectedElements() {
+    return this.state.selectedElements;
+  }
+}
