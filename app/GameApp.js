@@ -80,10 +80,8 @@ export class GameApp {
   startGameWithLoadout(startingElements, seed) {
     // Accept either positional args (old callers) or a single config object from IntroScreen load flow.
     let cfg = null;
-    if (startGameWithLoadout && typeof startGameWithLoadout === 'object' && startGameWithLoadout.startingElements !== undefined) {
-      // defensive - not used, fallback below
-    }
-    if (typeof startingElements === 'object' && startingElements !== null && startingElements.startingElements !== undefined) {
+    // If the first argument is a config object produced by IntroScreen (contains startingElements), use it.
+    if (startingElements && typeof startingElements === 'object' && startingElements.startingElements !== undefined) {
       cfg = startingElements;
     } else {
       cfg = { startingElements: startingElements || [], seed: seed };
