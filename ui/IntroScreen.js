@@ -76,8 +76,7 @@ export class IntroScreen {
           const seed = payload && payload.seed ? payload.seed : Math.floor(Math.random() * 0x7FFFFFFF);
           // Start the game with the recovered starting elements (may be empty) and seed
           this.container.remove();
-          // Pass the raw saved payload through so GameApp can apply all saved state fields
-          this.onGameStart({ startingElements, seed, savedPayload: payload });
+          this.onGameStart({ startingElements, seed });
         });
       }
     } catch (e) { /* silent */ }
