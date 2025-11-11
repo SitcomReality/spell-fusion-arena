@@ -15,7 +15,7 @@ export function renderSmokeParticle(ctx, particle, alpha) {
     );
     gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.max(0, Math.min(1, alpha * 0.3))})`);
     gradient.addColorStop(0.7, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.max(0, Math.min(1, alpha * 0.1))})`);
-    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`));
+    gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
     ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(safeX, safeY, size, 0, Math.PI * 2);
