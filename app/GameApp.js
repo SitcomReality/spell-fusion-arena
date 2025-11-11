@@ -8,7 +8,7 @@ import { RewardUI } from '../ui/RewardUI.js';
 import { IntroScreen } from '../ui/IntroScreen.js';
 import { WaveStartButton } from '../ui/WaveStartButton.js';
 import { SeededRandom } from '../game/SeededRandom.js';
-import { ELEMENTS } from '../spells/Element.js';
+import { ELEMENTS, ELEMENTS_READY } from '../spells/Element.js';
 import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
 import { Tutorial } from '../ui/Tutorial.js';
@@ -83,7 +83,7 @@ export class GameApp {
     introScreen.show();
   }
 
-  startGameWithLoadout(startingElements, seed, savedState) {
+  async startGameWithLoadout(startingElements, seed, savedState) {
     // savedState is provided as the third parameter; use it directly
     
     // Clean up previous game if any
@@ -109,6 +109,9 @@ export class GameApp {
 
     // If we have saved state, restore it
     if (savedState) {
+      // Ensure element definitions are loaded before we attempt to refresh any UI
+      try { await ELEMENTS_READY; } catch (e) { /* continue best-effort */ }
+
       // Restore unlocked elements
       if (savedState.unlockedElementKeys && Array.isArray(savedState.unlockedElementKeys)) {
         this.gameState.unlockedElementKeys = [...savedState.unlockedElementKeys];
@@ -135,10 +138,15 @@ export class GameApp {
       if (savedState.equippedSpells) {
         this.gameState.player.equipSpells(savedState.equippedSpells, savedState.spellSlotFocus || [1, 0, 0, 0]);
       }
-
-      // Restore player HP
-      if (typeof savedState.playerHp === 'number') {
-        this.gameState.player.hp = Math.max(1, savedState.playerHp);
+      
+      // After restoring data, ensure the FusionUI reflects the restored state (unlocked elements, inventory, slots, focus/essence)
+      try {
+        if (this.fusionUI) {
+          // Refresh will re-render elements library, slots, preview and created spells list
+          this.fusionUI.refresh();
+        }
+      } catch (e) {
+        console.warn('Failed to refresh FusionUI after loading savedState', e);
       }
     }
 
