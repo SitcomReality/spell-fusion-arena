@@ -41,6 +41,45 @@ export class IntroScreen {
       } catch (e) { /* silent */ }
       this.startNewGame();
     });
+
+    // If there is a saved game in localStorage, show a "Load Game" button
+    try {
+      const saved = localStorage.getItem('spellFusion_save_v1');
+      if (saved) {
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'intro-button';
+        loadBtn.id = 'load-game-btn';
+        loadBtn.textContent = 'Load Game';
+        // insert load button next to New Game
+        newGameBtn.insertAdjacentElement('afterend', loadBtn);
+
+        loadBtn.addEventListener('click', async () => {
+          let payload = null;
+          try { payload = JSON.parse(saved); } catch (e) { payload = null; }
+          // Ensure element definitions are available
+          try { await ELEMENTS_READY; } catch (e) {}
+
+          // Build startingElements array from unlockedElementKeys if present
+          const startingElements = [];
+          if (payload && Array.isArray(payload.unlockedElementKeys)) {
+            for (const key of payload.unlockedElementKeys) {
+              try {
+                const mod = await import('../spells/Element.js');
+                const ELEMENTS = mod.ELEMENTS || (await mod.ELEMENTS_READY && mod.ELEMENTS) || {};
+                if (ELEMENTS[key]) startingElements.push(ELEMENTS[key]);
+              } catch (e) { /* best-effort; skip missing elements */ }
+              if (startingElements.length >= 4) break;
+            }
+          }
+
+          // Fallback: ensure at least an empty array is passed; prefer saved seed if present
+          const seed = payload && payload.seed ? payload.seed : Math.floor(Math.random() * 0x7FFFFFFF);
+          // Start the game with the recovered starting elements (may be empty) and seed
+          this.container.remove();
+          this.onGameStart({ startingElements, seed });
+        });
+      }
+    } catch (e) { /* silent */ }
   }
 
   async startNewGame() {
