@@ -5,6 +5,8 @@ import { FusionPreview } from './FusionPreview.js';
 import { SpellSlotsUI } from './SpellSlotsUI.js';
 import { SpellFusion } from '../spells/SpellFusion.js';
 import { getSpellCost } from '../spells/Element.js';
+import { FusionController } from './fusion/FusionController.js';
+import { CreatedSpellsList } from './fusion/CreatedSpellsList.js';
 
 export class FusionUI {
   constructor(onSpellEquipped, gameState) {
@@ -13,67 +15,25 @@ export class FusionUI {
     this.onSpellEquipped = onSpellEquipped;
     this.gameState = gameState;
 
-    this.selectedElements = [];
-    this.currentSpell = null;
-    this.equippedSpells = [null, null, null, null];
-    this.spellSlotFocus = [1, 0, 0, 0]; // Focus starts at 1 for slot 1, 0 for others
-    this.spellInventory = []; // NEW: Array of created spells
-    this.essenceBank = 1; // Mana Essence for spell equipping (start with 1)
-    this.focusBank = 0;   // Focus for upgrading slots
-    this.maxFusionSlots = 4;
-    this.unlockedFusionSlots = 4; // All slots unlocked from start
+    // Delegate heavy logic to the controller
+    this.controller = new FusionController(onSpellEquipped, gameState);
 
-    // Create subcomponents
-    this.elementsLibrary = new ElementsLibrary((key, element, cardEl) => {
-      this.onElementClicked(key, element, cardEl);
-    });
-
-    this.detailsPanel = new ElementDetailsPanel();
-
-    this.fusionBuilder = new FusionBuilder({
-      totalSlots: 4,
-      unlockedSlots: this.unlockedFusionSlots,
-      onSlotRemove: (idx) => this.removeElement(idx),
-      onUnlockSlot: (slotIndex) => this.unlockFusionSlot(slotIndex),
-      // NEW: allow builder to read the live Mana Essence value so it can mark inactive slots
-      getEssence: () => this.essenceBank
-    });
-
-    this.fusionPreview = new FusionPreview();
-
-    this.spellSlotsUI = new SpellSlotsUI(this.equippedContainer, {
-      getEquippedSpells: () => this.equippedSpells,
-      getSpellSlotFocus: () => this.spellSlotFocus,
-      getEssenceBank: () => this.essenceBank,
-      getSpellInventory: () => this.spellInventory,
-      onUnequip: (i) => this.unequipSpell(i),
-      onAllocateFocus: (i) => this.allocateFocusToSlot(i),
-      onEquipFromInventory: (slotIndex, spellFromInventory) => this.equipSpellFromInventory(slotIndex, spellFromInventory)
+    // Created spells list helper
+    this.createdList = new CreatedSpellsList((spell) => {
+      // quick-equip event: dispatch to controller
+      this.controller.handleQuickEquip(spell);
+      this.renderSpellSlots();
     });
 
     this.render();
   }
 
   addEssenceToBank(amount) {
-    this.essenceBank += amount;
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
-    // Update HUD if available
-    try {
-      if (window && window.gameInstance && window.gameInstance.hud) {
-        window.gameInstance.hud.setEssence(this.essenceBank);
-      }
-    } catch (e) {}
+    this.controller.addEssence(amount);
   }
 
   addFocusToBank(amount) {
-    this.focusBank += amount;
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
-    // Update HUD if available
-    try {
-      if (window && window.gameInstance && window.gameInstance.hud) {
-        window.gameInstance.hud.setFocus(this.focusBank);
-      }
-    } catch (e) {}
+    this.controller.addFocus(amount);
   }
 
   unlockFusionSlot(slotIndex) {
@@ -81,6 +41,7 @@ export class FusionUI {
   }
 
   render() {
+    // keep outer DOM scaffold but delegate inner pieces
     this.container.innerHTML = `
       <div class="fusion-container">
         <div class="fusion-section">
@@ -90,7 +51,7 @@ export class FusionUI {
             <div class="element-details-panel" id="element-details-panel"></div>
           </div>
         </div>
-        
+
         <div class="fusion-section">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <h2 style="margin:0;">Create Spell</h2>
@@ -101,8 +62,7 @@ export class FusionUI {
             <div id="fusion-panel"></div>
           </div>
         </div>
-        
-        <!-- Created spells list: player's spell inventory -->
+
         <div class="fusion-section">
           <h2>Created Spells</h2>
           <div id="created-spells-list" class="created-spells-list" aria-live="polite"></div>
@@ -110,105 +70,35 @@ export class FusionUI {
       </div>
     `;
 
-    // mount subcomponents into DOM
-    this.elementsLibrary.mount(document.getElementById('elements-library'));
-    this.detailsPanel.mount(document.getElementById('element-details-panel'));
-    this.fusionBuilder.mount(document.getElementById('fusion-builder'));
-    this.fusionPreview.mount(document.getElementById('fusion-panel'));
-    this.spellSlotsUI.mount();
+    // mount controller-managed subcomponents
+    this.controller.mount({
+      elementsLibraryEl: document.getElementById('elements-library'),
+      elementDetailsEl: document.getElementById('element-details-panel'),
+      fusionBuilderEl: document.getElementById('fusion-builder'),
+      fusionPanelEl: document.getElementById('fusion-panel')
+    });
 
-    // Wire the external Clear button to clear fusion selection
+    this.createdList.mount(document.getElementById('created-spells-list'));
+    this.controller.refresh();
+    this.renderSpellSlots();
+
     const clearBtn = this.container.querySelector('.fusion-clear-btn');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => this.clearFusion());
-    }
-
-    // initial updates - pass unlockedElementKeys to refresh
-    this.elementsLibrary.refresh(this.gameState?.unlockedElementKeys || []);
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
-    this.renderCreatedSpells();
-
-    // Set up preview clear callback
-    this.fusionPreview.setOnClear(() => this.clearFusion());
+    if (clearBtn) clearBtn.addEventListener('click', () => this.controller.clearFusion());
   }
 
   renderSpellSlots() {
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
+    const { equippedSpells, spellSlotFocus, focusBank, spellInventory } = this.controller.getPublicState();
+    // reuse existing SpellSlotsUI instance behavior via controller helper
+    this.controller.spellSlotsUI.update(equippedSpells, spellSlotFocus, focusBank, spellInventory);
   }
 
   // Renders the player's created spells inventory as a vertical list.
   renderCreatedSpells() {
-    const listEl = this.container && this.container.querySelector('#created-spells-list');
-    if (!listEl) return;
-    listEl.innerHTML = '';
-
-    if (!this.spellInventory || this.spellInventory.length === 0) {
-      listEl.innerHTML = `<div class="properties-empty">No created spells yet</div>`;
-      return;
-    }
-
-    // Each item: small color square (same height as text) + name and simple stats
-    this.spellInventory.forEach((spell, idx) => {
-      const item = document.createElement('div');
-      item.className = 'created-spell-item';
-      item.dataset.index = idx;
-
-      const color = spell.color || { r: 120, g: 120, b: 120 };
-      const dmg = Math.round((spell.properties?.damage || 0));
-      const spd = Math.round((spell.properties?.speed || 0));
-
-      item.innerHTML = `
-        <span class="created-spell-color" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b})"></span>
-        <span class="created-spell-label">${spell.name} <span class="created-spell-meta">— D:${dmg} S:${spd}</span></span>
-        <button class="created-spell-delete" title="Delete spell" aria-label="Delete spell">✕</button>
-      `;
-
-      // Only show / enable delete when tutorial is completed and the spell is not currently equipped
-      const tutorialCompleted = localStorage.getItem('tutorialCompleted') === 'true';
-      const isEquipped = this.equippedSpells.some(s => s === spell);
-      const deleteBtn = item.querySelector('.created-spell-delete');
-      if (!tutorialCompleted || isEquipped) {
-        if (deleteBtn) deleteBtn.remove();
-      } else {
-        // Delete button handler: remove spell from inventory and re-render
-        deleteBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          // Defensive: ensure spell is not currently equipped (double-check)
-          const stillEquipped = this.equippedSpells.some(s => s === spell);
-          if (stillEquipped) {
-            // If attempted while equipped (race), prevent deletion
-            return;
-          }
-          // Remove the spell at this index (re-find index in case inventory changed)
-          const realIdx = this.spellInventory.indexOf(spell);
-          if (realIdx >= 0) {
-            this.spellInventory.splice(realIdx, 1);
-          }
-          // Re-render slots and created list
-          this.renderSpellSlots();
-          this.renderCreatedSpells();
-
-          // Persist save after deleting a spell
-          try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
-        });
-      }
-
-      // Allow clicking to equip from this list via a quick-equip action (optional UX)
-      item.addEventListener('click', (ev) => {
-        // Avoid triggering equip when clicking the delete button
-        if (ev.target.closest('.created-spell-delete')) return;
-        // If user has no equipped slot empty, open a chooser by dispatching a simple event:
-        const event = new CustomEvent('fusionui:equip-from-created', { detail: { spell, index: idx } });
-        window.dispatchEvent(event);
-      });
-
-      listEl.appendChild(item);
-    });
+    this.createdList.render(this.controller.spellInventory, this.controller.equippedSpells);
   }
 
   onElementClicked(key, element, cardEl) {
-    this.elementsLibrary.markSelectedCard(cardEl);
-    this.detailsPanel.show(element, () => this.addElementToFusion(element));
+    this.controller.onElementClicked(key, element, cardEl);
     
     // NEW: Handle tutorial progression from step 0 (Select Element) to step 1 (Add to Fusion Slot)
     try {
@@ -221,188 +111,46 @@ export class FusionUI {
   }
 
   addElementToFusion(element) {
-    if (this.selectedElements.length >= this.maxFusionSlots) return;
-    this.selectedElements.push(element);
-    this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.updateFusionPreview();
-
-    try {
-      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        // Determine whether to auto-scroll: only when all currently affordable slots are filled.
-        // Use the same COSTS mapping as FusionBuilder to determine per-slot required essence.
-        const COSTS = [1, 5, 10, 20]; // per-slot required Mana Essence for slots 0..3
-        const currentEssence = Number(this.essenceBank || 0);
-
-        // Count how many fusion slots are currently affordable (player can pay the slot cost)
-        let affordableSlots = 0;
-        for (let i = 0; i < Math.min(this.maxFusionSlots, COSTS.length); i++) {
-          if (currentEssence >= (COSTS[i] || 0)) affordableSlots++;
-        }
-
-        // If the number of selected elements equals the number of affordable slots, scroll down.
-        if (this.selectedElements.length === affordableSlots && affordableSlots > 0) {
-          const fusionContainer = this.container;
-          const fusionSections = fusionContainer.querySelectorAll('.fusion-section');
-          const targetSection = fusionSections[1] || fusionSections[0];
-          if (targetSection) {
-            const offsetTop = targetSection.offsetTop;
-            fusionContainer.scrollTo({ top: offsetTop - 8, behavior: 'smooth' });
-          }
-        }
-      }
-    } catch (e) {
-      // silent fallback
-    }
+    this.controller.addElementToFusion(element);
   }
 
   removeElement(index) {
-    this.selectedElements.splice(index, 1);
-    this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.updateFusionPreview();
+    this.controller.removeElement(index);
   }
 
   clearFusion() {
-    this.selectedElements = [];
-    this.currentSpell = null;
-    this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.updateFusionPreview(true);
+    this.controller.clearFusion();
   }
 
   updateFusionPreview(forceEmpty = false) {
-    if (forceEmpty || this.selectedElements.length === 0) {
-      this.fusionPreview.showMessage(`Add an element to create a spell`);
-      return;
-    }
-
-    this.currentSpell = SpellFusion.fuse(...this.selectedElements);
-
-    const cost = getSpellCost(this.selectedElements.length);
-
-    // NEW: Handle step 7 tutorial constraint
-    const isInTutorialStep7 = document.documentElement.classList.contains('tutorial-lock-to-fusion-full');
-    const isExactlyTwoElements = this.selectedElements.length === 2;
-    const canCreate = isInTutorialStep7 ? isExactlyTwoElements : true;
-    const affordable = (this.essenceBank >= cost) && canCreate;
-
-    this.fusionPreview.showSpell(this.currentSpell, () => this.addSpellToInventory(this.currentSpell), cost, affordable);
-    
-    // NEW: Mark create button for step 7 specific styling
-    if (isInTutorialStep7) {
-      const createBtn = document.querySelector('.fusion-preview-create');
-      if (createBtn) {
-        createBtn.classList.toggle('enabled-for-two-elements', isExactlyTwoElements);
-      }
-    }
+    this.controller.updateFusionPreview(forceEmpty);
   }
 
   // NEW: Add spell to inventory (costs Essence)
   addSpellToInventory(spell) {
-    const elementCount = this.selectedElements.length;
-    const cost = getSpellCost(elementCount);
-
-    if (this.essenceBank < cost) {
-      alert(`Need ${cost} Mana Essence to create this spell (have ${this.essenceBank})`);
-      return;
-    }
-
-    // Deduct cost and add to inventory
-    this.essenceBank -= cost;
-    this.spellInventory.push(spell);
-
-    // Clear fusion UI after successful creation
-    this.clearFusion();
-    this.renderSpellSlots();
-    // Update created spells list
-    this.renderCreatedSpells();
-
-    // Persist save after creating a new spell
-    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
-
-    // If tutorial is active and currently on the Create step, advance to Equip step
-    try {
-      if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
-        // If the tutorial is currently on the 'two-element-fusion' step, advance to 'allocate-focus'.
-        // Otherwise fall back to the previous behavior of advancing to 'equip-spell'.
-        const tut = window.gameInstance.tutorial;
-        const twoIdx = tut.stepManager.indexOf('two-element-fusion');
-        const allocIdx = tut.stepManager.indexOf('allocate-focus');
-        const equipIdx = tut.stepManager.indexOf('equip-spell');
-        if (twoIdx >= 0 && allocIdx >= 0 && tut.currentStep === twoIdx) {
-          tut.showStep(allocIdx);
-        } else if (equipIdx >= 0) {
-          tut.showStep(equipIdx);
-        }
-      }
-    } catch (e) { /* silent */ }
-
-    // Ensure the fusion UI is scrolled back to the top so the Elements library is visible on mobile
-    try {
-      if (this.container) {
-        this.container.scrollTo?.({ top: 0, behavior: 'smooth' });
-      }
-    } catch (e) { /* silent */ }
-
-    // Update HUD to reflect essence spent
-    try {
-      if (window && window.gameInstance && window.gameInstance.hud) {
-        window.gameInstance.hud.setEssence(this.essenceBank);
-      }
-    } catch (e) {}
+    this.controller.addSpellToInventory(spell);
   }
 
   // NEW: Equip spell from inventory to a slot (free)
   equipSpellFromInventory(slotIndex, spell) {
-    // Remove the same spell from any other slot so each spell occupies at most one slot
-    for (let i = 0; i < this.equippedSpells.length; i++) {
-      if (i !== slotIndex && this.equippedSpells[i] === spell) {
-        this.equippedSpells[i] = null;
-      }
-    }
-    this.equippedSpells[slotIndex] = spell;
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
-    this.renderSpellSlots();
-    this.renderCreatedSpells();
-
-    // Persist save when slot contents change
-    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+    this.controller.equipSpellFromInventory(slotIndex, spell);
   }
 
   unequipSpell(index) {
-    this.equippedSpells[index] = null;
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
-    this.renderSpellSlots();
-    this.renderCreatedSpells();
-
-    // Persist save when slot contents change
-    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+    this.controller.unequipSpell(index);
   }
 
   allocateFocusToSlot(slotIndex) {
-    if (this.focusBank <= 0) return;
-    this.spellSlotFocus[slotIndex] = (this.spellSlotFocus[slotIndex] || 0) + 1;
-    this.focusBank -= 1;
-    this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
-    this.renderSpellSlots();
-    // Update HUD to reflect focus spent
-    try {
-      if (window && window.gameInstance && window.gameInstance.hud) {
-        window.gameInstance.hud.setFocus(this.focusBank);
-      }
-    } catch (e) {}
-
-    // Persist save when focus allocation (slot state) changes
-    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+    this.controller.allocateFocusToSlot(slotIndex);
   }
 
   getEquippedSpells() {
-    return this.equippedSpells.filter(s => s !== null);
+    return this.controller.getEquippedSpells();
   }
 
   refresh() {
-    this.elementsLibrary.refresh(this.gameState.unlockedElementKeys);
-    this.spellSlotsUI.update(this.equippedSpells, this.spellSlotFocus, this.focusBank, this.spellInventory);
-    this.fusionBuilder.setSelectedElements(this.selectedElements);
-    this.updateFusionPreview();
-    this.renderCreatedSpells();
+    this.controller.refresh();
+    this.createdList.render(this.controller.spellInventory, this.controller.equippedSpells);
+    this.renderSpellSlots();
   }
 }
