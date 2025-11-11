@@ -129,19 +129,30 @@ export class FusionUI {
   // NEW: Add spell to inventory (costs Essence)
   addSpellToInventory(spell) {
     this.controller.addSpellToInventory(spell);
+    // Update created spells list and spell slots UI so new spell is visible immediately
+    try { this.renderCreatedSpells(); } catch (e) {}
+    try { this.renderSpellSlots(); } catch (e) {}
   }
 
   // NEW: Equip spell from inventory to a slot (free)
   equipSpellFromInventory(slotIndex, spell) {
     this.controller.equipSpellFromInventory(slotIndex, spell);
+    // Update created spells list and spell slots UI to reflect equipment change
+    try { this.renderCreatedSpells(); } catch (e) {}
+    try { this.renderSpellSlots(); } catch (e) {}
   }
 
   unequipSpell(index) {
     this.controller.unequipSpell(index);
+    // Refresh UI after unequip
+    try { this.renderCreatedSpells(); } catch (e) {}
+    try { this.renderSpellSlots(); } catch (e) {}
   }
 
   allocateFocusToSlot(slotIndex) {
     this.controller.allocateFocusToSlot(slotIndex);
+    // Ensure spell slots UI and HUD reflect the new focus allocation
+    try { this.renderSpellSlots(); } catch (e) {}
   }
 
   getEquippedSpells() {
