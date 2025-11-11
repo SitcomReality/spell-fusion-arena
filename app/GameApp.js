@@ -78,19 +78,30 @@ export class GameApp {
   }
 
   startGameWithLoadout(startingElements, seed) {
+    // Accept either positional args (old callers) or a single config object from IntroScreen load flow.
+    let cfg = null;
+    if (startGameWithLoadout && typeof startGameWithLoadout === 'object' && startGameWithLoadout.startingElements !== undefined) {
+      // defensive - not used, fallback below
+    }
+    if (typeof startingElements === 'object' && startingElements !== null && startingElements.startingElements !== undefined) {
+      cfg = startingElements;
+    } else {
+      cfg = { startingElements: startingElements || [], seed: seed };
+    }
+
     // Clean up previous game if any
     this.cleanupGame();
 
-    this.rng = new SeededRandom(seed);
+    this.rng = new SeededRandom(cfg.seed);
 
-    const startingElementKeys = startingElements.map(elem => {
+    const startingElementKeys = (cfg.startingElements || []).map(elem => {
       for (const [key, el] of Object.entries(ELEMENTS)) {
         if (el === elem) return key;
       }
       return null;
     }).filter(k => k !== null);
 
-    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height, seed, startingElementKeys);
+    this.gameState = new GameState(CONFIG.canvas.width, CONFIG.canvas.height, cfg.seed, startingElementKeys);
 
     const startingSpells = startingElements.slice(0, 4);
     this.gameState.player.equipSpells(startingSpells, [1, 0, 0, 0]);
@@ -98,6 +109,57 @@ export class GameApp {
     this.fusionUI = new FusionUI((spells, focus) => {
       this.gameState.player.equipSpells(spells, focus);
     }, this.gameState);
+
+    // If a saved payload was provided, apply it now to fully restore game UI/state
+    try {
+      const payload = cfg.savedPayload || null;
+      if (payload) {
+        // unlocked elements
+        if (Array.isArray(payload.unlockedElementKeys)) {
+          this.gameState.unlockedElementKeys = [...payload.unlockedElementKeys];
+        }
+
+        // Essence & Focus banks
+        if (this.fusionUI) {
+          if (typeof payload.essenceBank === 'number') this.fusionUI.essenceBank = payload.essenceBank;
+          if (typeof payload.focusBank === 'number') this.fusionUI.focusBank = payload.focusBank;
+        }
+
+        // Spell inventory
+        if (Array.isArray(payload.spellInventory) && this.fusionUI) {
+          // Best-effort: accept saved spells as-is (they should already be serializable objects)
+          this.fusionUI.spellInventory = payload.spellInventory.slice();
+        }
+
+        // Equipped spells and slot focus
+        if (Array.isArray(payload.equippedSpells) && this.fusionUI) {
+          // equippedSpells may contain nulls or spell objects; assign directly but ensure array length 4
+          const eq = payload.equippedSpells.slice(0, 4);
+          while (eq.length < 4) eq.push(null);
+          this.fusionUI.equippedSpells = eq;
+        }
+        if (Array.isArray(payload.spellSlotFocus) && this.fusionUI) {
+          const sf = payload.spellSlotFocus.slice(0, 4);
+          while (sf.length < 4) sf.push(0);
+          this.fusionUI.spellSlotFocus = sf;
+          // Also push into player so firing intervals are correct
+          this.gameState.player.spellSlotFocus = sf;
+          this.gameState.player.calculateCastIntervals();
+        }
+
+        // Player HP
+        if (typeof payload.playerHp === 'number') {
+          this.gameState.player.hp = payload.playerHp;
+        }
+
+        // Wave number (restore to that wave so HUD shows correct next-wave)
+        if (typeof payload.wave === 'number' && this.gameState.waveManager) {
+          this.gameState.waveManager.currentWave = payload.wave;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to apply saved payload during load:', e);
+    }
 
     // Initialize tutorial
     this.tutorial = new Tutorial(this.gameState, this.fusionUI);
@@ -160,8 +222,8 @@ export class GameApp {
         this.hud.setScore(this.gameState.score);
         this.hud.setEnemies(0);
         this.hud.setHealth(this.gameState.player.hp);
-        this.hud.setEssence(this.fusionUI.essenceBank);
-        this.hud.setFocus(this.fusionUI.focusBank);
+        this.hud.setEssence(this.fusionUI.essenceBank || 0);
+        this.hud.setFocus(this.fusionUI.focusBank || 0);
       }
     } catch (e) {}
 
