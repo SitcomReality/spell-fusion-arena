@@ -266,12 +266,16 @@ export class RewardUI {
   selectElement(elementKey) {
     this.hide();
     this.onRewardChosen({ type: 'element', key: elementKey });
+    // Persist save immediately after choosing a reward
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
   selectEssence() {
     const amount = this.essenceOffer;
     this.hide();
     this.onRewardChosen({ type: 'essence', amount });
+    // Persist save immediately after choosing a reward
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
   hide() {

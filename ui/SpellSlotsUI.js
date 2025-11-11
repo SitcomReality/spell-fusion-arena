@@ -290,6 +290,9 @@ export class SpellSlotsUI {
         // ensure we remove the document-level flag before removing overlay
         removeInventoryFlag();
         overlay.remove();
+
+        // Persist save when user equips a spell from inventory via the selector
+        try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
       });
       listContainer.appendChild(item);
     });

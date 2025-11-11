@@ -168,7 +168,6 @@ export class FusionUI {
       const isEquipped = this.equippedSpells.some(s => s === spell);
       const deleteBtn = item.querySelector('.created-spell-delete');
       if (!tutorialCompleted || isEquipped) {
-        // Remove the button from DOM so it is not visible or focusable
         if (deleteBtn) deleteBtn.remove();
       } else {
         // Delete button handler: remove spell from inventory and re-render
@@ -188,6 +187,9 @@ export class FusionUI {
           // Re-render slots and created list
           this.renderSpellSlots();
           this.renderCreatedSpells();
+
+          // Persist save after deleting a spell
+          try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
         });
       }
 
@@ -313,6 +315,9 @@ export class FusionUI {
     // Update created spells list
     this.renderCreatedSpells();
 
+    // Persist save after creating a new spell
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+
     // If tutorial is active and currently on the Create step, advance to Equip step
     try {
       if (window && window.gameInstance && window.gameInstance.tutorial && window.gameInstance.tutorial.isActive) {
@@ -357,6 +362,9 @@ export class FusionUI {
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
     this.renderCreatedSpells();
+
+    // Persist save when slot contents change
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
   unequipSpell(index) {
@@ -364,6 +372,9 @@ export class FusionUI {
     this.onSpellEquipped(this.equippedSpells, this.spellSlotFocus);
     this.renderSpellSlots();
     this.renderCreatedSpells();
+
+    // Persist save when slot contents change
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
   allocateFocusToSlot(slotIndex) {
@@ -378,6 +389,9 @@ export class FusionUI {
         window.gameInstance.hud.setFocus(this.focusBank);
       }
     } catch (e) {}
+
+    // Persist save when focus allocation (slot state) changes
+    try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
   }
 
   getEquippedSpells() {

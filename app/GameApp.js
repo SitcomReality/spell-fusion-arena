@@ -41,8 +41,33 @@ export class GameApp {
 
     this.setupMobileLayoutObserver();
 
+    // Expose save helper for UI modules to call when they mutate state
+    window.saveGame = this.saveGameState?.bind(this) || (() => {});
+
     // Show intro screen
     this.showIntroScreen();
+  }
+
+  // NEW: persist a minimal snapshot of important game/fusion state to localStorage
+  saveGameState() {
+    try {
+      const payload = {
+        unlockedElementKeys: this.gameState ? this.gameState.unlockedElementKeys : [],
+        // fusionUI may be null during intro/cleanup - guard access
+        essenceBank: this.fusionUI ? this.fusionUI.essenceBank : 0,
+        focusBank: this.fusionUI ? this.fusionUI.focusBank : 0,
+        spellInventory: this.fusionUI ? this.fusionUI.spellInventory : [],
+        equippedSpells: this.fusionUI ? this.fusionUI.equippedSpells : [null, null, null, null],
+        spellSlotFocus: this.fusionUI ? this.fusionUI.spellSlotFocus : [1,0,0,0],
+        playerHp: this.gameState ? this.gameState.player.hp : undefined,
+        wave: this.gameState ? this.gameState.waveManager.currentWave : undefined,
+        seed: this.gameState ? this.gameState.seed : undefined
+      };
+      localStorage.setItem('spellFusion_save_v1', JSON.stringify(payload));
+    } catch (e) {
+      // best-effort; do not break game flow on storage errors
+      console.warn('Failed to save game state', e);
+    }
   }
 
   showIntroScreen() {
