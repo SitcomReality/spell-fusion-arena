@@ -138,6 +138,11 @@ export class GameApp {
       if (savedState.equippedSpells) {
         this.gameState.player.equipSpells(savedState.equippedSpells, savedState.spellSlotFocus || [1, 0, 0, 0]);
       }
+
+      // Ensure WaveManager reflects saved wave number so loaded games resume at the correct wave
+      if (typeof savedState.wave === 'number') {
+        this.gameState.waveManager.currentWave = Math.max(0, Math.floor(savedState.wave));
+      }
       
       // After restoring data, ensure the FusionUI reflects the restored state (unlocked elements, inventory, slots, focus/essence)
       try {
