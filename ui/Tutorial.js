@@ -76,6 +76,17 @@ export class Tutorial {
       try { this._completionCleanup(); } catch (e) {}
       this._completionCleanup = null;
     }
+
+    // Mark tutorial completed in storage (already present) and notify other systems
+    try {
+      localStorage.setItem('tutorialCompleted', 'true');
+    } catch (e) { /* silent */ }
+
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('tutorial-completed'));
+      }
+    } catch (e) { /* silent */ }
   }
 
   static hasCompletedTutorial() {
