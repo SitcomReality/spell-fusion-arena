@@ -61,7 +61,7 @@ export const VisualBlender = {
       l: Math.min(1, weightSecSum > 0 ? (weightedLightSecondary / weightSecSum) : secHslList[0].l)
     };
 
-    const avgInputSat = (primHslList.reduce((s, x) => s + x.s, 0) + secHslList.reduce((s, x) => s + x.s, 0)) / (primHslList.length + secHslList.length));
+    const avgInputSat = (primHslList.reduce((s, x) => s + x.s, 0) + secHslList.reduce((s, x) => s + x.s, 0)) / (primHslList.length + secHslList.length);
     const satScale = 0.6 + Math.pow(avgInputSat, 1.2) * 0.55;
     primaryHsl.s = Math.min(1, primaryHsl.s * satScale);
     secondaryHsl.s = Math.min(1, secondaryHsl.s * (0.9 + (1 - avgInputSat) * 0.1));
