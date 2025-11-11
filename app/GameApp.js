@@ -228,6 +228,8 @@ export class GameApp {
       try { if (this.tutorial && this.tutorial.isActive && this.tutorial.callout) this.tutorial.callout.remove(); } catch (e) {}
       this.gameState.waveManager.startNextWave();
       this.gameState.startWave();
+      // Ensure the start panel is removed so it doesn't obscure the canvas during the active wave
+      try { if (this.waveStartButton) this.waveStartButton.hide(); } catch (e) {}
       try { if (this.hud) this.hud.setWave(this.gameState.waveManager.currentWave); if (this.hud) this.hud.setEnemies(0); } catch (e) {}
     });
     if (this.autoEnabled) setTimeout(() => this.autoManager.autoStartWaveIfPending(), 100);
