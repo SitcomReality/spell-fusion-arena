@@ -1,3 +1,13 @@
+import { renderTrailParticle } from './particleRenderers/Trail.js';
+import { renderFloatingText } from './particleRenderers/FloatingText.js';
+import { renderAuraParticle } from './particleRenderers/Aura.js';
+import { renderBeamParticle } from './particleRenderers/Beam.js';
+import { renderSmokeParticle } from './particleRenderers/Smoke.js';
+import { renderSparkParticle } from './particleRenderers/Spark.js';
+import { renderSwirlParticle } from './particleRenderers/Swirl.js';
+import { renderGlowParticle } from './particleRenderers/Glow.js';
+import { renderDefaultParticle } from './particleRenderers/Default.js';
+
 export class EffectsRenderer {
   constructor(canvas) {
     this.canvas = canvas;
@@ -16,31 +26,31 @@ export class EffectsRenderer {
     // Different rendering based on particle type
     switch (particle.type) {
       case 'trail':
-        import('./particleRenderers/Trail.js').then(m => m.renderTrailParticle(this.ctx, particle, alpha));
+        renderTrailParticle(this.ctx, particle, alpha);
         break;
       case 'floating-text':
-        import('./particleRenderers/FloatingText.js').then(m => m.renderFloatingText(this.ctx, particle, alpha));
+        renderFloatingText(this.ctx, particle, alpha);
         break;
       case 'aura':
-        import('./particleRenderers/Aura.js').then(m => m.renderAuraParticle(this.ctx, particle, alpha));
+        renderAuraParticle(this.ctx, particle, alpha);
         break;
       case 'beam':
-        import('./particleRenderers/Beam.js').then(m => m.renderBeamParticle(this.ctx, particle, alpha));
+        renderBeamParticle(this.ctx, particle, alpha);
         break;
       case 'smoke':
-        import('./particleRenderers/Smoke.js').then(m => m.renderSmokeParticle(this.ctx, particle, alpha));
+        renderSmokeParticle(this.ctx, particle, alpha);
         break;
       case 'spark':
-        import('./particleRenderers/Spark.js').then(m => m.renderSparkParticle(this.ctx, particle, alpha));
+        renderSparkParticle(this.ctx, particle, alpha);
         break;
       case 'swirl':
-        import('./particleRenderers/Swirl.js').then(m => m.renderSwirlParticle(this.ctx, particle, alpha));
+        renderSwirlParticle(this.ctx, particle, alpha);
         break;
       case 'glow':
-        import('./particleRenderers/Glow.js').then(m => m.renderGlowParticle(this.ctx, particle, alpha));
+        renderGlowParticle(this.ctx, particle, alpha);
         break;
       default:
-        import('./particleRenderers/Default.js').then(m => m.renderDefaultParticle(this.ctx, particle, alpha));
+        renderDefaultParticle(this.ctx, particle, alpha);
     }
     
     this.ctx.globalAlpha = 1.0;
