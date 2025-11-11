@@ -84,8 +84,7 @@ export class GameApp {
   }
 
   startGameWithLoadout(startingElements, seed, savedState) {
-    // Extract savedState if it exists (from load game)
-    const savedState = arguments[2] || null; // passed as 3rd arg if loading
+    // savedState is provided as the third parameter; use it directly
     
     // Clean up previous game if any
     this.cleanupGame();
