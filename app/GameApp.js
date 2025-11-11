@@ -176,6 +176,20 @@ export class GameApp {
       },
       (autoEnabled) => {
         this.autoEnabled = autoEnabled;
+
+        // If auto mode is just enabled, trigger immediate actions if the game is waiting.
+        if (autoEnabled) {
+          // 1. Check if waiting for reward
+          if (this.rewardUI && this.rewardUI.container) {
+            this.autoSelectReward();
+          }
+          // 2. Check if waiting for wave start
+          else if (this.gameState && this.gameState.waveStartPending) {
+            // Auto allocate focus must happen before auto starting the wave
+            this.autoAllocateFocus();
+            this.autoStartWave();
+          }
+        }
       }
     );
     this.speedControl.mount(document.getElementById('canvas-wrapper'));
@@ -226,6 +240,11 @@ export class GameApp {
         this.fusionUI.addEssenceToBank(autoEssence);
       } catch (e) {}
       this.rewardUI.show(waveNumber);
+      
+      // NEW: Auto-select reward if auto is enabled
+      if (this.autoEnabled) {
+        setTimeout(() => this.autoSelectReward(), 200);
+      }
     });
 
     // Handle game over
@@ -383,11 +402,13 @@ export class GameApp {
         if (this.hud) this.hud.setEnemies(0);
       } catch (e) {}
 
-      // NEW: Auto-start wave if auto is enabled
-      if (this.autoEnabled) {
-        setTimeout(() => this.autoStartWave(), 500);
-      }
+      // Removed redundant auto-start call here, manual start handles progression if clicked.
     });
+    
+    // Trigger immediate auto-start if enabled
+    if (this.autoEnabled) {
+      setTimeout(() => this.autoStartWave(), 100);
+    }
   }
 
   setupMobileLayoutObserver() {
