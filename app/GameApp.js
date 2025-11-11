@@ -72,12 +72,21 @@ export class GameApp {
 
   showIntroScreen() {
     const introScreen = new IntroScreen((config) => {
-      this.startGameWithLoadout(config.startingElements, config.seed);
+      // Extract savedState if provided (from load game flow)
+      const savedState = config.savedState || null;
+      this.startGameWithLoadout(
+        config.startingElements, 
+        config.seed,
+        savedState
+      );
     });
     introScreen.show();
   }
 
-  startGameWithLoadout(startingElements, seed) {
+  startGameWithLoadout(startingElements, seed, savedState) {
+    // Extract savedState if it exists (from load game)
+    const savedState = arguments[2] || null; // passed as 3rd arg if loading
+    
     // Clean up previous game if any
     this.cleanupGame();
 
@@ -98,6 +107,41 @@ export class GameApp {
     this.fusionUI = new FusionUI((spells, focus) => {
       this.gameState.player.equipSpells(spells, focus);
     }, this.gameState);
+
+    // If we have saved state, restore it
+    if (savedState) {
+      // Restore unlocked elements
+      if (savedState.unlockedElementKeys && Array.isArray(savedState.unlockedElementKeys)) {
+        this.gameState.unlockedElementKeys = [...savedState.unlockedElementKeys];
+      }
+
+      // Restore essence and focus banks
+      this.fusionUI.essenceBank = savedState.essenceBank || 0;
+      this.fusionUI.focusBank = savedState.focusBank || 0;
+
+      // Restore spell inventory (spells are serialized, need to be reconstructed)
+      if (savedState.spellInventory && Array.isArray(savedState.spellInventory)) {
+        this.fusionUI.spellInventory = [...savedState.spellInventory];
+      }
+
+      // Restore equipped spells and slot focus
+      if (savedState.equippedSpells && Array.isArray(savedState.equippedSpells)) {
+        this.fusionUI.equippedSpells = [...savedState.equippedSpells];
+      }
+      if (savedState.spellSlotFocus && Array.isArray(savedState.spellSlotFocus)) {
+        this.fusionUI.spellSlotFocus = [...savedState.spellSlotFocus];
+      }
+
+      // Apply equipped spells to player
+      if (savedState.equippedSpells) {
+        this.gameState.player.equipSpells(savedState.equippedSpells, savedState.spellSlotFocus || [1, 0, 0, 0]);
+      }
+
+      // Restore player HP
+      if (typeof savedState.playerHp === 'number') {
+        this.gameState.player.hp = Math.max(1, savedState.playerHp);
+      }
+    }
 
     // Initialize tutorial
     this.tutorial = new Tutorial(this.gameState, this.fusionUI);

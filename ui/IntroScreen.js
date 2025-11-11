@@ -59,24 +59,43 @@ export class IntroScreen {
           // Ensure element definitions are available
           try { await ELEMENTS_READY; } catch (e) {}
 
-          // Build startingElements array from unlockedElementKeys if present
+          // If no valid payload, fall back to new game
+          if (!payload) {
+            alert('Failed to load saved game.');
+            this.startNewGame();
+            return;
+          }
+
+          // Reconstruct full game state from payload
           const startingElements = [];
-          if (payload && Array.isArray(payload.unlockedElementKeys)) {
-            for (const key of payload.unlockedElementKeys) {
-              try {
-                const mod = await import('../spells/Element.js');
-                const ELEMENTS = mod.ELEMENTS || (await mod.ELEMENTS_READY && mod.ELEMENTS) || {};
-                if (ELEMENTS[key]) startingElements.push(ELEMENTS[key]);
-              } catch (e) { /* best-effort; skip missing elements */ }
-              if (startingElements.length >= 4) break;
+          if (Array.isArray(payload.unlockedElementKeys)) {
+            for (const key of payload.unlockedElementKeys.slice(0, 4)) {
+              const elem = ELEMENTS[key];
+              if (elem) startingElements.push(elem);
             }
           }
 
-          // Fallback: ensure at least an empty array is passed; prefer saved seed if present
-          const seed = payload && payload.seed ? payload.seed : Math.floor(Math.random() * 0x7FFFFFFF);
-          // Start the game with the recovered starting elements (may be empty) and seed
+          // Build the full config for game startup
+          const loadedConfig = {
+            startingElements,
+            startingElementKeys: payload.unlockedElementKeys || [],
+            seed: payload.seed || Math.floor(Math.random() * 0x7FFFFFFF),
+            // Pass the full saved state so GameApp can restore it
+            savedState: {
+              unlockedElementKeys: payload.unlockedElementKeys || [],
+              essenceBank: payload.essenceBank || 0,
+              focusBank: payload.focusBank || 0,
+              spellInventory: payload.spellInventory || [],
+              equippedSpells: payload.equippedSpells || [null, null, null, null],
+              spellSlotFocus: payload.spellSlotFocus || [1, 0, 0, 0],
+              playerHp: payload.playerHp || 1000,
+              wave: payload.wave || 0
+            }
+          };
+
+          // Hide intro screen and start game with loaded state
           this.container.remove();
-          this.onGameStart({ startingElements, seed });
+          this.onGameStart(loadedConfig);
         });
       }
     } catch (e) { /* silent */ }
@@ -262,7 +281,7 @@ export class IntroScreen {
     // Hide intro screen and start game with selected elements
     this.container.remove();
 
-    // Pass the selected elements, their keys, and seed to the game
+    // Pass the selected elements, their keys, seed, and savedState to the game
     this.onGameStart({
       startingElements: this.selectedStartingElements,
       startingElementKeys: this.selectedElementKeys,
