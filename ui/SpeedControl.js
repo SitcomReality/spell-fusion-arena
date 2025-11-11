@@ -6,10 +6,7 @@ export class SpeedControl {
     this.element = null;
     this.currentSpeed = 1;
     this.autoEnabled = false;
-    this._onTutorialCompleted = () => {
-      // re-render when tutorial finishes so the auto control becomes available
-      this.render();
-    };
+    this.autoVisible = true; // NEW: Assume visible unless told otherwise
   }
 
   mount(container) {
@@ -17,10 +14,6 @@ export class SpeedControl {
     this.element = document.createElement('div');
     this.element.className = 'game-controls-wrapper';
     this.container.appendChild(this.element);
-    // Listen for tutorial completion so we can show the auto toggle when tutorial ends
-    if (typeof window !== 'undefined') {
-      window.addEventListener('tutorial-completed', this._onTutorialCompleted);
-    }
     this.render();
   }
 
@@ -28,16 +21,7 @@ export class SpeedControl {
     if (!this.container) return;
 
     const speeds = [1, 2, 5, 10];
-
-    // Determine if tutorial is active (if so, hide auto control)
-    let tutorialActive = false;
-    try {
-      const gi = window && window.gameInstance;
-      tutorialActive = !!(gi && gi.tutorial && gi.tutorial.isActive);
-    } catch (e) {
-      tutorialActive = false;
-    }
-
+    const autoControlClass = this.autoVisible ? 'auto-control' : 'auto-control hidden-by-tutorial';
     this.element.innerHTML = `
       <div class="game-controls">
         <div class="speed-control">
@@ -50,13 +34,12 @@ export class SpeedControl {
             `).join('')}
           </div>
         </div>
-        ${tutorialActive ? '' : `
-        <div class="auto-control">
+        <div class="${autoControlClass}">
           <button class="auto-toggle-btn" title="Toggle automatic wave progression and reward selection">
             <span class="auto-toggle-label">Auto</span>
             <span class="auto-toggle-status">OFF</span>
           </button>
-        </div>`}
+        </div>
       </div>
     `;
 
@@ -73,10 +56,6 @@ export class SpeedControl {
       autoBtn.addEventListener('click', () => {
         this.toggleAuto();
       });
-      // update status text/class to match current state
-      const statusEl = this.element.querySelector('.auto-toggle-status');
-      if (statusEl) statusEl.textContent = this.autoEnabled ? 'ON' : 'OFF';
-      if (this.autoEnabled) autoBtn.classList.add('active'); else autoBtn.classList.remove('active');
     }
   }
 
@@ -108,21 +87,19 @@ export class SpeedControl {
     }
   }
 
+  setAutoVisible(visible) {
+    if (this.autoVisible !== visible) {
+      this.autoVisible = visible;
+      this.render();
+    }
+  }
+
   getAuto() {
     return this.autoEnabled;
   }
 
   getSpeed() {
     return this.currentSpeed;
-  }
-
-  // cleanup if SpeedControl is removed
-  unmount() {
-    try {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('tutorial-completed', this._onTutorialCompleted);
-      }
-    } catch (e) {}
   }
 }
 

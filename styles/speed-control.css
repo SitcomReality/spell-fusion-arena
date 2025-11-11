@@ -74,6 +74,10 @@
   align-items: center;
 }
 
+.auto-control.hidden-by-tutorial {
+    display: none;
+}
+
 .auto-toggle-btn {
   display: flex;
   align-items: center;

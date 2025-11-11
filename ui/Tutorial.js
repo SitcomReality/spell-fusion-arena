@@ -76,17 +76,13 @@ export class Tutorial {
       try { this._completionCleanup(); } catch (e) {}
       this._completionCleanup = null;
     }
-
-    // Mark tutorial completed in storage (already present) and notify other systems
+    
+    // NEW: Notify GameApp that tutorial is complete so it can unlock hidden UI
     try {
-      localStorage.setItem('tutorialCompleted', 'true');
-    } catch (e) { /* silent */ }
-
-    try {
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('tutorial-completed'));
-      }
-    } catch (e) { /* silent */ }
+        if (window && window.gameInstance && window.gameInstance.speedControl) {
+            window.gameInstance.speedControl.setAutoVisible(true);
+        }
+    } catch (e) {}
   }
 
   static hasCompletedTutorial() {

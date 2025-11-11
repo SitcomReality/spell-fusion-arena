@@ -179,6 +179,14 @@ export class GameApp {
       }
     );
     this.speedControl.mount(document.getElementById('canvas-wrapper'));
+    
+    // NEW: Initially hide auto control if tutorial is active/pending
+    if (this.tutorial) {
+        this.speedControl.setAutoVisible(false);
+    } else {
+        // If loaded game or no tutorial (already completed), show auto control.
+        this.speedControl.setAutoVisible(true);
+    }
 
     this.rewardUI = new RewardUI((reward) => {
       if (reward.type === 'essence') {
