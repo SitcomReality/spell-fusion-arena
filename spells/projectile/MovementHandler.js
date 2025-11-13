@@ -89,6 +89,10 @@ export class MovementHandler {
       this.updateStandard(projectile, dt, enemies);
     }
 
+    // NOTE: Attraction/repulsion physics removed per dev/01-remove-vortex-repulsion.md.
+    // Previously this function called applyAttractionRepulsion(projectile, dt, enemies);
+    // That physics was removed to eliminate ineffective vortex/repulsion forces.
+
     // Wave motion perpendicular to velocity (applies to both movement types)
     if (projectile.waveAmplitude) {
       projectile.waveAngle += projectile.waveFrequency * dt;
