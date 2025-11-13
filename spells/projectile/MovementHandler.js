@@ -1,5 +1,11 @@
 import { TargetFinder } from './TargetFinder.js';
 
+/* 
+  NOTE: vortex/repulsion physics have been removed from the codebase.
+  Any appearance of projectile.properties.vortex or projectile.properties.repulsion
+  should be treated as legacy and ignored here (no-op). This file will not
+  perform attraction/repulsion forces.
+*/
 export class MovementHandler {
   static initMovement(projectile, targetX, targetY) {
     const properties = projectile.spell.properties;
@@ -88,10 +94,6 @@ export class MovementHandler {
     } else {
       this.updateStandard(projectile, dt, enemies);
     }
-
-    // NOTE: Attraction/repulsion physics removed per dev/01-remove-vortex-repulsion.md.
-    // Previously this function called applyAttractionRepulsion(projectile, dt, enemies);
-    // That physics was removed to eliminate ineffective vortex/repulsion forces.
 
     // Wave motion perpendicular to velocity (applies to both movement types)
     if (projectile.waveAmplitude) {
