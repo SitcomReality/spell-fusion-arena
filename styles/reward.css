@@ -94,6 +94,22 @@
   box-shadow: 0 0 10px rgba(255,200,80, calc(0.22 * var(--rarity-intensity,1)));
 }
 
+/* Rarity-specific pill & card tints for full 13-tier system (mundane -> mythic).
+   Cooler / more vibrant colors are applied to the rarest tiers. */
+.reward-card[data-rarity="mundane"] .rarity-pill { background: rgba(80,80,80,0.10); color: #cfd6d8; border-color: rgba(255,255,255,0.04); }
+.reward-card[data-rarity="common"] .rarity-pill { background: rgba(120,110,100,0.10); color: #e6d7c8; border-color: rgba(255,240,200,0.06); }
+.reward-card[data-rarity="uncommon"] .rarity-pill { background: rgba(140,200,90,0.12); color: #dff6c8; border-color: rgba(140,200,90,0.15); }
+.reward-card[data-rarity="unusual"] .rarity-pill { background: rgba(120,180,200,0.10); color: #e6fbff; border-color: rgba(120,180,200,0.12); }
+.reward-card[data-rarity="rare"] .rarity-pill { background: linear-gradient(90deg, rgba(255,200,80,0.12), rgba(255,120,200,0.08)); color: #fff1d6; border-color: rgba(255,200,80,0.22); }
+.reward-card[data-rarity="prestigious"] .rarity-pill { background: linear-gradient(90deg, rgba(180,150,220,0.12), rgba(120,200,255,0.06)); color: #f3eaff; border-color: rgba(160,140,200,0.14); }
+.reward-card[data-rarity="exotic"] .rarity-pill { background: linear-gradient(90deg, rgba(120,220,200,0.12), rgba(100,170,255,0.08)); color: #eafffb; border-color: rgba(80,180,200,0.16); }
+.reward-card[data-rarity="outstanding"] .rarity-pill { background: linear-gradient(90deg, rgba(140,180,255,0.12), rgba(200,140,255,0.08)); color: #eef4ff; border-color: rgba(140,160,240,0.16); }
+.reward-card[data-rarity="exceptional"] .rarity-pill { background: linear-gradient(90deg, rgba(100,220,255,0.14), rgba(140,140,255,0.10)); color: #eaf9ff; border-color: rgba(100,180,240,0.18); }
+.reward-card[data-rarity="legendary"] .rarity-pill { background: linear-gradient(90deg, rgba(140,220,255,0.16), rgba(180,160,255,0.12)); color: #ffffff; border-color: rgba(120,200,255,0.2); box-shadow: 0 0 8px rgba(120,200,255,0.12); }
+.reward-card[data-rarity="wondrous"] .rarity-pill { background: linear-gradient(90deg, rgba(120,180,255,0.18), rgba(180,120,255,0.14)); color: #fffdf8; border-color: rgba(160,140,255,0.22); box-shadow: 0 0 10px rgba(180,140,255,0.14); }
+.reward-card[data-rarity="supernal"] .rarity-pill { background: linear-gradient(90deg, rgba(120,240,255,0.20), rgba(160,200,255,0.16)); color: #ffffff; border-color: rgba(120,220,255,0.26); box-shadow: 0 0 12px rgba(120,220,255,0.18); }
+.reward-card[data-rarity="mythic"] .rarity-pill { background: linear-gradient(90deg, rgba(160,240,255,0.22), rgba(220,160,255,0.20)); color: #fffefe; border-color: rgba(200,180,255,0.30); box-shadow: 0 0 18px rgba(200,180,255,0.22); }
+
 .reward-choices {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
