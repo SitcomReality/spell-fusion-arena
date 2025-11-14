@@ -32,14 +32,7 @@ export class ParticleEmitter {
         opacity: 0.7
       };
       
-      // Special effects for specific types
-      if (visuals.vortex || visuals.pullParticles) {
-        particle.vx *= -0.5;
-        particle.vy *= -0.5;
-        particle.attracted = true;
-        particle.targetX = projectile.x;
-        particle.targetY = projectile.y;
-      }
+      // Removed attraction/repulsion handling (vortex / pullParticles) — deprecated properties are ignored.
       
       if (visuals.swirl) {
         const angle = Math.random() * Math.PI * 2;
