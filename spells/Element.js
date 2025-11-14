@@ -45,8 +45,14 @@ async function _loadElements() {
     const common = (await import('./elements/common.js')).COMMON_ELEMENTS || {};
     const uncommon = (await import('./elements/uncommon.js')).UNCOMMON_ELEMENTS || {};
     const rare = (await import('./elements/rare.js')).RARE_ELEMENTS || {};
+    const mundane = (await import('./elements/definitions/01-mundane.js')).MUNDANE_ELEMENTS || {};
+    const commonDef = (await import('./elements/definitions/02-common.js')).COMMON_ELEMENTS || {};
+    const uncommonDef = (await import('./elements/definitions/03-uncommon.js')).UNCOMMON_ELEMENTS || {};
+    const supernal = (await import('./elements/definitions/12-supernal.js')).SUPERNAL_ELEMENTS || {};
+    const mythic = (await import('./elements/definitions/13-mythic.js')).MYTHIC_ELEMENTS || {};
+    const wondrous = (await import('./elements/definitions/11-wondrous.js')).WONDROUS_ELEMENTS || {};
 
-    const merged = Object.assign({}, common, uncommon, rare);
+    const merged = Object.assign({}, mundane, commonDef, uncommonDef, supernal, mythic, wondrous, common, uncommon, rare);
 
     for (const [key, desc] of Object.entries(merged)) {
       ELEMENTS[key] = new Element(desc.name, desc.color, desc.propertyGenes, desc.visualEffects, desc.rarity || 'common');
