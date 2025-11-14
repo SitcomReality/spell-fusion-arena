@@ -39,21 +39,64 @@ export class RewardUI {
 
     // Pick 2 random locked elements, weighted by rarity
     this.choices = [];
-    const pool = [];
-    for (const k of elementKeys) {
-      const r = lockedElements[k].rarity || 'common';
-      const w = r === 'rare' ? 10 : (r === 'uncommon' ? 30 : 60);
-      for (let i = 0; i < w; i++) pool.push(k);
-    }
-    const picked = new Set();
-    while (this.choices.length < 2 && pool.length > 0) {
-      const idx = this.rng ? this.rng.nextInt(0, pool.length) : Math.floor(Math.random() * pool.length);
-      const key = pool[idx];
-      if (!picked.has(key)) {
-        picked.add(key);
-        this.choices.push({ key, element: lockedElements[key] });
+    // Rarity tiers from lowest -> highest. Each step increases rarity by factor 10.
+    const rarityTier = {
+      mundane: 1,
+      common: 2,
+      uncommon: 3,
+      unusual: 4,
+      rare: 5,
+      prestigious: 6,
+      exotic: 7,
+      outstanding: 8,
+      exceptional: 9,
+      legendary: 10,
+      wondrous: 11,
+      supernal: 12,
+      mythic: 13
+    };
+
+    const maxTier = 13;
+
+    // Build weighted options where higher-tier rarities are exponentially less likely.
+    const options = elementKeys.map(k => {
+      const el = lockedElements[k];
+      const tier = rarityTier[el.rarity] || 2; // default to common-like if unknown
+      // weight scale: lower numeric weight for rarer tiers (each tier ~10x rarer).
+      // Use pow(0.1, tier-1) to keep numbers well-behaved as small floats; weightedChoice handles relative weights.
+      const weight = Math.pow(0.1, tier - 1);
+      return { value: k, weight, element: el };
+    }).filter(o => o.weight > 0);
+
+    // Helper to pick without replacement using rng.weightedChoice where available.
+    const pickOne = () => {
+      if (options.length === 0) return null;
+      if (this.rng && typeof this.rng.weightedChoice === 'function') {
+        const value = this.rng.weightedChoice(options.map(o => ({ value: o, weight: o.weight })));
+        // value is the object from options (we passed objects as value); find and remove it
+        const idx = options.findIndex(o => o === value);
+        if (idx >= 0) return options.splice(idx, 1)[0];
+        // fallback: random pop
+        return options.splice(Math.floor((this.rng ? this.rng.next() : Math.random()) * options.length), 1)[0];
+      } else {
+        // Fallback: deterministic-ish random by cumulative weights using Math.random()
+        const total = options.reduce((s, o) => s + o.weight, 0);
+        let r = (this.rng ? this.rng.next() : Math.random()) * total;
+        for (let i = 0; i < options.length; i++) {
+          r -= options[i].weight;
+          if (r <= 0) {
+            return options.splice(i, 1)[0];
+          }
+        }
+        return options.splice(options.length - 1, 1)[0];
       }
-      for (let i = pool.length - 1; i >= 0; i--) if (pool[i] === key) pool.splice(i, 1);
+    };
+
+    // Pick up to 2 distinct choices
+    while (this.choices.length < 2 && options.length > 0) {
+      const pick = pickOne();
+      if (!pick) break;
+      this.choices.push({ key: pick.value, element: pick.element });
     }
 
     this.render(waveNumber);
