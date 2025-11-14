@@ -33,13 +33,20 @@ export class EffectsRenderer {
           const x = Number.isFinite(particle.x) ? particle.x : 0;
           const y = Number.isFinite(particle.y) ? particle.y : 0;
           const size = Number.isFinite(particle.size) ? Math.max(1, particle.size) : 8;
-          // Optional rotation based on velocity if available
-          if (Number.isFinite(particle.vx) && Number.isFinite(particle.vy)) {
+          
+          // Handle rotation for directional particles (like slash_01)
+          if (Number.isFinite(particle.vx) && Number.isFinite(particle.vy) && particle.rotateWithVelocity) {
             const angle = Math.atan2(particle.vy, particle.vx);
             this.ctx.translate(x, y);
             this.ctx.rotate(angle);
             this.ctx.drawImage(img, -size/2, -size/2, size, size);
+          } else if (Number.isFinite(particle.rotation)) {
+            // Static rotation
+            this.ctx.translate(x, y);
+            this.ctx.rotate(particle.rotation);
+            this.ctx.drawImage(img, -size/2, -size/2, size, size);
           } else {
+            // No rotation
             this.ctx.drawImage(img, x - size/2, y - size/2, size, size);
           }
           this.ctx.restore();
@@ -52,7 +59,7 @@ export class EffectsRenderer {
       }
     }
     
-    // Different rendering based on particle type
+    // Fallback to shape rendering
     switch (particle.type) {
       case 'trail':
         renderTrailParticle(this.ctx, particle, alpha);
@@ -85,24 +92,22 @@ export class EffectsRenderer {
     this.ctx.globalAlpha = 1.0;
   }
 
-  // The higher-level aura/aoe renderers remain here and continue to use the canvas context synchronously.
   renderProjectileAura(projectile) {
-    // Guard against invalid projectile data to prevent createRadialGradient errors
     if (!projectile || !projectile.spell) return;
     const px = Number.isFinite(projectile.x) ? projectile.x : 0;
     const py = Number.isFinite(projectile.y) ? projectile.y : 0;
     const baseRadius = Number.isFinite(projectile.radius) ? Math.max(0.1, projectile.radius) : 1;
     const spell = projectile.spell;
     const visualEffects = spell.visualEffects || {};
-    const auraSizeRaw = visualEffects.auraSize || 20;
-    const auraSize = Number.isFinite(auraSizeRaw) ? Math.max(0.1, auraSizeRaw) : 20;
-    // Ensure auraIntensity uses the raw value when finite, otherwise default to 0.3
-    const rawAuraIntensity = visualEffects.auraIntensity;
-    const auraIntensity = Number.isFinite(rawAuraIntensity) ? rawAuraIntensity : 0.3;
-    const color = spell.color || { r: 200, g: 120, b: 40 };
+    
+    // Support new aura configuration
+    const auraConfig = visualEffects.aura || {};
+    const auraSize = (typeof auraConfig === 'object' ? (auraConfig.size || 20) : visualEffects.auraSize) || 20;
+    const auraIntensity = (typeof auraConfig === 'object' ? (auraConfig.intensity || 0.3) : visualEffects.auraIntensity) || 0.3;
+    const color = auraConfig.color || spell.color || { r: 200, g: 120, b: 40 };
     const accentColor = spell.accentColor;
 
-    // Main aura with primary color
+    // Main aura glow
     const gradient = this.ctx.createRadialGradient(
       px, py, baseRadius,
       px, py, auraSize
@@ -115,7 +120,7 @@ export class EffectsRenderer {
     this.ctx.arc(px, py, auraSize, 0, Math.PI * 2);
     this.ctx.fill();
     
-    // Add accent color outer ring if available
+    // Accent glow if available
     if (accentColor) {
       const accentGradient = this.ctx.createRadialGradient(
         px, py, auraSize * 0.7,

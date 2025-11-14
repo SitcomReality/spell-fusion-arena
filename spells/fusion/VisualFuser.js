@@ -1,49 +1,126 @@
-// Visual effects fusion extracted from SpellFusion
+/**
+ * VisualFuser: Orchestrates visual effect generation for fused spells
+ * Uses the full element objects and delegates to VisualEffectGenerator
+ */
+
+import VisualEffectGenerator from './VisualEffectGenerator.js';
+
 export const VisualFuser = {
-  fuse(...visuals) {
-    const vs = visuals.map(v => v || {});
-    const fused = {
-      trail: vs.some(v => v.trail),
-      trailType: (vs.find(v => v.trail) || {}).trailType || 'trail',
-      trailDensity: Math.floor(vs.reduce((sum, v) => sum + (v.trailDensity || 0), 0) / Math.max(1, vs.length)),
-      trailSize: Math.floor(vs.reduce((sum, v) => sum + (v.trailSize || 0), 0) / Math.max(1, vs.length)),
-      aura: vs.some(v => v.aura),
-      auraSize: Math.floor(vs.reduce((sum, v) => sum + (v.auraSize || 0), 0) / Math.max(1, vs.length)),
-      auraIntensity: vs.reduce((sum, v) => sum + (v.auraIntensity || 0), 0) / Math.max(1, vs.length),
-      impactParticles: Math.floor(vs.reduce((sum, v) => sum + (v.impactParticles || 0), 0) / Math.max(1, vs.length)),
-      impactType: (vs[0] && vs[0].impactType) || 'spark',
-      beam: vs.some(v => v.beam),
-      swirl: vs.some(v => v.swirl),
-      wispy: vs.some(v => v.wispy),
-      shimmer: vs.some(v => v.shimmer),
-      chaotic: vs.some(v => v.chaotic),
-      sizeModifier: this.calculateSizeModifier(vs),
-      shapeVariant: this.determineShapeVariant(vs)
+  /**
+   * Fuse visual effects from multiple elements
+   * @param {...Object} elements - Full element objects to fuse
+   * @returns {Object} Complete visual effects configuration
+   */
+  fuse(...elements) {
+    if (!elements || elements.length === 0) {
+      return this.getDefaultVisuals();
+    }
+
+    // Filter out null/undefined elements
+    const validElements = elements.filter(e => e && typeof e === 'object');
+    
+    if (validElements.length === 0) {
+      return this.getDefaultVisuals();
+    }
+
+    // Calculate merged properties from all elements
+    const mergedProperties = this.mergeProperties(validElements);
+    
+    // Generate comprehensive visual effects using the new generator
+    const generatedEffects = VisualEffectGenerator.generate(validElements, mergedProperties);
+    
+    // Merge with any legacy visual genes for backward compatibility
+    return {
+      ...this.legacyEffectsFromElements(validElements),
+      ...generatedEffects
     };
-    return fused;
   },
 
-  calculateSizeModifier(visuals) {
-    let sizeSum = 0, count = 0;
-    for (const v of visuals) {
-      if (v && v.sizeMultiplier !== undefined) {
-        sizeSum += v.sizeMultiplier;
-        count++;
+  /**
+   * Merge property genes from all elements
+   */
+  mergeProperties(elements) {
+    const merged = {};
+    
+    for (const element of elements) {
+      const genes = element.propertyGenes || {};
+      for (const [key, value] of Object.entries(genes)) {
+        if (key !== 'damage' && key !== 'speed') {
+          merged[key] = (merged[key] || 0) + value;
+        }
       }
     }
-    if (count === 0) return 1.0;
-    const average = sizeSum / count;
-    const varietyBonus = Math.min(0.15, (visuals.length - 1) * 0.05);
-    return Math.max(0.7, Math.min(1.5, average + varietyBonus));
+    
+    return merged;
   },
 
-  determineShapeVariant(visuals) {
-    const hasBeam = visuals.some(v => v && v.beam);
-    const hasSwirl = visuals.some(v => v && v.swirl);
-    const hasVortex = visuals.some(v => v && v.vortex);
-    if (hasBeam) return 'elongated';
-    if (hasSwirl || hasVortex) return 'swirling';
-    return 'round';
+  /**
+   * Extract legacy visual effects from elements for backward compatibility
+   */
+  legacyEffectsFromElements(elements) {
+    const legacyFusion = {
+      trailDensity: 0,
+      trailSize: 0,
+      auraSize: 0,
+      auraIntensity: 0,
+      impactParticles: 0,
+      swirl: false,
+      wispy: false,
+      shimmer: false,
+      chaotic: false,
+      beam: false
+    };
+
+    for (const el of elements) {
+      const vis = el.visualEffects || {};
+      legacyFusion.trailDensity += (vis.trailDensity || 0);
+      legacyFusion.trailSize += (vis.trailSize || 0);
+      legacyFusion.auraSize += (vis.auraSize || 0);
+      legacyFusion.auraIntensity += (vis.auraIntensity || 0);
+      legacyFusion.impactParticles += (vis.impactParticles || 0);
+      if (vis.swirl) legacyFusion.swirl = true;
+      if (vis.wispy) legacyFusion.wispy = true;
+      if (vis.shimmer) legacyFusion.shimmer = true;
+      if (vis.chaotic) legacyFusion.chaotic = true;
+      if (vis.beam) legacyFusion.beam = true;
+    }
+
+    const count = elements.length;
+    return {
+      trailDensity: Math.round(legacyFusion.trailDensity / count),
+      trailSize: Math.round(legacyFusion.trailSize / count),
+      auraSize: Math.round(legacyFusion.auraSize / count),
+      auraIntensity: legacyFusion.auraIntensity / count,
+      impactParticles: Math.round(legacyFusion.impactParticles / count),
+      swirl: legacyFusion.swirl,
+      wispy: legacyFusion.wispy,
+      shimmer: legacyFusion.shimmer,
+      chaotic: legacyFusion.chaotic,
+      beam: legacyFusion.beam
+    };
+  },
+
+  /**
+   * Default visuals for when no valid elements provided
+   */
+  getDefaultVisuals() {
+    return {
+      trail: true,
+      trailType: 'spark',
+      trailDensity: 5,
+      trailSize: 2,
+      aura: true,
+      auraSize: 25,
+      auraIntensity: 0.5,
+      impactParticles: 20,
+      impactType: 'spark',
+      shapeVariant: 'sphere',
+      sizeMultiplier: 1.0,
+      visibilityTier: 'basic',
+      particleTextureLevel: 'common'
+    };
   }
 };
+
+export default VisualFuser;
 
