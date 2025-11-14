@@ -22,6 +22,17 @@ export class ParticleManager {
 
   updateParticles(dt) {
     for (const particle of this.game.particles) {
+      // Handle attracted particles (void effect)
+      if (particle.attracted && particle.targetX !== undefined) {
+        const dx = particle.targetX - particle.x;
+        const dy = particle.targetY - particle.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 1) {
+          particle.vx += (dx / dist) * 200 * dt;
+          particle.vy += (dy / dist) * 200 * dt;
+        }
+      }
+      
       // Handle swirl particles
       if (particle.swirlAngle !== undefined) {
         particle.swirlAngle += particle.swirlSpeed * dt;
