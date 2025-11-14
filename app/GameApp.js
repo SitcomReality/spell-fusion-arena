@@ -10,6 +10,7 @@ import { Tutorial } from '../ui/Tutorial.js';
 import { createHUD, createSpeedControl, createFusionUI, createRewardUI, createWaveStartButton } from './UISetup.js';
 import { saveGameSnapshot, loadGameSnapshot } from './SaveManager.js';
 import { AutoManager } from './AutoManager.js';
+import TextureManager from '../rendering/TextureManager.js';
 
 export class GameApp {
   constructor() {
@@ -20,6 +21,24 @@ export class GameApp {
     this.fxCanvas = document.getElementById('fx-canvas');
     this.fxCanvas.width = CONFIG.canvas.width;
     this.fxCanvas.height = CONFIG.canvas.height;
+
+    // Preload particle textures to avoid pop-in during gameplay
+    // List mirrors files in /img/particle/ — keys default to URLs here.
+    TextureManager.load([
+      '/img/particle/circle_01.png','/img/particle/circle_02.png','/img/particle/circle_03.png','/img/particle/circle_04.png','/img/particle/circle_05.png',
+      '/img/particle/fire_01.png','/img/particle/fire_02.png','/img/particle/flare_01.png','/img/particle/light_01.png','/img/particle/light_02.png','/img/particle/light_03.png',
+      '/img/particle/magic_01.png','/img/particle/magic_02.png','/img/particle/magic_03.png','/img/particle/magic_04.png','/img/particle/magic_05.png',
+      '/img/particle/scorch_01.png','/img/particle/scorch_02.png','/img/particle/scorch_03.png',
+      '/img/particle/scratch_01.png','/img/particle/slash_01.png',
+      '/img/particle/smoke_01.png','/img/particle/smoke_02.png',
+      '/img/particle/spark_01.png','/img/particle/spark_02.png','/img/particle/spark_03.png','/img/particle/spark_04.png',
+      '/img/particle/star_01.png','/img/particle/star_02.png','/img/particle/star_03.png','/img/particle/star_04.png','/img/particle/star_05.png','/img/particle/star_06.png','/img/particle/star_07.png','/img/particle/star_08.png','/img/particle/star_09.png',
+      '/img/particle/trace_01.png','/img/particle/trace_02.png','/img/particle/trace_03.png','/img/particle/trace_04.png','/img/particle/trace_05.png','/img/particle/trace_06.png',
+      '/img/particle/particle_texture_descriptions.md'
+    ]).then(() => {
+      // optional: expose readiness flag or simple log
+      console.log('TextureManager: particle textures preloaded.');
+    });
 
     this.renderer = new Renderer(this.canvas);
     this.fxRenderer = new EffectsRenderer(this.fxCanvas);
