@@ -17,9 +17,6 @@ export class ParticleEmitter {
     const primaryColor = projectile.spell.color;
     const accentColor = projectile.spell.accentColor || primaryColor;
     const useAccent = projectile.spell.accentColor && Math.random() > 0.5;
-
-    // Optional texture from visualEffects.texture
-    const texture = visuals.texture || null;
     
     for (let i = 0; i < density; i++) {
       const particle = {
@@ -34,9 +31,6 @@ export class ParticleEmitter {
         type: visuals.trailType || 'trail',
         opacity: 0.7
       };
-
-      // Attach texture if specified
-      if (texture) particle.texture = texture;
       
       // Removed attraction/repulsion handling (vortex / pullParticles) — deprecated properties are ignored.
       
@@ -69,9 +63,6 @@ export class ParticleEmitter {
     const primaryColor = projectile.spell.color;
     const accentColor = projectile.spell.accentColor;
     const secondaryColor = projectile.spell.secondaryColor || accentColor || primaryColor;
-
-    // Optional texture from visualEffects.texture (use same texture for impact particles)
-    const texture = visuals.texture || null;
     
     for (let i = 0; i < count * particleMultiplier; i++) {
       const angle = (Math.PI * 2 * i) / (count * particleMultiplier) + (Math.random() - 0.5) * 0.5;
@@ -97,9 +88,6 @@ export class ParticleEmitter {
         type: visuals.impactType || 'spark',
         opacity: 1
       };
-
-      // Attach texture if specified
-      if (texture) particle.texture = texture;
       
       particles.push(particle);
     }

@@ -7,6 +7,7 @@ import { renderSparkParticle } from './particleRenderers/Spark.js';
 import { renderSwirlParticle } from './particleRenderers/Swirl.js';
 import { renderGlowParticle } from './particleRenderers/Glow.js';
 import { renderDefaultParticle } from './particleRenderers/Default.js';
+import TextureManager from './TextureManager.js';
 
 export class EffectsRenderer {
   constructor(canvas) {
@@ -22,6 +23,34 @@ export class EffectsRenderer {
     const alpha = particle.life / particle.maxLife;
     
     this.ctx.globalAlpha = alpha * (particle.opacity || 1);
+    
+    // If particle specifies a texture, attempt to draw the preloaded image centered at the particle.
+    if (particle.texture) {
+      const img = TextureManager.getTexture(particle.texture);
+      if (img) {
+        try {
+          this.ctx.save();
+          const x = Number.isFinite(particle.x) ? particle.x : 0;
+          const y = Number.isFinite(particle.y) ? particle.y : 0;
+          const size = Number.isFinite(particle.size) ? Math.max(1, particle.size) : 8;
+          // Optional rotation based on velocity if available
+          if (Number.isFinite(particle.vx) && Number.isFinite(particle.vy)) {
+            const angle = Math.atan2(particle.vy, particle.vx);
+            this.ctx.translate(x, y);
+            this.ctx.rotate(angle);
+            this.ctx.drawImage(img, -size/2, -size/2, size, size);
+          } else {
+            this.ctx.drawImage(img, x - size/2, y - size/2, size, size);
+          }
+          this.ctx.restore();
+          this.ctx.globalAlpha = 1.0;
+          return;
+        } catch (e) {
+          // If textured draw fails, fall back to shape rendering below
+          this.ctx.restore?.();
+        }
+      }
+    }
     
     // Different rendering based on particle type
     switch (particle.type) {
