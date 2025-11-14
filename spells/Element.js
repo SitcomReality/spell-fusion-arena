@@ -48,11 +48,18 @@ async function _loadElements() {
     const mundane = (await import('./elements/definitions/01-mundane.js')).MUNDANE_ELEMENTS || {};
     const commonDef = (await import('./elements/definitions/02-common.js')).COMMON_ELEMENTS || {};
     const uncommonDef = (await import('./elements/definitions/03-uncommon.js')).UNCOMMON_ELEMENTS || {};
+    const unusual = (await import('./elements/definitions/04-unusual.js')).UNUSUAL_ELEMENTS || {};
+    const rareDef = (await import('./elements/definitions/05-rare.js')).RARE_ELEMENTS || {};
+    const prestigious = (await import('./elements/definitions/06-prestigious.js')).PRESTIGIOUS_ELEMENTS || {};
+    const exotic = (await import('./elements/definitions/07-exotic.js')).EXOTIC_ELEMENTS || {};
+    const outstanding = (await import('./elements/definitions/08-outstanding.js')).OUTSTANDING_ELEMENTS || {};
+    const exceptional = (await import('./elements/definitions/09-exceptional.js')).EXCEPTIONAL_ELEMENTS || {};
+    const legendary = (await import('./elements/definitions/10-legendary.js')).LEGENDARY_ELEMENTS || {};
+    const wondrous = (await import('./elements/definitions/11-wondrous.js')).WONDROUS_ELEMENTS || {};
     const supernal = (await import('./elements/definitions/12-supernal.js')).SUPERNAL_ELEMENTS || {};
     const mythic = (await import('./elements/definitions/13-mythic.js')).MYTHIC_ELEMENTS || {};
-    const wondrous = (await import('./elements/definitions/11-wondrous.js')).WONDROUS_ELEMENTS || {};
 
-    const merged = Object.assign({}, mundane, commonDef, uncommonDef, supernal, mythic, wondrous, common, uncommon, rare);
+    const merged = Object.assign({}, mundane, commonDef, uncommonDef, unusual, rareDef, prestigious, exotic, outstanding, exceptional, legendary, wondrous, supernal, mythic, common, uncommon, rare);
 
     for (const [key, desc] of Object.entries(merged)) {
       ELEMENTS[key] = new Element(desc.name, desc.color, desc.propertyGenes, desc.visualEffects, desc.rarity || 'common');
