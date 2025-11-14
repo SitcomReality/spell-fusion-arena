@@ -4,6 +4,7 @@ export const MUNDANE_ELEMENTS = {
     color: { r: 181, g: 166, b: 146 },
     propertyGenes: {
       speed: 180,
+      damage: 8,
       slowing: 2,
     },
     visualEffects: {
@@ -22,6 +23,7 @@ export const MUNDANE_ELEMENTS = {
     color: { r: 135, g: 169, b: 181 },
     propertyGenes: {
       speed: 200,
+      damage: 10,
       wave: 2,
     },
     visualEffects: {
@@ -40,6 +42,7 @@ export const MUNDANE_ELEMENTS = {
     color: { r: 212, g: 221, b: 224 },
     propertyGenes: {
       speed: 250,
+      damage: 9,
       knockback: 1,
     },
     visualEffects: {
@@ -57,6 +60,8 @@ export const MUNDANE_ELEMENTS = {
   wood: {
     name: 'Wood',
     color: { r: 133, g: 94, b: 66 },
+    secondaryColor: { r: 145, g: 105, b: 70 },
+    accentColor: { r: 190, g: 145, b: 100 },
     propertyGenes: {
       speed: 150,
       damage: 22,
@@ -109,6 +114,7 @@ export const MUNDANE_ELEMENTS = {
     color: { r: 214, g: 191, b: 143 },
     propertyGenes: {
       speed: 210,
+      damage: 8,
       piercing: 1,
     },
     visualEffects: {
@@ -127,6 +133,7 @@ export const MUNDANE_ELEMENTS = {
     color: { r: 124, g: 161, b: 103 },
     propertyGenes: {
       speed: 190,
+      damage: 9,
       dot: 2,
     },
     visualEffects: {
