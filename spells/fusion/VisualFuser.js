@@ -14,11 +14,9 @@ export const VisualFuser = {
       impactType: (vs[0] && vs[0].impactType) || 'spark',
       beam: vs.some(v => v.beam),
       swirl: vs.some(v => v.swirl),
-      vortex: vs.some(v => v.vortex),
       wispy: vs.some(v => v.wispy),
       shimmer: vs.some(v => v.shimmer),
       chaotic: vs.some(v => v.chaotic),
-      pullParticles: vs.some(v => v.pullParticles),
       sizeModifier: this.calculateSizeModifier(vs),
       shapeVariant: this.determineShapeVariant(vs)
     };
