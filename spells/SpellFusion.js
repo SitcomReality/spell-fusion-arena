@@ -6,7 +6,7 @@ export class SpellFusion {
   static fuse(...elements) {
     const colorResult = ColorBlender.blendWithVisualGenes(...elements);
     const fusedProperties = PropertyFuser.fuse(...elements);
-    const fusedVisuals = VisualFuser.fuse(...elements.map(e => e.visualEffects));
+    const fusedVisuals = VisualFuser.fuse(...elements);
 
     return {
       name: elements.map(e => e.name).join('-'),

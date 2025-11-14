@@ -34,12 +34,12 @@ export class Renderer {
   renderProjectile(projectile) {
     const color = projectile.spell.color;
     const accentColor = projectile.spell.accentColor;
-    const shapeVariant = projectile.spell.visualEffects?.shapeVariant || 'round';
+    const { shapeVariant, texture } = projectile.spell.visualEffects || {};
     
     // Main projectile body
     this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     
-    if (shapeVariant === 'elongated') {
+    if (shapeVariant === 'beam' || shapeVariant === 'shard' || shapeVariant === 'elongated') {
       // Draw elongated shape for beam-like projectiles
       this.ctx.save();
       this.ctx.translate(projectile.x, projectile.y);
@@ -47,7 +47,7 @@ export class Renderer {
       this.ctx.rotate(angle);
       this.ctx.fillRect(-projectile.radius * 1.5, -projectile.radius * 0.5, projectile.radius * 3, projectile.radius);
       this.ctx.restore();
-    } else if (shapeVariant === 'swirling') {
+    } else if (shapeVariant === 'swirl' || shapeVariant === 'swirling') {
       // Draw with slight rotation effect
       this.ctx.beginPath();
       this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
@@ -66,7 +66,7 @@ export class Renderer {
           this.ctx.fill();
         }
       }
-    } else {
+    } else { // round, core, heavy, seeker, glyph, electric
       // Round projectile
       this.ctx.beginPath();
       this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);

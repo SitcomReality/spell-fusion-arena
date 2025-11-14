@@ -29,7 +29,8 @@ export class ParticleEmitter {
         maxLife: 0.3 + Math.random() * 0.3,
         size: visuals.trailSize || 3,
         type: visuals.trailType || 'trail',
-        opacity: 0.7
+        opacity: 0.7,
+        initialRotation: Math.random() * Math.PI * 2,
       };
       
       // Removed attraction/repulsion handling (vortex / pullParticles) — deprecated properties are ignored.
@@ -86,7 +87,8 @@ export class ParticleEmitter {
         maxLife: 0.4 + Math.random() * 0.4,
         size: (visuals.trailSize || 3) * 1.5,
         type: visuals.impactType || 'spark',
-        opacity: 1
+        opacity: 1,
+        initialRotation: Math.random() * Math.PI * 2,
       };
       
       particles.push(particle);
