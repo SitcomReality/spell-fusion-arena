@@ -52,7 +52,6 @@ export class VisualPreview {
    */
   static determineVisualStyle(visualEffects, properties) {
     // Priority: more specific effects first
-    if (visualEffects.vortex || properties.vortex) return 'vortex';
     if (visualEffects.swirl || properties.spiral) return 'swirl';
     if (visualEffects.beam) return 'beam';
     if (visualEffects.wispy || properties.wave) return 'wispy';
