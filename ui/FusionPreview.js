@@ -6,7 +6,7 @@ export class FusionPreview {
   constructor() {
     this.panel = new DetailPanel();
     this.onClear = null;
-    this._createButtonClickHandler = null;
+    this._createButtonClickHandlers = [];
   }
 
   mount(container) {
@@ -62,12 +62,13 @@ export class FusionPreview {
           className: 'fusion-preview-create' + (affordable ? '' : ' unaffordable'),
           label: createLabel,
           onClick: () => {
-            if (!affordable) return;
-            if (onCreate) onCreate();
-            // Trigger tutorial completion
-            if (this._createButtonClickHandler) {
-              this._createButtonClickHandler();
-            }
+            // We rely on FusionController to show an alert if essence is insufficient, 
+            // and CSS to visually disable the button when unaffordable.
+            
+            if (onCreate) onCreate(); // This is the dummy function passed by FusionController
+            
+            // Trigger all registered handlers (main creation logic + tutorial completion)
+            this._createButtonClickHandlers.forEach(handler => handler());
           }
         }
       ]
@@ -124,11 +125,12 @@ export class FusionPreview {
     this.onClear = callback;
   }
 
-  // Register a callback when the create button is clicked
+  // Register a callback when the create button is clicked. Now supports multiple listeners.
   onCreateButtonClick(callback) {
-    this._createButtonClickHandler = callback;
-    return () => {
-      this._createButtonClickHandler = null;
+    this._createButtonClickHandlers.push(callback);
+    const cleanup = () => {
+      this._createButtonClickHandlers = this._createButtonClickHandlers.filter(h => h !== callback);
     };
+    return cleanup;
   }
 }

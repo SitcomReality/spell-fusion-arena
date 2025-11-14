@@ -34,6 +34,8 @@ export function setupCompletionForStep(stepIndex, controller, fusionUI) {
     cleanupFns.push(off);
   } else if (stepIndex === 2 || stepIndex === 5) {
     // Create button in FusionPreview
+    // NOTE: FusionPreview now supports multiple handlers, so this no longer overwrites 
+    // the primary spell creation logic from FusionUI.
     const off = fusionUI.fusionPreview.onCreateButtonClick(() => {
       advanceTutorial(stepIndex + 1);
     });
