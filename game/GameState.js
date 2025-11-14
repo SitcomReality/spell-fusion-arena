@@ -5,6 +5,7 @@ import { CONFIG } from '../config.js';
 import { CollisionHandler } from './CollisionHandler.js';
 import { ParticleManager } from './ParticleManager.js';
 import { castSpell } from './GameActions.js';
+import SpatialGrid from './collision/SpatialGrid.js';
 
 export class GameState {
   constructor(canvasWidth, canvasHeight, seed = null, unlockedElementKeys = []) {
@@ -39,6 +40,9 @@ export class GameState {
     this.collisionHandler = new CollisionHandler(this);
     this.particleManager = new ParticleManager(this);
     this.lastFocusReward = 0; // Track focus rewarded this wave
+
+    // NEW: Initialize spatial grid for collision detection (cell size ~150px)
+    this.spatialGrid = new SpatialGrid(150, canvasWidth, canvasHeight);
 
     this.seed = seed;
   }
@@ -164,7 +168,17 @@ export class GameState {
       }
     }
 
-    this.collisionHandler.checkCollisions();
+    // NEW: Build spatial grid and use it for collision detection
+    this.spatialGrid.clear();
+    for (const enemy of this.enemies) {
+      this.spatialGrid.insert(enemy);
+    }
+    for (const projectile of this.projectiles) {
+      this.spatialGrid.insert(projectile);
+    }
+
+    // Pass the grid to collision handler
+    this.collisionHandler.checkCollisions(this.spatialGrid);
 
     this.projectiles = this.projectiles.filter(p => p.alive);
     this.enemies = this.enemies.filter(e => {

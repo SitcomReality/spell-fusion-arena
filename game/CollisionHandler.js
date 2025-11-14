@@ -12,17 +12,27 @@ export class CollisionHandler {
     this.chainAndPierceHandler = new ChainAndPierceHandler(this.game);
   }
 
-  checkCollisions() {
+  /**
+   * Check collisions using spatial grid for efficiency
+   * @param {SpatialGrid} spatialGrid - Pre-populated spatial grid for this frame
+   */
+  checkCollisions(spatialGrid) {
     const game = this.game;
+    
     for (const projectile of game.projectiles) {
       if (!projectile.alive) continue;
 
       const chainedEnemies = projectile.chainedEnemies || [];
 
-      for (const enemy of game.enemies) {
-        if (!enemy.alive) continue;
-        if (chainedEnemies.includes(enemy)) continue;
+      // Use spatial grid to get nearby objects instead of checking all enemies
+      const nearbyObjects = spatialGrid.getNearby(projectile);
 
+      for (const nearbyObj of nearbyObjects) {
+        // Filter to only enemies (skip other projectiles)
+        if (!nearbyObj.alive || !nearbyObj.type || nearbyObj === projectile) continue;
+        if (chainedEnemies.includes(nearbyObj)) continue;
+
+        const enemy = nearbyObj;
         const dx = projectile.x - enemy.x;
         const dy = projectile.y - enemy.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
