@@ -1,4 +1,3 @@
-rendering/TextureManager.js
 // Simple texture manager for preloading image sprites and retrieving by key (url or alias)
 export const TextureManager = {
   _map: new Map(),
