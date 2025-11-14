@@ -56,6 +56,7 @@ export const UNCOMMON_ELEMENTS = {
     accentColor: { r: 120, g: 100, b: 40 },
     propertyGenes: {
       speed: 240,
+      damage: 14,
       homing: 5,
       wave: 4,
       slowing: 3,

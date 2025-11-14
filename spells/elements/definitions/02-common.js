@@ -55,6 +55,7 @@ export const COMMON_ELEMENTS = {
     accentColor: { r: 180, g: 220, b: 255 },
     propertyGenes: {
       speed: 300,
+      damage: 18,
       piercing: 3,
       knockback: 2,
     },
@@ -161,6 +162,7 @@ export const COMMON_ELEMENTS = {
     accentColor: { r: 240, g: 180, b: 220 },
     propertyGenes: {
       speed: 240,
+      damage: 16,
       chaining: 5,
       wave: 4,
       aoe: 2,
