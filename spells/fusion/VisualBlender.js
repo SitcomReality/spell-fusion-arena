@@ -11,15 +11,6 @@ export const VisualBlender = {
       };
     }
 
-    const rarityMap = {
-      mundane: 1, common: 2, uncommon: 3, unusual: 4, rare: 5,
-      prestigious: 6, exotic: 7, outstanding: 8, exceptional: 9,
-      legendary: 10, wondrous: 11, supernal: 12, mythic: 13
-    };
-    const avgRarity = elements.reduce((sum, el) => sum + (rarityMap[el.rarity] || 1), 0) / Math.max(1, elements.length);
-    const raritySaturationBoost = (avgRarity - 2) * 0.05;
-
-
     const primaryColors = elements.map(e => e.color);
     const secondaryColors = elements.map(e => e.secondaryColor || e.color);
     const visualGenes = elements.map(e => e.visualGenes || {
@@ -71,7 +62,7 @@ export const VisualBlender = {
     };
 
     const avgInputSat = (primHslList.reduce((s, x) => s + x.s, 0) + secHslList.reduce((s, x) => s + x.s, 0)) / (primHslList.length + secHslList.length);
-    const satScale = 0.6 + Math.pow(avgInputSat, 1.2) * 0.55 + raritySaturationBoost;
+    const satScale = 0.6 + Math.pow(avgInputSat, 1.2) * 0.55;
     primaryHsl.s = Math.min(1, primaryHsl.s * satScale);
     secondaryHsl.s = Math.min(1, secondaryHsl.s * (0.9 + (1 - avgInputSat) * 0.1));
 

@@ -33,26 +33,15 @@ export class EffectsRenderer {
           const x = Number.isFinite(particle.x) ? particle.x : 0;
           const y = Number.isFinite(particle.y) ? particle.y : 0;
           const size = Number.isFinite(particle.size) ? Math.max(1, particle.size) : 8;
-          this.ctx.translate(x, y);
-
-          let angle = 0;
           // Optional rotation based on velocity if available
-          if (particle.texture.includes('slash_01')) {
-             if (Number.isFinite(particle.vx) && Number.isFinite(particle.vy)) {
-                angle = Math.atan2(particle.vy, particle.vx);
-             }
-          } else if (particle.texture.includes('magic_01') || particle.texture.includes('magic_02')) {
-              angle = (particle.life / particle.maxLife) * Math.PI * 2;
-          } else if (!particle.texture.includes('scratch_01') && !particle.texture.includes('trace_')) {
-              angle = particle.initialRotation || 0;
-          }
-
-          if (angle !== 0) {
+          if (Number.isFinite(particle.vx) && Number.isFinite(particle.vy)) {
+            const angle = Math.atan2(particle.vy, particle.vx);
+            this.ctx.translate(x, y);
             this.ctx.rotate(angle);
+            this.ctx.drawImage(img, -size/2, -size/2, size, size);
+          } else {
+            this.ctx.drawImage(img, x - size/2, y - size/2, size, size);
           }
-          
-          this.ctx.drawImage(img, -size/2, -size/2, size, size);
-          
           this.ctx.restore();
           this.ctx.globalAlpha = 1.0;
           return;
