@@ -10,6 +10,15 @@ export const PropertyFuser = {
       const element = elements[i];
       const positionMultiplier = 1.0 / (1 + i * 0.35);
 
+      // ANALYZE PROPERTY COUNT (ignore damage/speed which are handled separately)
+      const genes = element.propertyGenes || {};
+      const propKeys = Object.keys(genes).filter(k => k !== 'damage' && k !== 'speed');
+      const propertyCount = propKeys.length;
+
+      // CALCULATE FOCUS MULTIPLIER: fewer properties -> larger multiplier
+      // 1 + (4 - propertyCount) * 0.25 produces +0.75 at 1 prop, 0 at 4+ props
+      const focusMultiplier = 1 + Math.max(0, (4 - propertyCount)) * 0.25;
+
       for (const [property, value] of Object.entries(element.propertyGenes || {})) {
         if (property === 'damage') {
           totalDamage += value * (i === 0 ? 1 : 0.6);
@@ -23,7 +32,8 @@ export const PropertyFuser = {
         if (property === 'vortex' || property === 'repulsion') {
           continue;
         }
-        propertyScores[property] = (propertyScores[property] || 0) + value * positionMultiplier;
+        // Apply both position-based weighting and focused-contribution multiplier
+        propertyScores[property] = (propertyScores[property] || 0) + value * positionMultiplier * focusMultiplier;
       }
     }
 
@@ -35,8 +45,11 @@ export const PropertyFuser = {
     // Convert accumulated scores into final property potency
     for (const [property, score] of Object.entries(propertyScores)) {
       if (score > 0) {
-        const potency = score / 12;
-        finalProperties[property] = Math.round(potency * 100) / 100;
+        // Increased divisor to compensate for focused amplification; keeps values in reasonable range.
+        const potency = score / 14;
+        // Apply mild non-linearity to avoid extreme spikes: use sqrt on potency then preserve sign
+        const adjusted = Math.sign(potency) * Math.sqrt(Math.abs(potency));
+        finalProperties[property] = Math.round(adjusted * 100) / 100;
       }
     }
 
