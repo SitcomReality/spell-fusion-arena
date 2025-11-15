@@ -34,11 +34,35 @@ export class ElementsLibrary {
     // Add view mode toggle
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'elements-library-controls';
+    controlsDiv.style.cssText = `
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    `;
 
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'elements-view-toggle';
     toggleBtn.textContent = this.viewMode === 'grid' ? '📋 List' : '⊞ Grid';
-
+    toggleBtn.style.cssText = `
+      padding: 6px 12px;
+      border: 1px solid #4a9eff;
+      background: rgba(74, 158, 255, 0.1);
+      color: #b0d4ff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    `;
+    toggleBtn.addEventListener('mouseenter', () => {
+      toggleBtn.style.borderColor = '#64c8ff';
+      toggleBtn.style.background = 'rgba(100, 200, 255, 0.2)';
+    });
+    toggleBtn.addEventListener('mouseleave', () => {
+      toggleBtn.style.borderColor = '#4a9eff';
+      toggleBtn.style.background = 'rgba(74, 158, 255, 0.1)';
+    });
     toggleBtn.addEventListener('click', () => {
       this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
       this.sortProperty = null;
@@ -142,7 +166,7 @@ export class ElementsLibrary {
     headerRow.className = 'elements-list-header';
     headerRow.style.cssText = `
       display: grid;
-      grid-template-columns: 120px repeat(6, 80px);
+      grid-template-columns: 120px repeat(6, 48px);
       gap: 0;
       background: rgba(0, 0, 0, 0.3);
       border-bottom: 1px solid #4a2a7f;
@@ -170,7 +194,9 @@ export class ElementsLibrary {
     
     for (const prop of properties) {
       const header = document.createElement('button');
-      header.textContent = prop.charAt(0).toUpperCase() + prop.slice(1);
+      // Use the shared property-icon mapping so headers show the small icons instead of text
+      header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span>`;
+      header.title = prop.charAt(0).toUpperCase() + prop.slice(1);
       header.className = 'elements-list-sort-btn';
       header.dataset.property = prop;
       header.style.cssText = `
@@ -188,11 +214,19 @@ export class ElementsLibrary {
       `;
 
       const updateHeaderStyle = () => {
+        // Keep the icon as the main content; append a compact arrow indicator when active
         if (this.sortProperty === prop) {
           header.style.background = 'rgba(100, 200, 255, 0.2)';
           header.style.color = '#64c8ff';
           header.style.fontWeight = '700';
-          header.textContent = prop.charAt(0).toUpperCase() + prop.slice(1) + (this.sortAscending ? ' ↑' : ' ↓');
+          // icon + small arrow (up/down) kept minimal width
+          header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span><span class="sort-arrow">${this.sortAscending ? '▲' : '▼'}</span>`;
+        } else {
+          // restore default icon-only content when not active
+          header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span>`;
+          header.style.background = 'rgba(0, 0, 0, 0.2)';
+          header.style.color = '#b0d4ff';
+          header.style.fontWeight = '500';
         }
       };
       updateHeaderStyle();
@@ -239,7 +273,7 @@ export class ElementsLibrary {
       row.className = 'elements-list-row';
       row.style.cssText = `
         display: grid;
-        grid-template-columns: 120px repeat(6, 80px);
+        grid-template-columns: 120px repeat(6, 48px);
         gap: 0;
         border-bottom: 1px solid rgba(74, 158, 255, 0.1);
         align-items: center;
