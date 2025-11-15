@@ -30,6 +30,7 @@ export class CollisionHandler {
       for (const nearbyObj of nearbyObjects) {
         // Filter to only enemies (skip other projectiles)
         if (!nearbyObj.alive || !nearbyObj.type || nearbyObj === projectile) continue;
+        if ((nearbyObj.alpha !== undefined && nearbyObj.alpha < 1)) continue;
         if (chainedEnemies.includes(nearbyObj)) continue;
 
         const enemy = nearbyObj;

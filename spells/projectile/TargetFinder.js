@@ -4,7 +4,7 @@ export class TargetFinder {
     let minDist = Infinity;
 
     for (const enemy of enemies) {
-      if (!enemy.alive) continue;
+      if (!enemy.alive || (enemy.alpha !== undefined && enemy.alpha < 1)) continue;
       const dx = enemy.x - x;
       const dy = enemy.y - y;
       const dist = dx * dx + dy * dy;
@@ -37,7 +37,7 @@ export class TargetFinder {
     let maxDist = -Infinity;
 
     for (const enemy of enemies) {
-      if (!enemy.alive) continue;
+      if (!enemy.alive || (enemy.alpha !== undefined && enemy.alpha < 1)) continue;
       const dx = enemy.x - x;
       const dy = enemy.y - y;
       const dist = dx * dx + dy * dy;
@@ -55,7 +55,7 @@ export class TargetFinder {
     let maxHealth = -Infinity;
 
     for (const enemy of enemies) {
-      if (!enemy.alive) continue;
+      if (!enemy.alive || (enemy.alpha !== undefined && enemy.alpha < 1)) continue;
       const alivePixels = enemy.pixelBody.getAlivePixels().length;
       if (alivePixels > maxHealth) {
         maxHealth = alivePixels;
@@ -71,7 +71,7 @@ export class TargetFinder {
     let minHealth = Infinity;
 
     for (const enemy of enemies) {
-      if (!enemy.alive) continue;
+      if (!enemy.alive || (enemy.alpha !== undefined && enemy.alpha < 1)) continue;
       const alivePixels = enemy.pixelBody.getAlivePixels().length;
       if (alivePixels < minHealth && alivePixels > 0) {
         minHealth = alivePixels;
@@ -82,3 +82,4 @@ export class TargetFinder {
     return weakest;
   }
 }
+
