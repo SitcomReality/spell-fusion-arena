@@ -7,6 +7,7 @@ export function saveGameSnapshot(gameApp) {
       spellInventory: gameApp.fusionUI ? gameApp.fusionUI.spellInventory : [],
       equippedSpells: gameApp.fusionUI ? gameApp.fusionUI.equippedSpells : [null, null, null, null],
       spellSlotFocus: gameApp.fusionUI ? gameApp.fusionUI.spellSlotFocus : [1,0,0,0],
+      targetPreferences: gameApp.fusionUI && gameApp.fusionUI.state ? gameApp.fusionUI.state.targetPreferences : ['nearest', 'furthest', 'strongest', 'weakest'],
       playerHp: gameApp.gameState ? gameApp.gameState.player.hp : undefined,
       wave: gameApp.gameState ? gameApp.gameState.waveManager.currentWave : undefined,
       seed: gameApp.gameState ? gameApp.gameState.seed : undefined

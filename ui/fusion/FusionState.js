@@ -4,6 +4,7 @@ export class FusionState {
     this.currentSpell = null;
     this.equippedSpells = [null, null, null, null];
     this.spellSlotFocus = [1, 0, 0, 0];
+    this.targetPreferences = ['nearest', 'furthest', 'strongest', 'weakest'];
     this.spellInventory = [];
     this.essenceBank = 1;
     this.focusBank = 0;

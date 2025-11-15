@@ -66,6 +66,33 @@
   box-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
 }
 
+/* NEW: Target selector button */
+.spell-slot-content .slot-target-selector {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #4a9eff;
+  background: rgba(0, 0, 0, 0.7);
+  color: #64c8ff;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.spell-slot-content .slot-target-selector:hover {
+  background: rgba(74, 158, 255, 0.3);
+  color: #fff;
+  border-color: #64c8ff;
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
+}
+
 /* Properties & badges inside slots */
 .spell-slot-stats {
   display: flex;
@@ -224,6 +251,89 @@
 .inventory-spell-desc {
   font-size: 12px;
   color: #aaa;
+}
+
+/* Target selector modal */
+.target-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+
+.target-selector-modal {
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 100%);
+  border: 2px solid #4a9eff;
+  padding: 24px;
+  max-width: 300px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(74, 158, 255, 0.3);
+  border-radius: 8px;
+}
+
+.target-selector-modal h3 {
+  font-size: 18px;
+  color: #64c8ff;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.target-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.target-option-btn {
+  padding: 10px 16px;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid #4a9eff;
+  color: #b0d4ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.target-option-btn:hover {
+  background: rgba(100, 200, 255, 0.2);
+  border-color: #64c8ff;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
+}
+
+.target-option-btn.active {
+  background: rgba(100, 200, 255, 0.3);
+  border-color: #64c8ff;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(100, 200, 255, 0.4);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .target-selector-modal {
+    max-width: 90vw;
+    padding: 16px;
+  }
+
+  .target-selector-modal h3 {
+    font-size: 16px;
+  }
+
+  .target-option-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
 
 /* Restore desktop grid layout for spell slots (4 across) */

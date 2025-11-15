@@ -5,13 +5,15 @@ export class Player {
     this.radius = radius;
     this.hp = 1000;
     this.maxHp = 1000;
-    this.equippedSpells = []; // Array of spells for each slot
-    this.spellSlotFocus = []; // Focus resource for each slot (increases firing speed)
-    this.timeSinceLastCast = [0, 0, 0, 0]; // Track cast timing per slot
+    this.equippedSpells = [];
+    this.spellSlotFocus = [];
+    this.timeSinceLastCast = [0, 0, 0, 0];
     this.castIntervals = [Infinity, Infinity, Infinity, Infinity];
     this.maxSpellSlots = 4;
-    // stable phase offsets per slot to avoid synchronized firing
     this.slotPhaseOffsets = new Array(this.maxSpellSlots).fill(0);
+    
+    // NEW: Target preferences per slot (default: nearest, furthest, strongest, weakest)
+    this.targetPreferences = ['nearest', 'furthest', 'strongest', 'weakest'];
   }
   
   equipSpells(spells, focus) {

@@ -43,7 +43,9 @@ export class FusionUI {
       getSpellInventory: () => this.state.spellInventory,
       onUnequip: (i) => this.unequipSpell(i),
       onAllocateFocus: (i) => this.allocateFocusToSlot(i),
-      onEquipFromInventory: (slotIndex, spellFromInventory) => this.equipSpellFromInventory(slotIndex, spellFromInventory)
+      onEquipFromInventory: (slotIndex, spellFromInventory) => this.equipSpellFromInventory(slotIndex, spellFromInventory),
+      onSetTargetPreference: (slotIndex, preference) => this.setTargetPreference(slotIndex, preference),
+      getTargetPreferences: () => this.state.targetPreferences
     });
 
     this.render();
@@ -161,7 +163,14 @@ export class FusionUI {
   }
 
   renderSpellSlots() {
-    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory);
+    this.spellSlotsUI.update(this.state.equippedSpells, this.state.spellSlotFocus, this.state.focusBank, this.state.spellInventory, this.state.targetPreferences);
+  }
+
+  setTargetPreference(slotIndex, preference) {
+    if (this.state.targetPreferences) {
+      this.state.targetPreferences[slotIndex] = preference;
+      this.renderSpellSlots();
+    }
   }
 
   onElementClicked(key, element, cardEl) {

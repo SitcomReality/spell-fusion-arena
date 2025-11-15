@@ -7,12 +7,13 @@ export class SpellSlotsUI {
     this.onUnequip = callbacks.onUnequip || (() => {});
     this.onAllocateFocus = callbacks.onAllocateFocus || (() => {});
     this.onEquipFromInventory = callbacks.onEquipFromInventory || (() => {});
+    this.onSetTargetPreference = callbacks.onSetTargetPreference || (() => {});
     this.getEquippedSpells = callbacks.getEquippedSpells || (() => []);
     this.getSpellSlotFocus = callbacks.getSpellSlotFocus || (() => []);
     this.getFocusBank = callbacks.getFocusBank || (() => 0);
     this.getSpellInventory = callbacks.getSpellInventory || (() => []);
+    this.getTargetPreferences = callbacks.getTargetPreferences || (() => ['nearest', 'furthest', 'strongest', 'weakest']);
     this.container = null;
-    // NEW: Callbacks for tutorial
     this._spellEquippedHandler = null;
     this._focusAllocatedHandler = null;
   }
@@ -24,7 +25,7 @@ export class SpellSlotsUI {
     this.externalContainer.appendChild(this.container);
   }
 
-  update(equippedSpells, slotFocus, focusBank, spellInventory) {
+  update(equippedSpells, slotFocus, focusBank, spellInventory, targetPreferences) {
     if (!this.externalContainer) return;
     this.externalContainer.innerHTML = `<div class="spell-slots" id="external-spell-slots"></div>`;
     const grid = document.getElementById('external-spell-slots');
@@ -73,10 +74,10 @@ export class SpellSlotsUI {
                       </div>`;
             }).join('') + '</div>';
 
-        // Build slot DOM without color background; we'll insert a VisualPreview tile instead.
         slot.innerHTML = `
           ${headerContentHtml}
           <div class="spell-slot-content">
+            <button class="slot-target-selector" title="Change target preference" data-slot="${i}">🎯</button>
             <button class="slot-props-btn" aria-label="Show properties">i</button>
             <div class="slot-props-tooltip" aria-hidden="true"></div>
             ${propsHtml}
@@ -87,7 +88,6 @@ export class SpellSlotsUI {
           </div>
         `;
 
-        // Insert VisualPreview into the content area to represent the spell visually.
         try {
           const previewData = {
             color: spell.color,
@@ -100,11 +100,9 @@ export class SpellSlotsUI {
           previewEl.classList.add('slot-visual-preview');
           const contentEl = slot.querySelector('.spell-slot-content');
           if (contentEl) {
-            // Insert preview at the start of content so other controls overlay it.
             contentEl.insertBefore(previewEl, contentEl.firstChild);
           }
         } catch (e) {
-          // Fallback: color the content background if preview creation fails
           const contentEl = slot.querySelector('.spell-slot-content');
           if (contentEl) contentEl.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
         }
@@ -116,12 +114,21 @@ export class SpellSlotsUI {
           this.showInventorySelector(i, this.getSpellInventory());
         });
 
+        const targetBtn = slot.querySelector('.slot-target-selector');
+        if (targetBtn) {
+          const currentPref = targetPreferences ? targetPreferences[i] : 'nearest';
+          targetBtn.title = `Target: ${currentPref}`;
+          targetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showTargetSelector(i, currentPref);
+          });
+        }
+
         const addFocusBtn = slot.querySelector('.slot-add-focus');
         if (addFocusBtn) {
           addFocusBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.onAllocateFocus(i);
-            // NEW: Trigger tutorial completion
             if (this._focusAllocatedHandler) {
               this._focusAllocatedHandler();
             }
@@ -181,7 +188,6 @@ export class SpellSlotsUI {
           addFocusBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.onAllocateFocus(i);
-            // NEW: Trigger tutorial completion
             if (this._focusAllocatedHandler) {
               this._focusAllocatedHandler();
             }
@@ -208,7 +214,46 @@ export class SpellSlotsUI {
     }
   }
 
-  // NEW: Register callback when spell is equipped
+  showTargetSelector(slotIndex, currentPref) {
+    const targetOptions = ['nearest', 'furthest', 'strongest', 'weakest'];
+    const labels = {
+      nearest: '🎯 Nearest',
+      furthest: '📍 Furthest',
+      strongest: '💪 Strongest',
+      weakest: '🎲 Weakest'
+    };
+
+    const overlay = document.createElement('div');
+    overlay.id = 'target-selector-overlay';
+    overlay.className = 'target-selector-overlay';
+    overlay.innerHTML = `
+      <div class="target-selector-modal">
+        <h3>Target Preference</h3>
+        <div class="target-options" id="target-options"></div>
+      </div>
+    `;
+
+    const optionsContainer = overlay.querySelector('#target-options');
+    targetOptions.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'target-option-btn' + (option === currentPref ? ' active' : '');
+      btn.textContent = labels[option];
+      btn.addEventListener('click', () => {
+        this.onSetTargetPreference(slotIndex, option);
+        overlay.remove();
+        try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+      });
+      optionsContainer.appendChild(btn);
+    });
+
+    const closeOverlay = () => overlay.remove();
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeOverlay();
+    });
+
+    document.body.appendChild(overlay);
+  }
+
   onSpellEquipped(callback) {
     this._spellEquippedHandler = callback;
     return () => {
@@ -216,7 +261,6 @@ export class SpellSlotsUI {
     };
   }
 
-  // NEW: Register callback when focus is allocated
   onFocusAllocated(callback) {
     this._focusAllocatedHandler = callback;
     return () => {
@@ -224,7 +268,6 @@ export class SpellSlotsUI {
     };
   }
 
-  // NEW: Show inventory selector modal when empty slot is clicked
   showInventorySelector(slotIndex, spellInventory) {
     if (spellInventory.length === 0) {
       alert('No spells in inventory. Create a spell first!');

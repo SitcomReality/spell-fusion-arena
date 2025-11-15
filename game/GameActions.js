@@ -1,4 +1,5 @@
 import { Projectile } from '../spells/Projectile.js';
+import { TargetFinder } from '../spells/projectile/TargetFinder.js';
 
 /**
  * castSpell(gameState, slotIndex)
@@ -15,22 +16,21 @@ export function castSpell(gameState, slotIndex) {
   let targetX = gameState.centerX;
   let targetY = gameState.centerY - 100;
 
-  // If enemies exist, aim at nearest
+  // If enemies exist, aim using the slot's target preference
   if (gameState.enemies.length > 0) {
-    const nearest = findNearestEnemy(gameState, player.x, player.y);
-    if (nearest) {
-      targetX = nearest.x;
-      targetY = nearest.y;
+    const preference = player.targetPreferences[slotIndex] || 'nearest';
+    const targetEnemy = TargetFinder.findByPreference(player.x, player.y, gameState.enemies, preference);
+    if (targetEnemy) {
+      targetX = targetEnemy.x;
+      targetY = targetEnemy.y;
     }
   }
 
   // Apply a small damage boost based on Focus allocated to this slot.
-  // Each Focus provides a modest damage bonus (e.g. +3% per Focus) to slow projectile-count ramp while keeping player effectiveness.
   const focusForSlot = (player.spellSlotFocus && player.spellSlotFocus[slotIndex]) || 0;
-  const damageBoostPerFocus = 0.03; // 3% damage per Focus
+  const damageBoostPerFocus = 0.03;
   const damageMultiplier = 1 + focusForSlot * damageBoostPerFocus;
 
-  // Create a shallow copy of the spell and its numeric properties so the boost only affects this cast instance.
   const spellInstance = {
     ...spell,
     properties: { ...(spell.properties || {}) }
