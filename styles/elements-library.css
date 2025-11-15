@@ -1,0 +1,36 @@
+/* Controls and grid view for Elements Library */
+
+.elements-library-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.elements-view-toggle {
+  padding: 6px 12px;
+  border: 1px solid #4a9eff;
+  background: rgba(74, 158, 255, 0.1);
+  color: #b0d4ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.elements-view-toggle:hover {
+  border-color: #64c8ff;
+  background: rgba(100, 200, 255, 0.2);
+}
+
+.elements-library-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+
