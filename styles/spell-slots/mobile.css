@@ -42,12 +42,27 @@
     bottom: 36px; /* appear above the bottom props button */
     left: 50%;
     transform: translateX(-50%);
+    min-width: 140px;
+    max-width: 220px;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+    border: 1px solid #4a9eff;
+    padding: 8px;
+    box-shadow: 0 6px 16px rgba(10,10,10,0.6);
+    display: none;
+    z-index: 30;
+    font-size: 12px;
   }
 
   /* Make sure the top corner buttons remain accessible and don't overlap content */
-  .spell-slot-content .spell-slot-swap,
+  .spell-slot-content .spell-slot-swap {
+    top: 4px;
+    right: 4px;
+    bottom: auto;
+  }
   .spell-slot-content .slot-target-selector {
     top: 4px;
+    left: 4px;
+    right: auto;
   }
 
   .slot-props-tooltip {
@@ -194,50 +209,24 @@
   .spell-slot-wrapper { height: 25%; }
   .spell-slot { border-left: 0; border-right: 0; }
 
-  /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
-  /* Keep swap button at top-right, target at top-left, and move props button to bottom-center */
-  .spell-slot-content .slot-target-selector {
-    top: 4px;
-    left: 4px;
-    right: auto;
-    bottom: auto;
-    width: 24px;
-    height: 24px;
-    position: absolute;
-    border-radius: 6px;
-    padding: 0;
-  }
-
-  .spell-slot-content .spell-slot-swap {
-    top: 4px;
-    right: 4px;
-    bottom: auto;
-    left: auto;
-    width: 24px;
-    height: 24px;
-    position: absolute;
-    font-size: 12px;
-    border-radius: 6px;
-    padding: 0;
-  }
-
+  /* Ensure slot-props button remains at bottom center on very small screens and swap stays top-right */
   .spell-slot-content .slot-props-btn {
     position: absolute;
     bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 6px;
-    border: 1px solid #4a9eff;
-    background: rgba(10,10,15,0.6);
-    color: #64c8ff;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 20;
+    padding: 0;
+  }
+  .spell-slot-content .spell-slot-swap {
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 6px;
     padding: 0;
   }
 }
