@@ -192,6 +192,17 @@ export class FusionUI {
     if (this.state.targetPreferences) {
       this.state.targetPreferences[slotIndex] = preference;
       this.renderSpellSlots();
+
+      // Ensure the live GameState player also receives the updated preference so
+      // runtime casting (GameActions.castSpell) uses the chosen target per slot.
+      try {
+        if (this.gameState && this.gameState.player && Array.isArray(this.gameState.player.targetPreferences)) {
+          this.gameState.player.targetPreferences[slotIndex] = preference;
+        }
+      } catch (e) {
+        // non-fatal; keep UI responsive
+        console.warn('Failed to sync target preference to gameState.player', e);
+      }
     }
   }
 
