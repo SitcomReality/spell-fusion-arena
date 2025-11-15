@@ -68,8 +68,10 @@ export class WaveManager {
         const spiralerChance = 0.05; // keep spiraler rare
         // Increase dasher chance by 1% per wave up to 25%
         const dasherChance = Math.min(0.25, 0.05 + (this.currentWave * 0.01));
+        // Support enemy chance: starts small and grows slowly per wave up to ~14%
+        const supportChance = Math.min(0.14, 0.06 + (this.currentWave * 0.005));
         // Normalize remaining probability to keep total = 1 (favoring grunt/runner/tank)
-        const remaining = 1 - spiralerChance - dasherChance;
+        const remaining = 1 - spiralerChance - dasherChance - supportChance;
         const gruntShare = baseGrunt / (baseGrunt + baseRunner + baseTank);
         const runnerShare = baseRunner / (baseGrunt + baseRunner + baseTank);
         const tankShare = baseTank / (baseGrunt + baseRunner + baseTank);
@@ -86,6 +88,8 @@ export class WaveManager {
           type = ENEMY_TYPES.tank;
         } else if (rand < gCut + rCut + tCut + spiralerChance) {
           type = ENEMY_TYPES.spiraler || ENEMY_TYPES.grunt;
+        } else if (rand < gCut + rCut + tCut + spiralerChance + supportChance) {
+          type = ENEMY_TYPES.support || ENEMY_TYPES.grunt;
         } else {
           type = ENEMY_TYPES.dasher || ENEMY_TYPES.grunt;
         }
