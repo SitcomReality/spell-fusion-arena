@@ -223,11 +223,21 @@ export class GameState {
   startWave() {
     this.waveStartPending = false;
     this.waveManager.waveActive = true;
+    this.updateHudVisibility();
   }
 
   // NEW: Prepare to show wave start button (pause wave spawning)
   showWaveStart() {
     this.waveStartPending = true;
+    this.updateHudVisibility();
+  }
+
+  updateHudVisibility() {
+    try {
+      if (window && window.gameInstance && window.gameInstance.speedControl) {
+        window.gameInstance.speedControl.updateHudVisibility();
+      }
+    } catch (e) { /* silent */ }
   }
 
   createParticles(x, y, color) {

@@ -116,6 +116,50 @@
   color: inherit;
 }
 
+/* HUD hide toggle button */
+.hud-hide-control {
+  display: flex;
+  align-items: center;
+}
+
+.hud-hide-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #4a2a7f;
+  background: rgba(74, 42, 127, 0.1);
+  color: #9db4ff;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.hud-hide-toggle-btn:hover {
+  border-color: #7a5aaf;
+  background: rgba(138, 43, 226, 0.15);
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.2);
+}
+
+.hud-hide-toggle-btn.active {
+  border-color: #64c8ff;
+  background: rgba(100, 200, 255, 0.2);
+  color: #64c8ff;
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
+}
+
+.hud-hide-toggle-status {
+  font-size: 9px;
+  font-weight: 700;
+  color: inherit;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .game-controls-wrapper {
@@ -147,6 +191,20 @@
   .auto-toggle-status {
     font-size: 8px;
   }
+
+  .hud-hide-control {
+    display: flex;
+  }
+
+  .hud-hide-toggle-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .hud-hide-toggle-status {
+    font-size: 8px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -164,5 +222,24 @@
   .auto-toggle-btn {
     padding: 4px 6px;
     font-size: 9px;
+  }
+
+  .hud-hide-toggle-btn {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+}
+
+/* Hide UI during wave when toggle is enabled */
+.hide-ui-during-wave #hud,
+.hide-ui-during-wave .game-controls-wrapper {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .hide-ui-during-wave #equipped-spells {
+    visibility: hidden;
+    pointer-events: none;
   }
 }

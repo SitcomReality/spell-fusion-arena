@@ -312,6 +312,13 @@ export class RewardUI {
     // Persist save immediately after choosing a reward
     try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
     
+    // Update HUD visibility when reward is chosen
+    try {
+      if (window && window.gameInstance && window.gameInstance.speedControl) {
+        window.gameInstance.speedControl.updateHudVisibility();
+      }
+    } catch (e) {}
+    
     // NEW: Auto-allocate focus if auto is enabled
     try {
       if (window && window.gameInstance && window.gameInstance.autoAllocateFocus) {
@@ -328,6 +335,13 @@ export class RewardUI {
     this.onRewardChosen({ type: 'essence', amount });
     // Persist save immediately after choosing a reward
     try { if (window && window.saveGame) window.saveGame(); } catch (e) {}
+    
+    // Update HUD visibility when reward is chosen
+    try {
+      if (window && window.gameInstance && window.gameInstance.speedControl) {
+        window.gameInstance.speedControl.updateHudVisibility();
+      }
+    } catch (e) {}
     
     // NEW: Auto-allocate focus if auto is enabled
     try {

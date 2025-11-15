@@ -7,6 +7,7 @@ export class SpeedControl {
     this.currentSpeed = 1;
     this.autoEnabled = false;
     this.autoVisible = true; // NEW: Assume visible unless told otherwise
+    this.hudHideEnabled = false;
   }
 
   mount(container) {
@@ -40,6 +41,12 @@ export class SpeedControl {
             <span class="auto-toggle-status">OFF</span>
           </button>
         </div>
+        <div class="hud-hide-control">
+          <button class="hud-hide-toggle-btn" title="Hide HUD during gameplay">
+            <span class="hud-hide-toggle-label">Hide</span>
+            <span class="hud-hide-toggle-status">OFF</span>
+          </button>
+        </div>
       </div>
     `;
 
@@ -55,6 +62,13 @@ export class SpeedControl {
     if (autoBtn) {
       autoBtn.addEventListener('click', () => {
         this.toggleAuto();
+      });
+    }
+
+    const hudHideBtn = this.element.querySelector('.hud-hide-toggle-btn');
+    if (hudHideBtn) {
+      hudHideBtn.addEventListener('click', () => {
+        this.toggleHudHide();
       });
     }
   }
@@ -87,6 +101,31 @@ export class SpeedControl {
     }
   }
 
+  toggleHudHide() {
+    this.hudHideEnabled = !this.hudHideEnabled;
+    const statusEl = this.element.querySelector('.hud-hide-toggle-status');
+    if (statusEl) {
+      statusEl.textContent = this.hudHideEnabled ? 'ON' : 'OFF';
+    }
+    const hudHideBtn = this.element.querySelector('.hud-hide-toggle-btn');
+    if (hudHideBtn) {
+      hudHideBtn.classList.toggle('active', this.hudHideEnabled);
+    }
+    this.updateHudVisibility();
+  }
+
+  updateHudVisibility() {
+    // Only hide HUD if toggle is ON and a wave is active (not waiting for start)
+    const gameState = (typeof window !== 'undefined' && window.gameInstance && window.gameInstance.gameState) ? window.gameInstance.gameState : null;
+    const shouldHide = this.hudHideEnabled && gameState && gameState.waveActive && !gameState.waveStartPending;
+    
+    if (shouldHide) {
+      document.documentElement.classList.add('hide-ui-during-wave');
+    } else {
+      document.documentElement.classList.remove('hide-ui-during-wave');
+    }
+  }
+
   setAutoVisible(visible) {
     if (this.autoVisible !== visible) {
       this.autoVisible = visible;
@@ -104,4 +143,3 @@ export class SpeedControl {
 }
 
 export default SpeedControl;
-
