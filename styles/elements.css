@@ -47,6 +47,30 @@
   box-shadow: 0 0 8px rgba(138, 43, 226, 0.1);
 }
 
+/* NEW: Constrain element-card width to the preview tile + padding so long names cannot expand layout */
+.element-card {
+  /* Force cards to be compact: width equals preview (50px for medium) + padding + small gutter */
+  width: 72px; /* 50px preview + ~22px for padding/margins */
+  max-width: 72px;
+  box-sizing: border-box;
+  white-space: normal;
+}
+
+/* Ensure header text wraps and doesn't push card wider; truncate if extremely long */
+.element-card-content h4 {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* allow up to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .element-card:hover {
   border-color: #7a5aaf;
   background: linear-gradient(135deg, #1a0f2e 0%, #2a1a4e 100%);
@@ -63,7 +87,6 @@
   width: 45px;
   height: 45px;
   flex-shrink: 0;
-  border: 1px solid #333;
 }
 
 .element-card-content {
@@ -73,10 +96,23 @@
   gap: 0;
 }
 
-.element-card-content h4 {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.2;
+/* Mobile adjustments that previously altered sizes */
+@media (max-width: 768px) {
+  .element-card {
+    padding: 6px;
+    width: 68px;
+    max-width: 68px;
+  }
+
+  .element-card-color {
+    width: 40px;
+    height: 40px;
+  }
+
+  .element-card-content h4 {
+    font-size: 11px;
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* Add layout wrappers */
