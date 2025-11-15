@@ -12,7 +12,7 @@ export function saveGameSnapshot(gameApp) {
       wave: gameApp.gameState ? gameApp.gameState.waveManager.currentWave : undefined,
       seed: gameApp.gameState ? gameApp.gameState.seed : undefined
     };
-    localStorage.setItem('spellFusion_save_v1', JSON.stringify(payload));
+    localStorage.setItem('spellFusion_save_v2', JSON.stringify(payload));
   } catch (e) {
     console.warn('Failed to save game state', e);
   }
@@ -20,7 +20,7 @@ export function saveGameSnapshot(gameApp) {
 
 export function loadGameSnapshot() {
   try {
-    const saved = localStorage.getItem('spellFusion_save_v1');
+    const saved = localStorage.getItem('spellFusion_save_v2');
     if (!saved) return null;
     return JSON.parse(saved);
   } catch (e) {

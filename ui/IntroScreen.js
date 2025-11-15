@@ -42,20 +42,19 @@ export class IntroScreen {
       this.startNewGame();
     });
 
-    // If there is a saved game in localStorage, show a "Load Game" button
+    // Check for v2 saves to show load button
     try {
-      const saved = localStorage.getItem('spellFusion_save_v1');
-      if (saved) {
+      const savedV2 = localStorage.getItem('spellFusion_save_v2');
+      if (savedV2) {
         const loadBtn = document.createElement('button');
         loadBtn.className = 'intro-button';
         loadBtn.id = 'load-game-btn';
         loadBtn.textContent = 'Load Game';
-        // insert load button next to New Game
         newGameBtn.insertAdjacentElement('afterend', loadBtn);
 
         loadBtn.addEventListener('click', async () => {
           let payload = null;
-          try { payload = JSON.parse(saved); } catch (e) { payload = null; }
+          try { payload = JSON.parse(savedV2); } catch (e) { payload = null; }
           // Ensure element definitions are available
           try { await ELEMENTS_READY; } catch (e) {}
 
@@ -97,6 +96,22 @@ export class IntroScreen {
           this.container.remove();
           this.onGameStart(loadedConfig);
         });
+      }
+    } catch (e) { /* silent */ }
+
+    // Check for v1 saves and show a message if found
+    try {
+      const savedV1 = localStorage.getItem('spellFusion_save_v1');
+      if (savedV1 && !localStorage.getItem('spellFusion_save_v2')) {
+        // Only show the legacy message if there's no v2 save
+        const legacyNotice = document.createElement('div');
+        legacyNotice.className = 'intro-legacy-notice';
+        legacyNotice.innerHTML = `
+          <p>We detected an older save file. The game has been updated significantly and old saves are no longer compatible.</p>
+          <p>If you'd like to continue with your old save, you can play the previous version here:</p>
+          <a href="https://websim.com/@SitcomReality/spell-fusion-arena/412" target="_blank" rel="noopener noreferrer" class="intro-legacy-link">Play Previous Version</a>
+        `;
+        this.container.querySelector('.intro-screen-content').appendChild(legacyNotice);
       }
     } catch (e) { /* silent */ }
   }
