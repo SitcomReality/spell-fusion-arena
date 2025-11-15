@@ -161,13 +161,17 @@ export class EffectsRenderer {
     const color = enemy.shieldFxColor || { r: 120, g: 220, b: 220 };
 
     // Gentle pulsing alpha so shields feel alive
-    const pulse = 0.25 + 0.15 * Math.sin((Date.now() % 2000) / 2000 * Math.PI * 2);
+    // Make the pulse tighter and brighter so the shield never appears 'off' at its low point.
+    // Use a higher baseline (0.65) and a smaller amplitude (0.12) to keep opacity consistent.
+    const pulse = 0.65 + 0.12 * Math.sin((Date.now() % 2000) / 2000 * Math.PI * 2);
+
     try {
       this.ctx.save();
       this.ctx.globalCompositeOperation = 'lighter';
       // outer glow
       const g1 = this.ctx.createRadialGradient(cx, cy, radius * 0.6, cx, cy, radius * 1.6);
-      g1.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${0.08 * pulse})`);
+      // Increase outer glow alpha proportionally to the brighter pulse so it remains visible.
+      g1.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${0.12 * pulse})`);
       g1.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
       this.ctx.fillStyle = g1;
       this.ctx.beginPath();
@@ -175,15 +179,16 @@ export class EffectsRenderer {
       this.ctx.fill();
 
       // ring stroke
-      this.ctx.globalAlpha = 0.5 * pulse;
-      this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.9 * pulse})`;
+      // Keep the stroke reasonably opaque at all times.
+      this.ctx.globalAlpha = 0.75 * pulse;
+      this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.95 * pulse})`;
       this.ctx.lineWidth = 3;
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       this.ctx.stroke();
 
       // inner faint core ring
-      this.ctx.globalAlpha = 0.18 * pulse;
+      this.ctx.globalAlpha = 0.28 * pulse;
       this.ctx.lineWidth = 1;
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, Math.max(6, radius * 0.45), 0, Math.PI * 2);
