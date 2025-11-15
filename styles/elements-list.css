@@ -104,6 +104,8 @@
 .elements-list-sort-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
 .elements-list-sort-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
 .elements-list-sort-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
+/* Added lifesteal column icon */
+.elements-list-sort-icon[data-property="lifesteal"] { background-image: url('/img/lifesteal.png'); }
 .elements-list-sort-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
 .elements-list-sort-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
 .elements-list-sort-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }

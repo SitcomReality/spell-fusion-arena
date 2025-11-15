@@ -115,7 +115,7 @@ export class ElementsLibrary {
     const listContainer = document.createElement('div');
     listContainer.className = 'elements-list-container';
 
-    const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral'];
+    const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral', 'lifesteal'];
 
     // Header wrapper: sticky at top
     const headerWrapper = document.createElement('div');
