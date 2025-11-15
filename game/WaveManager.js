@@ -60,9 +60,18 @@ export class WaveManager {
         type = this.rng.next() > 0.5 ? ENEMY_TYPES.grunt : ENEMY_TYPES.runner;
       } else {
         const rand = this.rng.next();
-        if (rand < 0.5) type = ENEMY_TYPES.grunt;
-        else if (rand < 0.85) type = ENEMY_TYPES.runner;
-        else type = ENEMY_TYPES.tank;
+        // Regular enemy pool order: grunt, runner, tank, then spiraler as a rarer regular spawn.
+        // Probabilities: grunt 50%, runner 35%, tank 10%, spiraler 5%
+        if (rand < 0.50) {
+          type = ENEMY_TYPES.grunt;
+        } else if (rand < 0.85) {
+          type = ENEMY_TYPES.runner;
+        } else if (rand < 0.95) {
+          type = ENEMY_TYPES.tank;
+        } else {
+          // Use spiraler from regular pool (only when not a boss wave)
+          type = ENEMY_TYPES.spiraler || ENEMY_TYPES.grunt;
+        }
       }
       
       const spawnSpread = this.currentWave <= 2 ? 1.2 : 0.9;
