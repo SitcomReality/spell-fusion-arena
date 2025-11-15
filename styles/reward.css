@@ -57,11 +57,45 @@
 }
 
 /* Header wrapper inside card to position title and rarity */
-.reward-card .reward-card-header {
+.reward-card .reward-card-header-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
+}
+
+/* OLD .reward-card-header rules were using a single-line layout.
+   Change to a stacked layout so long names wrap safely and the rarity pill
+   sits in the top-right corner of the card. */
+.reward-card {
+  position: relative; /* allow absolute positioning of rarity pill */
+}
+
+/* Make header a vertical stack so heading occupies its own line */
+.reward-card .reward-card-header {
+  display: block;
+  padding-right: 48px; /* reserve space for absolute rarity pill to avoid overlap */
+}
+
+/* Ensure the title takes the full width and wraps cleanly */
+.reward-card .reward-card-header h3 {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px 0;
+  line-height: 1.1;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Position the rarity pill in the top-right corner of the card */
+.reward-card .rarity-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 /* Visual prominence controlled by --rarity-intensity (0.0..1.0) */
