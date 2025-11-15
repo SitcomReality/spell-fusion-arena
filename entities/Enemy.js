@@ -46,6 +46,15 @@ export class Enemy {
     // NEW: Visibility state
     this.alpha = 0;
     this.fadeDuration = 0.5; // 500ms fade duration
+
+    // NEW: Shield state for support enemies (Step 1)
+    this.shieldActive = false;
+    this.shieldRadius = 26;
+    this.shieldOnDuration = 2.5;   // seconds shield stays on
+    this.shieldOffDuration = 2.5;  // seconds shield stays off
+    this.shieldTimer = 0;          // counts down and toggles shield when reaches 0
+    this.shieldFxColor = { r: 120, g: 220, b: 220 };
+    this.invulnerable = false;
   }
 
   update(dt, centerX, centerY) {

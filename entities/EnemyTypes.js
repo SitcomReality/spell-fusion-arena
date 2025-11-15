@@ -80,6 +80,17 @@ export const ENEMY_TYPES = {
     pattern: 'blob',
     color: { r: 100, g: 200, b: 150 },
     movePattern: 'dasher'
+  },
+
+  // New support enemy: periodically toggles a local shield
+  support: {
+    name: 'Support',
+    speed: 16,
+    width: 18,
+    height: 18,
+    pattern: 'blob',
+    color: { r: 80, g: 200, b: 180 },
+    movePattern: 'standard'
   }
 };
 
