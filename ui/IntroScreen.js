@@ -129,8 +129,67 @@ export class IntroScreen {
   }
 
   showLoadoutSelection(seed) {
-    // Roll 8 random elements, weighted by rarity (common > uncommon > rare)
-    const elementPool = this.rollElementPool(8);
+    // Build curated pools by rarity so we can present controlled choice pairs:
+    const allEntries = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
+    const byRarity = allEntries.reduce((acc, entry) => {
+      const r = entry.elem.rarity || 'common';
+      acc[r] = acc[r] || [];
+      acc[r].push(entry);
+      return acc;
+    }, {});
+
+    // Helper to pick and remove one random entry from a rarity pool
+    const pickFrom = (rarityPool) => {
+      const pool = byRarity[rarityPool] || [];
+      if (!pool || pool.length === 0) return null;
+      const idx = this.rng.nextInt(0, pool.length);
+      return pool.splice(idx, 1)[0];
+    };
+
+    // Construct the four choice rounds according to new rules:
+    // Round 1: mundane vs mundane
+    // Round 2: mundane vs common
+    // Round 3: common vs uncommon
+    // Round 4: uncommon vs unusual
+    const rounds = [];
+    // Defensive defaults if a rarity pool is empty: fall back to any available entry
+    const fallbackPick = () => {
+      const anyPools = Object.values(byRarity).flat();
+      if (anyPools.length === 0) return null;
+      const idx = this.rng.nextInt(0, anyPools.length);
+      return anyPools.splice(idx, 1)[0];
+    };
+
+    // ensure we use the RNG-seeded picks consistently
+    const pickSafe = (rarity) => {
+      const p = pickFrom(rarity);
+      return p || fallbackPick();
+    };
+
+    rounds.push([pickSafe('mundane'), pickSafe('mundane')]);
+    rounds.push([pickSafe('mundane'), pickSafe('common')]);
+    rounds.push([pickSafe('common'), pickSafe('uncommon')]);
+    rounds.push([pickSafe('uncommon'), pickSafe('unusual')]);
+
+    // Flatten remaining pools into a single pool for any missing picks later if needed
+    const elementPool = [];
+    for (const arr of Object.values(byRarity)) {
+      for (const e of arr) elementPool.push(e);
+    }
+
+    // For any round positions that ended up null (due to missing rarity), fill from leftover pool
+    for (let i = 0; i < rounds.length; i++) {
+      for (let j = 0; j < 2; j++) {
+        if (!rounds[i][j]) {
+          if (elementPool.length > 0) {
+            const idx = this.rng.nextInt(0, elementPool.length);
+            rounds[i][j] = elementPool.splice(idx, 1)[0];
+          } else {
+            rounds[i][j] = null;
+          }
+        }
+      }
+    }
 
     // Display title with seed info
     const titleEl = document.createElement('div');
@@ -153,61 +212,47 @@ export class IntroScreen {
     containerEl.appendChild(titleEl);
     this.container.appendChild(containerEl);
 
-    // Start the choice sequence
-    this.showLoadoutChoice(elementPool, 0, containerEl);
+    // Start the choice sequence using our precomputed rounds
+    this._precomputedRounds = rounds; // store for the choice flow
+    this.showLoadoutChoice(null, 0, containerEl);
   }
 
-  rollElementPool(count) {
-    const allElements = Object.entries(ELEMENTS).map(([key, elem]) => ({ key, elem }));
-    const pool = [];
-
-    // Weight by rarity: common=60, uncommon=30, rare=10
-    const weighted = [];
-    for (const { key, elem } of allElements) {
-      const weight = elem.rarity === 'rare' ? 10 : (elem.rarity === 'uncommon' ? 30 : 60);
-      for (let i = 0; i < weight; i++) {
-        weighted.push({ key, elem });
-      }
-    }
-
-    // Pick `count` unique elements
-    const picked = new Set();
-    while (pool.length < count && weighted.length > 0) {
-      const idx = this.rng.nextInt(0, weighted.length);
-      const { key, elem } = weighted[idx];
-      if (!picked.has(key)) {
-        picked.add(key);
-        pool.push({ key, elem });
-      }
-      // Remove all instances of this key from pool
-      for (let i = weighted.length - 1; i >= 0; i--) {
-        if (weighted[i].key === key) weighted.splice(i, 1);
-      }
-    }
-
-    return pool;
-  }
+  // rollElementPool removed (no longer used) - selection is handled in showLoadoutSelection
 
   showLoadoutChoice(elementPool, choiceIndex, parentContainer = null) {
+    // If we have precomputed rounds from showLoadoutSelection, use them.
+    const rounds = this._precomputedRounds || null;
     if (choiceIndex >= 4) {
       // All choices made, start game with selected elements
       this.startGameWithLoadout();
       return;
     }
 
-    // Pick 2 unique elements from the remaining pool
-    const choice1Idx = this.rng.nextInt(0, elementPool.length);
-    const choice1 = elementPool[choice1Idx];
+    // If rounds exist, extract the two choices for this index
+    let leftChoice = null;
+    let rightChoice = null;
+    if (rounds && rounds[choiceIndex]) {
+      leftChoice = rounds[choiceIndex][0];
+      rightChoice = rounds[choiceIndex][1];
+    } else {
+      // Fallback: pick two random distinct elements from provided elementPool
+      const pool = Array.isArray(elementPool) ? elementPool.slice() : [];
+      if (pool.length === 0) {
+        // No pool available; nothing to show
+        this.startGameWithLoadout();
+        return;
+      }
+      const idx1 = this.rng.nextInt(0, pool.length);
+      leftChoice = pool.splice(idx1, 1)[0];
+      if (pool.length > 0) {
+        const idx2 = this.rng.nextInt(0, pool.length);
+        rightChoice = pool.splice(idx2, 1)[0];
+      } else {
+        rightChoice = null;
+      }
+    }
 
-    // Remove choice1 from pool
-    const remaining = elementPool.filter((_, idx) => idx !== choice1Idx);
-    const choice2Idx = this.rng.nextInt(0, remaining.length);
-    const choice2 = remaining[choice2Idx];
-
-    // Remove choice2 from pool
-    const nextPool = remaining.filter((_, idx) => idx !== choice2Idx);
-
-    // Render choice cards
+    // Build the UI choices using the same rendering code previously used.
     const choiceContainer = document.createElement('div');
     choiceContainer.className = 'loadout-choice-container';
 
@@ -219,6 +264,12 @@ export class IntroScreen {
     };
 
     const makeCard = (choice) => {
+      if (!choice) {
+        const empty = document.createElement('div');
+        empty.className = 'loadout-choice-card';
+        empty.innerHTML = `<div class="loadout-card-content"><h3>Unavailable</h3></div>`;
+        return empty;
+      }
       const card = document.createElement('div');
       card.className = 'loadout-choice-card';
       const elem = choice.elem;
@@ -230,7 +281,6 @@ export class IntroScreen {
       const propEntries = Object.entries(propGenes);
       if (propEntries.length > 0) {
         propsHtml = '<div class="properties-list">' + propEntries.map(([k, v]) => {
-          // display numeric formatting for common keys
           const val = (typeof v === 'number') ? (Math.round((k === 'damage' || k === 'speed') ? v : v * 100) / 100) : v;
           return `<div class="property-badge" data-property="${k}">
                     <span class="property-icon"></span>
@@ -239,7 +289,6 @@ export class IntroScreen {
         }).join('') + '</div>';
       }
 
-      // Build card structure then insert a VisualPreview in place of the color square
       card.innerHTML = `
         <div class="loadout-card-content">
           <h3>${elem.name}</h3>
@@ -262,7 +311,6 @@ export class IntroScreen {
         // Insert preview at the top of the card
         card.insertBefore(previewEl, card.firstChild);
       } catch (e) {
-        // Fallback to original simple color block if preview fails
         const fallback = document.createElement('div');
         fallback.className = 'loadout-card-color';
         fallback.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
@@ -275,15 +323,15 @@ export class IntroScreen {
         updateProgress();
         // Small delay to show selection feedback
         setTimeout(() => {
-          this.showLoadoutChoice(nextPool, choiceIndex + 1, parentContainer);
+          this.showLoadoutChoice(null, choiceIndex + 1, parentContainer);
         }, 200);
       });
 
       return card;
     };
 
-    choiceContainer.appendChild(makeCard(choice1));
-    choiceContainer.appendChild(makeCard(choice2));
+    choiceContainer.appendChild(makeCard(leftChoice));
+    choiceContainer.appendChild(makeCard(rightChoice));
 
     // Remove the old choice cards if any exist inside the same parent container
     const targetParent = parentContainer || this.container;
