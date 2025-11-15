@@ -1,6 +1,13 @@
 export class PropertyApplier {
   static applyProperties(projectile, enemy, gameState) {
     const props = projectile.properties;
+
+    // NEW: If the enemy hasn't finished spawning / fading in, do not apply properties.
+    // This prevents AoE/explosion side-effects or DoT being applied to invisible pre-spawn enemies.
+    if (!enemy || !enemy.alive) return;
+    if ((enemy.spawnDelay && enemy.spawnDelay > 0) || (enemy.alpha !== undefined && enemy.alpha < 1)) {
+      return;
+    }
     
     // Lifesteal (NEW)
     if (props.lifesteal && props.lifesteal > 0 && gameState && gameState.player) {

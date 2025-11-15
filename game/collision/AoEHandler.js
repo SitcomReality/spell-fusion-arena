@@ -16,7 +16,13 @@ export class AoEHandler {
     } catch (e) { /* silent */ }
 
     for (const enemy of game.enemies) {
+      // Skip invalid/defeated/center enemy
       if (!enemy.alive || enemy === centerEnemy) continue;
+
+      // NEW: Skip enemies that haven't finished spawning/fading in so they aren't affected by AoE
+      if ((enemy.spawnDelay && enemy.spawnDelay > 0) || (enemy.alpha !== undefined && enemy.alpha < 1)) {
+        continue;
+      }
 
       const dx = enemy.x - centerEnemy.x;
       const dy = enemy.y - centerEnemy.y;
@@ -42,9 +48,12 @@ export class AoEHandler {
         // Apply DoT
         const dotIntensity = projectile.properties.dot || 0;
         if (dotIntensity > 0) {
-          const duration = 2 + dotIntensity * 1.5;
-          const damagePerTick = Math.max(1, damage * dotIntensity * 0.12);
-          enemy.applyBurning(duration, damagePerTick, projectile.spell.color);
+          // Additional safety: only apply DoT to tangible enemies (double-guard)
+          if (!((enemy.spawnDelay && enemy.spawnDelay > 0) || (enemy.alpha !== undefined && enemy.alpha < 1))) {
+            const duration = 2 + dotIntensity * 1.5;
+            const damagePerTick = Math.max(1, damage * dotIntensity * 0.12);
+            enemy.applyBurning(duration, damagePerTick, projectile.spell.color);
+          }
         }
 
         // Apply slowing
