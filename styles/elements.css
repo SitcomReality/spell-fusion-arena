@@ -25,9 +25,11 @@
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 6px;
+  justify-content: flex-start;
+  /* Make the library itself the single scroll container */
   max-height: 280px;
   overflow-y: auto;
-  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 .element-card {

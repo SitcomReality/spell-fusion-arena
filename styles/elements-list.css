@@ -80,8 +80,9 @@
 }
 
 .elements-list-rows {
-  max-height: 300px;
-  overflow-y: auto;
+  /* Allow parent (.elements-library) to control scrolling to avoid nested scrollbars */
+  max-height: none;
+  overflow: visible;
 }
 
 .elements-list-row {
