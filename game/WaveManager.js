@@ -88,27 +88,35 @@ export class WaveManager {
     const bossTypeKey = bossTypes[this.rng.nextInt(0, bossTypes.length)];
     const bossType = ENEMY_TYPES[bossTypeKey];
     
-    // Spawn boss at the spawn radius
-    const angle = Math.PI * 1.5; // come from bottom
-    // Use a dedicated, smaller spawn radius for bosses for quicker engagement
+    // Spawn boss(es) at evenly spaced positions around the spawn radius
+    const baseAngle = Math.PI * 1.5; // default incoming direction (from bottom)
+    // Determine how many bosses to spawn:
+    // - base 1 boss per boss wave
+    // - add extra bosses every 15 levels (floor(currentWave / 15))
+    const extraFrom15 = Math.floor(this.currentWave / 15);
+    const totalBosses = 1 + extraFrom15;
+
+    // Choose a spawn radius for bosses (kept slightly smaller to engage quicker)
     const bossSpawnRadius = 320;
-    const x = this.centerX + Math.cos(angle) * bossSpawnRadius;
-    const y = this.centerY + Math.sin(angle) * bossSpawnRadius;
-    
-    if (bossTypeKey === 'double') {
-      // Two bosses side by side
-      const offset = 60;
-      const boss1 = new Enemy(x - offset, y, bossType);
-      const boss2 = new Enemy(x + offset, y, bossType);
-      boss1.bossNumber = bossNumber;
-      boss2.bossNumber = bossNumber;
-      boss1.doubleBossId = 'double-' + bossNumber + '-1';
-      boss2.doubleBossId = 'double-' + bossNumber + '-2';
-      enemies.push(boss1, boss2);
-    } else {
-      const boss = new Enemy(x, y, bossType);
-      boss.bossNumber = bossNumber;
-      enemies.push(boss);
+
+    // Spread bosses evenly around the circle to avoid clustering
+    for (let i = 0; i < totalBosses; i++) {
+      // Even spacing around the circle, rotate around baseAngle so they generally come from bottom
+      const angle = baseAngle + (i * (Math.PI * 2) / totalBosses) + (this.rng.next() - 0.5) * 0.08; // slight jitter
+      const x = this.centerX + Math.cos(angle) * bossSpawnRadius;
+      const y = this.centerY + Math.sin(angle) * bossSpawnRadius;
+
+      if (bossTypeKey === 'double') {
+        // For 'double' boss type keep the original double-specific flags, but allow multiple spawned parts.
+        const part = new Enemy(x, y, bossType);
+        part.bossNumber = bossNumber;
+        part.doubleBossId = `double-${bossNumber}-${i + 1}`;
+        enemies.push(part);
+      } else {
+        const boss = new Enemy(x, y, bossType);
+        boss.bossNumber = bossNumber;
+        enemies.push(boss);
+      }
     }
     
     this.enemiesRemaining = enemies.length;
