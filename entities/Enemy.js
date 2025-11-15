@@ -21,9 +21,6 @@ export class Enemy {
     this.speed = type.speed;
     this.baseSpeed = type.speed;
     this.color = type.color;
-    // Visual fade-in support: start invisible and fade in once spawnDelay elapses
-    this.opacity = 0;
-    this._fadeRate = 4.0; // 1 / 0.25s fade duration (seconds)
 
     this.pixelBody = new PixelBody(type.width, type.height, type.pattern);
 
@@ -55,13 +52,6 @@ export class Enemy {
 
     // Status effects delegated to status module
     updateStatusEffects(this, dt);
-
-    // Fade-in handling: remain invisible while spawnDelay > 0, then ramp opacity to 1
-    if (this.spawnDelay && this.spawnDelay > 0) {
-      this.opacity = 0;
-    } else {
-      this.opacity = Math.min(1, (this.opacity || 0) + (this._fadeRate * dt));
-    }
   }
 
   applySlowing(duration, slowAmount) {

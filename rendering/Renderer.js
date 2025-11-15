@@ -24,14 +24,11 @@ export class Renderer {
     const offsetY = enemy.y - enemy.type.height / 2;
     
     const color = enemy.color;
-    // Respect per-enemy opacity (fade-in). Default to 1 if not provided.
-    const prevAlpha = this.ctx.globalAlpha;
-    this.ctx.globalAlpha = (typeof enemy.opacity === 'number') ? Math.max(0, Math.min(1, enemy.opacity)) : 1.0;
     this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
+    
     for (const pixel of alivePixels) {
       this.ctx.fillRect(offsetX + pixel.x, offsetY + pixel.y, 1, 1);
     }
-    this.ctx.globalAlpha = prevAlpha;
   }
   
   renderProjectile(projectile) {
