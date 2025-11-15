@@ -9,6 +9,7 @@ export const UNCOMMON_ELEMENTS = {
       damage: 22,
       slowing: 6,
       dot: 2,
+      wave: 1
     },
     visualEffects: {
       trail: true,
@@ -33,6 +34,7 @@ export const UNCOMMON_ELEMENTS = {
       damage: 28,
       piercing: 4,
       dot: 3,
+      spiral: 2
     },
     visualEffects: {
       trail: true,
@@ -60,6 +62,7 @@ export const UNCOMMON_ELEMENTS = {
       homing: 5,
       wave: 4,
       slowing: 3,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -86,6 +89,7 @@ export const UNCOMMON_ELEMENTS = {
       speed: 200,
       damage: 20,
       dot: 5,
+      wave: 2,
       slowing: 4,
     },
     visualEffects: {
@@ -166,6 +170,8 @@ export const UNCOMMON_ELEMENTS = {
       aoe: 5,
       slowing: 5,
       dot: 2,
+      wave: 3,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -193,6 +199,7 @@ export const UNCOMMON_ELEMENTS = {
       aoe: 6,
       wave: 5,
       knockback: 2,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -300,6 +307,7 @@ export const UNCOMMON_ELEMENTS = {
       slowing: 6,
       dot: 6,
       aoe: 3,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
