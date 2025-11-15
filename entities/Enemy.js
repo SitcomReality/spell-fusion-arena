@@ -8,7 +8,8 @@ import {
   applyPoison,
   takeBurnDamage,
   takePoisonDamage,
-  emitDoTParticles
+  emitDoTParticles,
+  updateShield
 } from './EnemyStatus.js';
 import { ENEMY_TYPES } from './EnemyTypes.js';
 
@@ -62,6 +63,9 @@ export class Enemy {
 
     // Movement & spawn handling delegated to movement module
     updatePosition(this, dt, centerX, centerY);
+
+    // NEW: Update shield state before other status effects so invulnerability is enforced early
+    try { updateShield(this, dt); } catch (e) { /* silent */ }
 
     // Status effects delegated to status module
     updateStatusEffects(this, dt);

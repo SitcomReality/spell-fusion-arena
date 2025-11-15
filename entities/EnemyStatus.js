@@ -40,6 +40,33 @@ export function updateStatusEffects(enemy, dt) {
   }
 }
 
+export function updateShield(enemy, dt) {
+  if (typeof enemy.shieldActive === 'undefined') return;
+  // Initialize timer if unset
+  if (typeof enemy.shieldTimer !== 'number' || enemy.shieldTimer === 0) {
+    enemy.shieldTimer = enemy.shieldOffDuration || 2.5;
+    enemy.shieldActive = false;
+    enemy.invulnerable = false;
+  }
+
+  enemy.shieldTimer -= dt;
+  if (enemy.shieldActive) {
+    if (enemy.shieldTimer <= 0) {
+      // turn off
+      enemy.shieldActive = false;
+      enemy.invulnerable = false;
+      enemy.shieldTimer = enemy.shieldOffDuration || 2.5;
+    }
+  } else {
+    if (enemy.shieldTimer <= 0) {
+      // turn on
+      enemy.shieldActive = true;
+      enemy.invulnerable = true;
+      enemy.shieldTimer = enemy.shieldOnDuration || 2.5;
+    }
+  }
+}
+
 export function applySlowing(enemy, duration, slowAmount) {
   if (!enemy.statusEffects.slowing.active || enemy.statusEffects.slowing.duration < duration) {
     enemy.statusEffects.slowing.active = true;
