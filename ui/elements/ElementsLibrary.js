@@ -10,9 +10,13 @@ export class ElementsLibrary {
     // View mode and sorting state
     this.viewMode = 'grid'; // 'grid' or 'list'
     this.sortProperty = null; // null = most recently unlocked, or property name
-    this.sortAscending = false; // default is descending (highest first)
+    this.sortAscending = false;
     this.unlockedElements = [];
-    this.lastUnlockedKeys = []; // remember last keys passed to refresh
+    this.lastUnlockedKeys = [];
+
+    // References for syncing scrolls
+    this.headerElement = null;
+    this.rowsElement = null;
   }
 
   mount(container) {
@@ -20,10 +24,8 @@ export class ElementsLibrary {
     this.container.innerHTML = '';
   }
 
-  // NEW: allow external UI to toggle view mode
   toggleView() {
     this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
-    // reset sort state when toggling view as previously done
     this.sortProperty = null;
     this.sortAscending = false;
     this.refresh(this.lastUnlockedKeys);
@@ -33,20 +35,15 @@ export class ElementsLibrary {
     if (!this.container) return;
     this.cardMap.clear();
 
-    // remember the keys so external toggle can refresh with same set
     this.lastUnlockedKeys = Array.isArray(unlockedKeys) ? unlockedKeys.slice() : [];
 
     const unlocked = getUnlockedElements(unlockedKeys);
     this.unlockedElements = Object.entries(unlocked).map(([key, element]) => ({ key, element }));
 
-    // Apply sorting
     this.unlockedElements = this.sortElements(this.unlockedElements);
 
     this.container.innerHTML = '';
     
-    // NOTE: view toggle moved to FusionUI header; do not add controls here anymore.
-    // (previously created an elements-library-controls div here)
-
     if (this.viewMode === 'grid') {
       this.renderGridView();
     } else {
@@ -57,12 +54,10 @@ export class ElementsLibrary {
   sortElements(elements) {
     const sorted = [...elements];
 
-    // If no sort property, sort by unlock order (most recent first = reverse)
     if (this.sortProperty === null) {
       return sorted.reverse();
     }
 
-    // Sort by property value
     sorted.sort((a, b) => {
       const valA = a.element.propertyGenes?.[this.sortProperty] || 0;
       const valB = b.element.propertyGenes?.[this.sortProperty] || 0;
@@ -120,52 +115,34 @@ export class ElementsLibrary {
     const listContainer = document.createElement('div');
     listContainer.className = 'elements-list-container';
 
-    // New two-pane layout: left fixed name column + right scrollable properties pane
-    const tableWrapper = document.createElement('div');
-    tableWrapper.className = 'elements-list-table';
-
-    // Left fixed column (header + name rows)
-    const leftCol = document.createElement('div');
-    leftCol.className = 'elements-list-left';
-    const leftHeader = document.createElement('div');
-    leftHeader.className = 'elements-list-left-header';
-    leftHeader.textContent = 'Element';
-    leftCol.appendChild(leftHeader);
-
-    const leftRows = document.createElement('div');
-    leftRows.className = 'elements-list-left-rows';
-    for (const { key, element } of this.unlockedElements) {
-      const nameRow = document.createElement('div');
-      nameRow.className = 'elements-list-left-row';
-      const color = element.color || { r: 120, g: 120, b: 120 };
-      nameRow.innerHTML = `
-        <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
-        <span class="element-list-name">${element.name}</span>
-      `;
-      // clicking left also opens details
-      nameRow.addEventListener('click', () => {
-        const dummyCard = document.createElement('div');
-        this.onClick(key, element, dummyCard);
-      });
-      leftRows.appendChild(nameRow);
-    }
-    leftCol.appendChild(leftRows);
-
-    // Right scrollable properties pane (with its own header)
-    const rightCol = document.createElement('div');
-    rightCol.className = 'elements-list-right';
-    const rightHeader = document.createElement('div');
-    rightHeader.className = 'elements-list-right-header';
-
-    // Extended property list: keep sensible order for readability and sorting
     const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral'];
 
-    // Build property header buttons (these are inside the horizontally scrollable pane)
+    // Header wrapper: sticky at top
+    const headerWrapper = document.createElement('div');
+    headerWrapper.className = 'elements-list-header-wrapper';
+
+    // Corner element
+    const corner = document.createElement('div');
+    corner.className = 'elements-list-header-corner';
+    corner.textContent = 'Element';
+    headerWrapper.appendChild(corner);
+
+    // Scrollable header for properties
+    const headerRow = document.createElement('div');
+    headerRow.className = 'elements-list-header';
+    this.headerElement = headerRow;
+
     for (const prop of properties) {
       const header = document.createElement('button');
       header.className = 'elements-list-sort-btn';
-      header.innerHTML = `<span class="elements-list-sort-icon" data-property="${prop}" aria-hidden="true"></span>`;
       header.dataset.property = prop;
+      
+      const icon = document.createElement('span');
+      icon.className = 'elements-list-sort-icon';
+      icon.dataset.property = prop;
+      icon.setAttribute('aria-hidden', 'true');
+      header.appendChild(icon);
+
       header.addEventListener('click', () => {
         if (this.sortProperty === prop) {
           this.sortAscending = !this.sortAscending;
@@ -175,37 +152,77 @@ export class ElementsLibrary {
         }
         this.refresh(unlockedKeys);
       });
-      rightHeader.appendChild(header);
+
+      headerRow.appendChild(header);
     }
-    rightCol.appendChild(rightHeader);
 
-    // Right rows container (scrollable horizontally)
-    const rightRows = document.createElement('div');
-    rightRows.className = 'elements-list-right-rows';
+    headerWrapper.appendChild(headerRow);
+    listContainer.appendChild(headerWrapper);
 
+    // Content wrapper: allows independent scrolling of names and properties
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'elements-list-content-wrapper';
+
+    // Fixed name column
+    const namesColumn = document.createElement('div');
+    namesColumn.className = 'elements-list-names';
+
+    // Scrollable properties area
+    const rowsDiv = document.createElement('div');
+    rowsDiv.className = 'elements-list-rows';
+    this.rowsElement = rowsDiv;
+
+    // Build rows
     for (const { key, element } of this.unlockedElements) {
-      const row = document.createElement('div');
-      row.className = 'elements-list-right-row';
+      // Name row
+      const nameRow = document.createElement('div');
+      nameRow.className = 'elements-list-name-row';
+      const color = element.color || { r: 120, g: 120, b: 120 };
+      nameRow.innerHTML = `
+        <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
+        <span class="element-list-name">${element.name}</span>
+      `;
+      namesColumn.appendChild(nameRow);
+
+      // Property row
+      const propRow = document.createElement('div');
+      propRow.className = 'elements-list-row';
+
       for (const prop of properties) {
         const cell = document.createElement('div');
-        cell.className = 'elements-list-right-cell';
         const value = element.propertyGenes?.[prop] || 0;
         cell.textContent = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
-        row.appendChild(cell);
+        propRow.appendChild(cell);
       }
-      // Clicking any property cell also opens details (maps to same element by index)
-      row.addEventListener('click', () => {
+
+      // Attach click handler to row
+      propRow.addEventListener('click', () => {
         const dummyCard = document.createElement('div');
         this.onClick(key, element, dummyCard);
       });
-      rightRows.appendChild(row);
-    }
-    rightCol.appendChild(rightRows);
 
-    tableWrapper.appendChild(leftCol);
-    tableWrapper.appendChild(rightCol);
-    listContainer.appendChild(tableWrapper);
+      rowsDiv.appendChild(propRow);
+    }
+
+    contentWrapper.appendChild(namesColumn);
+    contentWrapper.appendChild(rowsDiv);
+    listContainer.appendChild(contentWrapper);
+
     this.container.appendChild(listContainer);
+
+    // Sync horizontal scroll between header and properties
+    rowsDiv.addEventListener('scroll', () => {
+      headerRow.scrollLeft = rowsDiv.scrollLeft;
+    });
+
+    // Also sync vertical scroll between names and properties
+    rowsDiv.addEventListener('scroll', () => {
+      namesColumn.scrollTop = rowsDiv.scrollTop;
+    });
+
+    namesColumn.addEventListener('scroll', () => {
+      rowsDiv.scrollTop = namesColumn.scrollTop;
+    });
   }
 
   markSelectedCard(cardEl) {

@@ -1,200 +1,55 @@
-/* List view for Elements Library */
+/* List view for Elements Library - with sticky header and fixed name column */
 
-/* New two-pane list layout: fixed left name column + horizontally-scrollable right properties pane */
 .elements-list-container {
   border: 1px solid #4a2a7f;
   background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
   border-radius: 4px;
-  overflow: hidden; /* let the right pane scroll internally */
-}
-
-/* Table wrapper: flex row with fixed left column */
-.elements-list-table {
-  display: flex;
-  width: 100%;
-  min-width: 100%;
-}
-
-/* Left fixed column */
-.elements-list-left {
-  flex: 0 0 140px; /* name column width (adjustable) */
+  /* Make container a scroll container with specific height */
+  height: 280px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(74, 158, 255, 0.08);
-  background: rgba(0,0,0,0.18);
-  min-width: 120px;
-  max-width: 220px;
-  box-sizing: border-box;
-}
-
-/* Left header and rows */
-.elements-list-left-header {
-  padding: 8px;
-  font-weight: 600;
-  color: #64c8ff;
-  text-transform: uppercase;
-  font-size: 12px;
-  border-bottom: 1px solid rgba(74, 158, 255, 0.06);
-  position: sticky;
-  top: 0;
-  background: rgba(10,10,15,0.95);
-  z-index: 3;
-}
-
-.elements-list-left-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  max-height: 360px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.elements-list-left-row {
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.02);
-  cursor: pointer;
-  min-height: 40px;
-}
-
-.elements-list-left-row:hover {
-  background: rgba(100,200,255,0.03);
-}
-
-/* Right scrollable pane */
-.elements-list-right {
-  flex: 1 1 auto;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  min-width: 0;
-}
-
-/* The header inside the right pane stays sticky at top of the pane */
-.elements-list-right-header {
-  display: flex;
-  gap: 0;
-  padding: 8px;
-  background: rgba(0,0,0,0.02);
-  border-bottom: 1px solid rgba(74, 158, 255, 0.06);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-/* Each header button represents a property column; kept compact so many can fit horizontally */
-.elements-list-right-header .elements-list-sort-btn {
-  padding: 6px 10px;
-  min-width: 60px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px solid rgba(74, 158, 255, 0.03);
-  background: transparent;
-  color: #b0d4ff;
-}
-
-/* Rows in the right pane align with left rows by index order */
-.elements-list-right-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.elements-list-right-row {
-  display: flex;
-  gap: 0;
-  min-height: 40px;
-  align-items: center;
-  border-bottom: 1px solid rgba(255,255,255,0.02);
-  cursor: pointer;
-}
-
-.elements-list-right-row:hover {
-  background: rgba(100,200,255,0.02);
-}
-
-/* Individual property cell */
-.elements-list-right-cell {
-  padding: 8px 12px;
-  min-width: 60px;
-  text-align: center;
-  color: #dff6ff;
-  border-left: 1px solid rgba(74, 158, 255, 0.03);
-  box-sizing: border-box;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-/* Make the name swatch and text consistent with previous styling */
-.element-list-swatch {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-  border: 1px solid rgba(0,0,0,0.6);
-  box-shadow: 0 0 4px rgba(0,0,0,0.45) inset;
-  flex: 0 0 auto;
-}
-
-.element-list-name {
-  display: inline-block;
-  vertical-align: middle;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: calc(100% - 22px);
 }
 
-/* Responsive tweaks: reduce left column width on small screens so more room for properties */
-@media (max-width: 768px) {
-  .elements-list-left { flex: 0 0 110px; min-width: 92px; }
-  .elements-list-left-header { font-size: 11px; padding: 6px; }
-  .elements-list-left-row { padding: 6px; min-height: 36px; }
-  .elements-list-right-header .elements-list-sort-btn,
-  .elements-list-right-cell { min-width: 56px; padding: 6px 8px; font-size: 12px; }
-}
-
-/* Ensure that both panes scroll independently and keep left column visible while properties are scrolled horizontally */
-.elements-list-container { display: block; }
-
-/* Accessibility: focus styles for the sortable buttons */
-.elements-list-sort-btn:focus { outline: 2px solid rgba(100,200,255,0.25); outline-offset: 2px; }
-
-.elements-list-header {
-  display: grid;
-  /* narrow columns to icon-sized widths for property icons */
-  /* name column + 11 property icon columns */
-  /* Name, speed (30px), damage (25px), then 9 remaining properties at 20px each */
-  grid-template-columns: 75px 30px 25px repeat(9, 20px);
-  gap: 0;
-  background: rgba(0, 0, 0, 0.3);
+/* Header area: sticky at top, with sticky name column on left */
+.elements-list-header-wrapper {
+  display: flex;
   border-bottom: 1px solid #4a2a7f;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  min-width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
 }
 
-.elements-list-header > div,
-.elements-list-header > button {
-  padding: 4px;
-  font-weight: 600;
-  color: #64c8ff;
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.5px;
+/* Empty corner where sticky header meets sticky name column */
+.elements-list-header-corner {
+  width: 75px;
+  min-width: 75px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.5);
   border-right: 1px solid #4a2a7f;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 10px;
+  color: #64c8ff;
+  font-weight: 600;
+  padding: 4px;
 }
 
-/* Icon inside sort button */
+/* Scrollable header for properties */
+.elements-list-header {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  /* Hide scrollbar on header, sync it with content below */
+  scrollbar-width: none;
+}
+
+.elements-list-header::-webkit-scrollbar {
+  display: none;
+}
+
 .elements-list-sort-btn {
   padding: 4px;
   border: none;
@@ -209,9 +64,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 20px;
+  flex-shrink: 0;
+  border-right: 1px solid #4a2a7f;
 }
 
-/* New icon element styling */
+/* Column widths: speed 30px, damage 25px, others 20px */
+.elements-list-sort-btn[data-property="speed"] {
+  min-width: 30px;
+}
+
+.elements-list-sort-btn[data-property="damage"] {
+  min-width: 25px;
+}
+
+.elements-list-sort-btn:hover {
+  background: rgba(74, 158, 255, 0.15);
+  color: #dff6ff;
+}
+
+/* Icon inside sort button */
 .elements-list-sort-icon {
   width: 16px;
   height: 16px;
@@ -236,42 +108,57 @@
 .elements-list-sort-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
 .elements-list-sort-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
 
-/* Hover/toggle visual feedback remains meaningful for icon buttons */
-.elements-list-sort-btn:hover {
-  background: rgba(74, 158, 255, 0.15);
-  color: #dff6ff;
+/* Content area: scrollable both directions */
+.elements-list-content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-.elements-list-rows {
-  /* Allow parent (.elements-library) to control scrolling to avoid nested scrollbars */
-  max-height: none;
-  overflow: visible;
+/* Fixed name column */
+.elements-list-names {
+  width: 75px;
+  min-width: 75px;
+  flex-shrink: 0;
+  border-right: 1px solid #4a2a7f;
+  background: rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
 }
 
-.elements-list-row {
-  display: grid;
-  grid-template-columns: 75px 30px 25px repeat(9, 20px);
-  gap: 0;
+.elements-list-names::-webkit-scrollbar {
+  width: 6px;
+}
+
+.elements-list-names::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elements-list-names::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.elements-list-names::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Name row */
+.elements-list-name-row {
+  padding: 4px;
   border-bottom: 1px solid rgba(74, 158, 255, 0.1);
+  height: 24px;
+  display: flex;
   align-items: center;
+  gap: 6px;
+  min-height: 24px;
   cursor: pointer;
   transition: background 0.2s ease;
-  min-width: 100%;
 }
 
-.elements-list-row:hover {
+.elements-list-name-row:hover {
   background: rgba(100, 200, 255, 0.08);
-}
-
-.elements-list-row > div {
-  padding: 4px;
-  border-right: 1px solid rgba(74, 158, 255, 0.1);
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #dff6ff;
-  text-align: center;
 }
 
 /* Compact color swatch prepended to name cell to aid recognition without using extra column width */
@@ -280,29 +167,123 @@
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  margin-right: 8px;
-  vertical-align: middle;
+  flex-shrink: 0;
   border: 1px solid rgba(0,0,0,0.6);
   box-shadow: 0 0 4px rgba(0,0,0,0.45) inset;
-  flex: 0 0 auto;
 }
 
 /* Ensure the name text can truncate but remain readable next to swatch */
 .element-list-name {
   display: inline-block;
   vertical-align: middle;
-  max-width: calc(100% - 22px); /* allow for swatch + gap */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: left;
+  font-size: 11px;
   color: #dff6ff;
+  flex: 1;
+  min-width: 0;
 }
 
-/* Make sure name cell aligns left for readability while other property cells stay center-aligned */
-.elements-list-row > div:first-child {
-  text-align: left;
+/* Scrollable properties area */
+.elements-list-rows {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.elements-list-rows::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.elements-list-rows::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elements-list-rows::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.elements-list-rows::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Sync horizontal scroll between header and properties */
+.elements-list-rows.sync-scroll-x {
+  /* Handled by JavaScript */
+}
+
+.elements-list-row {
   display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(74, 158, 255, 0.1);
   align-items: center;
-  gap: 6px;
+  min-height: 24px;
+  white-space: nowrap;
+}
+
+.elements-list-row > div {
+  padding: 4px;
+  border-right: 1px solid rgba(74, 158, 255, 0.1);
+  font-size: 12px;
+  color: #dff6ff;
+  text-align: center;
+  min-width: 20px;
+  flex-shrink: 0;
+}
+
+/* Column widths to match header */
+.elements-list-row > div:nth-child(1) {
+  min-width: 30px; /* speed */
+}
+
+.elements-list-row > div:nth-child(2) {
+  min-width: 25px; /* damage */
+}
+
+@media (max-width: 768px) {
+  .elements-list-container {
+    height: 250px;
+  }
+
+  .element-list-name {
+    font-size: 10px;
+  }
+
+  .elements-list-row > div {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .elements-list-container {
+    height: 200px;
+  }
+
+  .elements-list-header-corner {
+    width: 60px;
+    font-size: 9px;
+  }
+
+  .elements-list-names {
+    width: 60px;
+    min-width: 60px;
+  }
+
+  .elements-list-row > div {
+    padding: 3px;
+    font-size: 10px;
+  }
+
+  .element-list-swatch {
+    width: 10px;
+    height: 10px;
+  }
+
+  .element-list-name {
+    font-size: 9px;
+  }
 }
