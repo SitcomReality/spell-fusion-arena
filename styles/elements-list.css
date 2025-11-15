@@ -10,7 +10,8 @@
 .elements-list-header {
   display: grid;
   /* narrow columns to icon-sized widths for property icons */
-  grid-template-columns: 120px repeat(6, 44px);
+  /* name column + 11 property icon columns */
+  grid-template-columns: 120px repeat(11, 44px);
   gap: 0;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid #4a2a7f;
@@ -72,6 +73,9 @@
 .elements-list-sort-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
 .elements-list-sort-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
 .elements-list-sort-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
+.elements-list-sort-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
+.elements-list-sort-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
+.elements-list-sort-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
 
 /* Hover/toggle visual feedback remains meaningful for icon buttons */
 .elements-list-sort-btn:hover {

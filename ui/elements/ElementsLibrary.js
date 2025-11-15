@@ -128,7 +128,8 @@ export class ElementsLibrary {
     nameHeader.textContent = 'Element';
     headerRow.appendChild(nameHeader);
 
-    const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave'];
+    // Extended property list: keep sensible order for readability and sorting
+    const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral'];
     
     for (const prop of properties) {
       const header = document.createElement('button');
