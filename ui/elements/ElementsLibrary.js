@@ -34,35 +34,10 @@ export class ElementsLibrary {
     // Add view mode toggle
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'elements-library-controls';
-    controlsDiv.style.cssText = `
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: center;
-    `;
 
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'elements-view-toggle';
     toggleBtn.textContent = this.viewMode === 'grid' ? '📋 List' : '⊞ Grid';
-    toggleBtn.style.cssText = `
-      padding: 6px 12px;
-      border: 1px solid #4a9eff;
-      background: rgba(74, 158, 255, 0.1);
-      color: #b0d4ff;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    `;
-    toggleBtn.addEventListener('mouseenter', () => {
-      toggleBtn.style.borderColor = '#64c8ff';
-      toggleBtn.style.background = 'rgba(100, 200, 255, 0.2)';
-    });
-    toggleBtn.addEventListener('mouseleave', () => {
-      toggleBtn.style.borderColor = '#4a9eff';
-      toggleBtn.style.background = 'rgba(74, 158, 255, 0.1)';
-    });
     toggleBtn.addEventListener('click', () => {
       this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
       this.sortProperty = null;
@@ -105,16 +80,7 @@ export class ElementsLibrary {
 
   renderGridView() {
     const gridDiv = document.createElement('div');
-    gridDiv.className = 'elements-library';
-    gridDiv.style.cssText = `
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      gap: 6px;
-      max-height: 280px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    `;
+    gridDiv.className = 'elements-library elements-library-grid';
 
     for (const { key, element } of this.unlockedElements) {
       const card = document.createElement('div');
@@ -154,85 +120,24 @@ export class ElementsLibrary {
   renderListView(unlockedKeys) {
     const listContainer = document.createElement('div');
     listContainer.className = 'elements-list-container';
-    listContainer.style.cssText = `
-      border: 1px solid #4a2a7f;
-      background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
-      border-radius: 4px;
-      overflow-x: auto;
-    `;
 
     // Build header with sortable columns
     const headerRow = document.createElement('div');
     headerRow.className = 'elements-list-header';
-    headerRow.style.cssText = `
-      display: grid;
-      grid-template-columns: 120px repeat(6, 48px);
-      gap: 0;
-      background: rgba(0, 0, 0, 0.3);
-      border-bottom: 1px solid #4a2a7f;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      min-width: 100%;
-    `;
 
     const nameHeader = document.createElement('div');
     nameHeader.textContent = 'Element';
-    nameHeader.style.cssText = `
-      padding: 8px;
-      font-weight: 600;
-      color: #64c8ff;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-      border-right: 1px solid #4a2a7f;
-      cursor: default;
-    `;
     headerRow.appendChild(nameHeader);
 
     const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave'];
     
     for (const prop of properties) {
       const header = document.createElement('button');
-      // Use the shared property-icon mapping so headers show the small icons instead of text
-      header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span>`;
-      header.title = prop.charAt(0).toUpperCase() + prop.slice(1);
       header.className = 'elements-list-sort-btn';
+      header.textContent = prop.charAt(0).toUpperCase() + prop.slice(1);
       header.dataset.property = prop;
-      header.style.cssText = `
-        padding: 8px;
-        border: none;
-        background: rgba(0, 0, 0, 0.2);
-        color: #b0d4ff;
-        cursor: pointer;
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 0.5px;
-        border-right: 1px solid #4a2a7f;
-        transition: all 0.2s ease;
-        font-weight: 500;
-      `;
-
-      const updateHeaderStyle = () => {
-        // Keep the icon as the main content; append a compact arrow indicator when active
-        if (this.sortProperty === prop) {
-          header.style.background = 'rgba(100, 200, 255, 0.2)';
-          header.style.color = '#64c8ff';
-          header.style.fontWeight = '700';
-          // icon + small arrow (up/down) kept minimal width
-          header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span><span class="sort-arrow">${this.sortAscending ? '▲' : '▼'}</span>`;
-        } else {
-          // restore default icon-only content when not active
-          header.innerHTML = `<span class="property-icon" data-property="${prop}" aria-hidden="true"></span>`;
-          header.style.background = 'rgba(0, 0, 0, 0.2)';
-          header.style.color = '#b0d4ff';
-          header.style.fontWeight = '500';
-        }
-      };
-      updateHeaderStyle();
 
       header.addEventListener('click', () => {
-        // If clicking the same property, toggle sort order
         if (this.sortProperty === prop) {
           this.sortAscending = !this.sortAscending;
         } else {
@@ -242,65 +147,22 @@ export class ElementsLibrary {
         this.refresh(unlockedKeys);
       });
 
-      header.addEventListener('mouseenter', () => {
-        if (this.sortProperty !== prop) {
-          header.style.background = 'rgba(74, 158, 255, 0.15)';
-          header.style.color = '#dff6ff';
-        }
-      });
-
-      header.addEventListener('mouseleave', () => {
-        if (this.sortProperty !== prop) {
-          header.style.background = 'rgba(0, 0, 0, 0.2)';
-          header.style.color = '#b0d4ff';
-        }
-      });
-
       headerRow.appendChild(header);
     }
 
     listContainer.appendChild(headerRow);
 
-    // Build rows
+    // Build rows container
     const rowsDiv = document.createElement('div');
-    rowsDiv.style.cssText = `
-      max-height: 300px;
-      overflow-y: auto;
-    `;
+    rowsDiv.className = 'elements-list-rows';
 
     for (const { key, element } of this.unlockedElements) {
       const row = document.createElement('div');
       row.className = 'elements-list-row';
-      row.style.cssText = `
-        display: grid;
-        grid-template-columns: 120px repeat(6, 48px);
-        gap: 0;
-        border-bottom: 1px solid rgba(74, 158, 255, 0.1);
-        align-items: center;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        min-width: 100%;
-      `;
-
-      row.addEventListener('mouseenter', () => {
-        row.style.background = 'rgba(100, 200, 255, 0.08)';
-      });
-      row.addEventListener('mouseleave', () => {
-        row.style.background = 'transparent';
-      });
 
       // Name cell
       const nameCell = document.createElement('div');
       nameCell.textContent = element.name;
-      nameCell.style.cssText = `
-        padding: 8px;
-        border-right: 1px solid rgba(74, 158, 255, 0.1);
-        font-size: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: #dff6ff;
-      `;
       row.appendChild(nameCell);
 
       // Property cells
@@ -308,18 +170,10 @@ export class ElementsLibrary {
         const cell = document.createElement('div');
         const value = element.propertyGenes?.[prop] || 0;
         cell.textContent = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
-        cell.style.cssText = `
-          padding: 8px;
-          border-right: 1px solid rgba(74, 158, 255, 0.1);
-          text-align: center;
-          font-size: 11px;
-          color: #b0d4ff;
-        `;
         row.appendChild(cell);
       }
 
       row.addEventListener('click', () => {
-        // Find the card element for consistency (create a dummy card for callback)
         const dummyCard = document.createElement('div');
         this.onClick(key, element, dummyCard);
       });
