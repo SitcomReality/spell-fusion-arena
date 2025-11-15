@@ -64,18 +64,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
+  width: 20px;
   flex-shrink: 0;
   border-right: 1px solid #4a2a7f;
 }
 
 /* Column widths: speed 30px, damage 25px, others 20px */
 .elements-list-sort-btn[data-property="speed"] {
-  min-width: 30px;
+  width: 30px;
 }
 
 .elements-list-sort-btn[data-property="damage"] {
-  min-width: 25px;
+  width: 25px;
 }
 
 .elements-list-sort-btn:hover {
