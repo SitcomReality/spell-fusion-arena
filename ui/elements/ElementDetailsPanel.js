@@ -39,6 +39,25 @@ export class ElementDetailsPanel {
       ]
     );
 
+    // Insert rarity pill into the panel-summary-info area (matches reward UI styling)
+    try {
+      const summaryInfo = this.panel.container.querySelector('.panel-summary-info');
+      if (summaryInfo) {
+        // Remove existing pill if present
+        const existing = summaryInfo.querySelector('.rarity-pill');
+        if (existing) existing.remove();
+
+        const pill = document.createElement('span');
+        pill.className = 'rarity-pill';
+        pill.textContent = (element.rarity || 'common');
+        pill.dataset.rarity = element.rarity || 'common';
+        // Insert pill into summaryInfo aligned to the right by appending;
+        // if layout requires top-right, CSS in reward.css already positions .rarity-pill absolutely when inside .reward-card,
+        // but here keep it inline so it flows beside the title.
+        summaryInfo.appendChild(pill);
+      }
+    } catch (e) { /* silent */ }
+
     // Replace the simple .panel-color block with a VisualPreview tile for richer visuals.
     try {
       const previewData = {
