@@ -11,7 +11,8 @@
   display: grid;
   /* narrow columns to icon-sized widths for property icons */
   /* name column + 11 property icon columns */
-  grid-template-columns: 75px repeat(11, 44px);
+  /* Name, speed (30px), damage (25px), then 9 remaining properties at 20px each */
+  grid-template-columns: 75px 30px 25px repeat(9, 20px);
   gap: 0;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid #4a2a7f;
@@ -23,7 +24,7 @@
 
 .elements-list-header > div,
 .elements-list-header > button {
-  padding: 6px;
+  padding: 4px;
   font-weight: 600;
   color: #64c8ff;
   text-transform: uppercase;
@@ -37,7 +38,7 @@
 
 /* Icon inside sort button */
 .elements-list-sort-btn {
-  padding: 6px;
+  padding: 4px;
   border: none;
   background: rgba(0, 0, 0, 0.2);
   color: #b0d4ff;
@@ -54,8 +55,8 @@
 
 /* New icon element styling */
 .elements-list-sort-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   display: inline-block;
   background-size: contain;
   background-repeat: no-repeat;
@@ -91,7 +92,7 @@
 
 .elements-list-row {
   display: grid;
-  grid-template-columns: 75px repeat(11, 44px);
+  grid-template-columns: 75px 30px 25px repeat(9, 20px);
   gap: 0;
   border-bottom: 1px solid rgba(74, 158, 255, 0.1);
   align-items: center;
@@ -105,7 +106,7 @@
 }
 
 .elements-list-row > div {
-  padding: 6px;
+  padding: 4px;
   border-right: 1px solid rgba(74, 158, 255, 0.1);
   font-size: 12px;
   white-space: nowrap;
