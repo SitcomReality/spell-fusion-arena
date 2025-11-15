@@ -120,21 +120,37 @@ export class ElementsLibrary {
     const listContainer = document.createElement('div');
     listContainer.className = 'elements-list-container';
 
-    // Build header with sortable columns
+    // Build a two-pane layout: fixed name column + scrollable properties pane
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'elements-list-table';
+
+    // Fixed left column (header + name cells)
+    const fixedColumn = document.createElement('div');
+    fixedColumn.className = 'elements-list-fixed-column';
+
+    const fixedHeader = document.createElement('div');
+    fixedHeader.className = 'elements-list-fixed-header';
+    fixedHeader.innerHTML = `<div class="fixed-name-cell">Element</div>`;
+    fixedColumn.appendChild(fixedHeader);
+
+    // Scrollable right pane (header + rows)
+    const scrollablePane = document.createElement('div');
+    scrollablePane.className = 'elements-list-scrollable';
+
     const headerRow = document.createElement('div');
     headerRow.className = 'elements-list-header';
 
-    const nameHeader = document.createElement('div');
-    nameHeader.textContent = 'Element';
-    headerRow.appendChild(nameHeader);
+    // Name header placeholder (kept for alignment only in scroll pane)
+    const spacer = document.createElement('div');
+    spacer.className = 'elements-list-header-spacer';
+    headerRow.appendChild(spacer);
 
     // Extended property list: keep sensible order for readability and sorting
     const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral'];
-    
+
     for (const prop of properties) {
       const header = document.createElement('button');
       header.className = 'elements-list-sort-btn';
-      // Use an icon-only button with a data-property so CSS can render the correct property icon
       header.innerHTML = `<span class="elements-list-sort-icon" data-property="${prop}" aria-hidden="true"></span>`;
       header.dataset.property = prop;
 
@@ -151,26 +167,36 @@ export class ElementsLibrary {
       headerRow.appendChild(header);
     }
 
-    listContainer.appendChild(headerRow);
+    scrollablePane.appendChild(headerRow);
 
-    // Build rows container
+    // Build rows container inside the scrollable pane
     const rowsDiv = document.createElement('div');
     rowsDiv.className = 'elements-list-rows';
 
     for (const { key, element } of this.unlockedElements) {
-      const row = document.createElement('div');
-      row.className = 'elements-list-row';
-
-      // Name cell - include a compact color swatch + truncated name so it doesn't consume much space
+      // Fixed name cell (left column)
       const nameCell = document.createElement('div');
+      nameCell.className = 'elements-list-fixed-row';
       const color = element.color || { r: 120, g: 120, b: 120 };
       nameCell.innerHTML = `
         <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
         <span class="element-list-name">${element.name}</span>
       `;
-      row.appendChild(nameCell);
+      nameCell.addEventListener('click', () => {
+        const dummyCard = document.createElement('div');
+        this.onClick(key, element, dummyCard);
+      });
+      fixedColumn.appendChild(nameCell);
 
-      // Property cells
+      // Property row in scrollable pane
+      const row = document.createElement('div');
+      row.className = 'elements-list-row';
+
+      // Spacer cell aligns with fixed column height to keep rows lined up
+      const spacerCell = document.createElement('div');
+      spacerCell.className = 'elements-list-row-spacer';
+      row.appendChild(spacerCell);
+
       for (const prop of properties) {
         const cell = document.createElement('div');
         const value = element.propertyGenes?.[prop] || 0;
@@ -186,7 +212,13 @@ export class ElementsLibrary {
       rowsDiv.appendChild(row);
     }
 
-    listContainer.appendChild(rowsDiv);
+    scrollablePane.appendChild(rowsDiv);
+
+    // Combine panes
+    tableWrapper.appendChild(fixedColumn);
+    tableWrapper.appendChild(scrollablePane);
+    listContainer.appendChild(tableWrapper);
+
     this.container.appendChild(listContainer);
   }
 
