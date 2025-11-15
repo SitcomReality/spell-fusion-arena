@@ -24,11 +24,15 @@ export class Renderer {
     const offsetY = enemy.y - enemy.type.height / 2;
     
     const color = enemy.color;
+    this.ctx.globalAlpha = enemy.alpha || 0; // Use enemy.alpha for fade in
+
     this.ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     
     for (const pixel of alivePixels) {
       this.ctx.fillRect(offsetX + pixel.x, offsetY + pixel.y, 1, 1);
     }
+
+    this.ctx.globalAlpha = 1.0; // Reset alpha
   }
   
   renderProjectile(projectile) {

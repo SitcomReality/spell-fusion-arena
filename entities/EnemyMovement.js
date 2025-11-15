@@ -12,6 +12,15 @@ export function updatePosition(enemy, dt, centerX, centerY) {
     }
   }
 
+  // Handle rapid fade in once spawn delay is over
+  if (enemy.alpha < 1) {
+    if (enemy.fadeDuration > 0) {
+      enemy.alpha = Math.min(1, enemy.alpha + dt / enemy.fadeDuration);
+    } else {
+      enemy.alpha = 1;
+    }
+  }
+
   const dx = centerX - enemy.x;
   const dy = centerY - enemy.y;
   const dist = Math.sqrt(dx * dx + dy * dy);

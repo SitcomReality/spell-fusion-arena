@@ -42,6 +42,10 @@ export class Enemy {
     this.agilePhaseTimer = 0;
 
     this.bossWobbleTimer = 0;
+    
+    // NEW: Visibility state
+    this.alpha = 0;
+    this.fadeDuration = 0.5; // 500ms fade duration
   }
 
   update(dt, centerX, centerY) {
