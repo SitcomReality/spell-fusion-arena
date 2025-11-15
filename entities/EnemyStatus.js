@@ -63,10 +63,23 @@ export function updateShield(enemy, dt) {
     }
   } else {
     if (enemy.shieldTimer <= 0) {
-      // turn on
-      enemy.shieldActive = true;
-      enemy.invulnerable = true;
-      enemy.shieldTimer = (typeof enemy.shieldOnDuration === 'number') ? enemy.shieldOnDuration : (CONFIG.enemy && CONFIG.enemy.shieldOnDuration) || 2.5;
+      // Only activate shield once enemy has finished fading in and any spawn delay is complete.
+      const hasFadedIn = (typeof enemy.alpha === 'number') ? enemy.alpha >= 1 : true;
+      const spawnComplete = !(enemy.spawnDelay && enemy.spawnDelay > 0);
+
+      if (hasFadedIn && spawnComplete) {
+        // turn on
+        enemy.shieldActive = true;
+        enemy.invulnerable = true;
+        enemy.shieldTimer = (typeof enemy.shieldOnDuration === 'number') ? enemy.shieldOnDuration : (CONFIG.enemy && CONFIG.enemy.shieldOnDuration) || 2.5;
+      } else {
+        // postpone activation briefly until fade/spawn complete to avoid showing shield early
+        // use a small retry delay (fraction of off duration) rather than immediate toggle
+        const retryDelay = Math.max(0.15, ((typeof enemy.shieldOffDuration === 'number') ? enemy.shieldOffDuration : (CONFIG.enemy && CONFIG.enemy.shieldOffDuration) || 2.5) * 0.15);
+        enemy.shieldTimer = retryDelay;
+        enemy.shieldActive = false;
+        enemy.invulnerable = false;
+      }
     }
   }
 }
