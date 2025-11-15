@@ -89,17 +89,12 @@
     opacity: 1;
   }
 
-  .spell-slot {
+  #equipped-spells .spell-slot {
     transition: opacity 160ms ease, transform 160ms ease;
     opacity: 0.95;
   }
 
-  .slot-target-selector {
-    left: -4px;
-    border-radius: 6px;
-  }
-
-  .aspect-ratio-1 {
+  .spell-slot {
     aspect-ratio: 1;
     width: 100%;
     max-width: 100%;
@@ -153,8 +148,17 @@
 
 /* Small screen adjustments */
 @media (max-width: 480px) {
-  .spell-slots {
-    grid-template-columns: repeat(4, 1fr);
+  /* Ensure corner buttons don't overlap: consolidated primary button rules */
+  .spell-slot-content button {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 0;
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .spell-slot {
@@ -199,23 +203,17 @@
   .spell-slot-wrapper { height: 25%; }
   .spell-slot { border-left: 0; border-right: 0; }
 
-  /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
-  .spell-slot-content .slot-props-btn {
-    top: 0;
-    left: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    padding: 0;
+  /* Target the slot-target-selector to nudge it slightly left on very small screens */
+  .spell-slot-content .slot-target-selector {
+    left: -4px;
+    top: 4px; /* keep pinned to top */
   }
-  .spell-slot-content .spell-slot-swap {
+
+  /* Place the props button at the bottom and center it */
+  .spell-slot-content .slot-props-btn {
     bottom: 0;
-    right: 0;
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
-    border-radius: 6px;
-    padding: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
