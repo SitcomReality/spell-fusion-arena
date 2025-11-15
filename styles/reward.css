@@ -43,20 +43,9 @@
 }
 
 /* Rarity pill shown on element cards */
-.rarity-pill {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: capitalize;
-  padding: 4px 8px;
-  border-radius: 12px;
-  margin-left: 8px;
-  color: #0a0a0f;
-  background: rgba(200,200,200,0.12);
-  border: 1px solid rgba(255,255,255,0.06);
-  align-self: center;
-}
+/* NOTE: core rarity-pill visuals have been moved to styles/components.css to make them reusable across panels.
+   Keep a small positioning helper here for reward cards when the pill should be absolutely positioned. */
 
-/* Header wrapper inside card to position title and rarity */
 .reward-card .reward-card-header-left {
   display: flex;
   align-items: center;
@@ -86,7 +75,7 @@
   white-space: normal;
 }
 
-/* Position the rarity pill in the top-right corner of the card */
+/* Position the rarity pill in the top-right corner of the card (reward-specific absolute placement) */
 .reward-card .rarity-pill {
   position: absolute;
   top: 10px;
