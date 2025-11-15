@@ -161,9 +161,13 @@ export class ElementsLibrary {
       const row = document.createElement('div');
       row.className = 'elements-list-row';
 
-      // Name cell
+      // Name cell - include a compact color swatch + truncated name so it doesn't consume much space
       const nameCell = document.createElement('div');
-      nameCell.textContent = element.name;
+      const color = element.color || { r: 120, g: 120, b: 120 };
+      nameCell.innerHTML = `
+        <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
+        <span class="element-list-name">${element.name}</span>
+      `;
       row.appendChild(nameCell);
 
       // Property cells

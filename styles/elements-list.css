@@ -114,3 +114,36 @@
   color: #dff6ff;
   text-align: center;
 }
+
+/* Compact color swatch prepended to name cell to aid recognition without using extra column width */
+.element-list-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 1px solid rgba(0,0,0,0.6);
+  box-shadow: 0 0 4px rgba(0,0,0,0.45) inset;
+  flex: 0 0 auto;
+}
+
+/* Ensure the name text can truncate but remain readable next to swatch */
+.element-list-name {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: calc(100% - 22px); /* allow for swatch + gap */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: #dff6ff;
+}
+
+/* Make sure name cell aligns left for readability while other property cells stay center-aligned */
+.elements-list-row > div:first-child {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
