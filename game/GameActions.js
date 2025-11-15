@@ -70,11 +70,49 @@ export function castSpell(gameState, slotIndex) {
           }
         }
 
+        // Simulate collision effects before retiring the projectile
         try {
-          // create its impact particles (visual feedback) before removing
+          // Emit impact particles
           const impact = (typeof oldest.createImpactParticles === 'function') ? oldest.createImpactParticles() : [];
           if (impact && impact.length > 0) gameState.particles.push(...impact);
-        } catch (e) { /* silent */ }
+
+          const targetEnemy = TargetFinder.findNearestEnemy(oldest.x, oldest.y, gameState.enemies);
+          
+          if (targetEnemy) {
+            // 1. Simulate enemy taking damage (calls takeDamageFromSource internally)
+            targetEnemy.takeDamage(oldest);
+            
+            // 2. Apply projectile properties (DoT, Slowing, Knockback, Lifesteal, etc.)
+            oldest.applyProjectileProperties(targetEnemy, gameState);
+
+            // 3. Handle AoE via dedicated handler
+            const aoeIntensity = oldest.properties.aoe || 0;
+            if (aoeIntensity > 0 && gameState.collisionHandler?.aoeHandler) {
+              gameState.collisionHandler.aoeHandler.handleAoEDamage(oldest, targetEnemy, aoeIntensity);
+            }
+
+            // 4. Handle splitting via dedicated handler
+            const splittingIntensity = oldest.properties.splitting || 0;
+            if (splittingIntensity > 0 && gameState.collisionHandler?.splittingHandler) {
+              gameState.collisionHandler.splittingHandler.handleSplitting(oldest, targetEnemy);
+            }
+            
+          } else {
+            // If no enemy is found, just trigger AoE visualization if applicable
+            const aoeIntensity = oldest.properties.aoe || 0;
+            if (aoeIntensity > 0) {
+              // Recalculate radius based on AoE intensity (matching AoEHandler internal logic base)
+              const baseAoERadius = 50 + aoeIntensity * 30;
+              const biasScale = 0.5 + 0.5 * Math.min(1, aeeIntensity);
+              const aoeRadius = Math.max(2, baseAoERadius * biasScale);
+              gameState.createAoEVisual(oldest.x, oldest.y, aoeRadius, oldest.spell.color, 0.6);
+            }
+          }
+
+        } catch (e) { 
+          // If simulation fails, log it but proceed to mark it dead.
+          console.error('Error simulating spiral projectile retirement collision:', e);
+        }
 
         // mark it dead so it will be removed during the next update loop
         try { oldest.alive = false; } catch (e) { /* silent */ }
