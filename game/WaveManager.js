@@ -49,7 +49,7 @@ export class WaveManager {
     const baseCount = 3 + Math.floor(this.currentWave * 1.5);
     
     for (let i = 0; i < baseCount; i++) {
-      const angle = (Math.PI * 2 * i) / baseCount + (this.rng.next() - 0.5) * 0.4;
+      const angle = this.rng.next() * Math.PI * 2;
       const x = this.centerX + Math.cos(angle) * CONFIG.enemy.spawnRadius;
       const y = this.centerY + Math.sin(angle) * CONFIG.enemy.spawnRadius;
       
@@ -76,7 +76,7 @@ export class WaveManager {
       }
       
       const e = new Enemy(x, y, type);
-      e.spawnDelay = i * 0.1;
+      e.spawnDelay = i * 0.5;
       enemies.push(e);
     }
     
