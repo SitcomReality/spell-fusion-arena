@@ -120,40 +120,52 @@ export class ElementsLibrary {
     const listContainer = document.createElement('div');
     listContainer.className = 'elements-list-container';
 
-    // Build a two-pane layout: fixed name column + scrollable properties pane
+    // New two-pane layout: left fixed name column + right scrollable properties pane
     const tableWrapper = document.createElement('div');
     tableWrapper.className = 'elements-list-table';
 
-    // Fixed left column (header + name cells)
-    const fixedColumn = document.createElement('div');
-    fixedColumn.className = 'elements-list-fixed-column';
+    // Left fixed column (header + name rows)
+    const leftCol = document.createElement('div');
+    leftCol.className = 'elements-list-left';
+    const leftHeader = document.createElement('div');
+    leftHeader.className = 'elements-list-left-header';
+    leftHeader.textContent = 'Element';
+    leftCol.appendChild(leftHeader);
 
-    const fixedHeader = document.createElement('div');
-    fixedHeader.className = 'elements-list-fixed-header';
-    fixedHeader.innerHTML = `<div class="fixed-name-cell">Element</div>`;
-    fixedColumn.appendChild(fixedHeader);
+    const leftRows = document.createElement('div');
+    leftRows.className = 'elements-list-left-rows';
+    for (const { key, element } of this.unlockedElements) {
+      const nameRow = document.createElement('div');
+      nameRow.className = 'elements-list-left-row';
+      const color = element.color || { r: 120, g: 120, b: 120 };
+      nameRow.innerHTML = `
+        <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
+        <span class="element-list-name">${element.name}</span>
+      `;
+      // clicking left also opens details
+      nameRow.addEventListener('click', () => {
+        const dummyCard = document.createElement('div');
+        this.onClick(key, element, dummyCard);
+      });
+      leftRows.appendChild(nameRow);
+    }
+    leftCol.appendChild(leftRows);
 
-    // Scrollable right pane (header + rows)
-    const scrollablePane = document.createElement('div');
-    scrollablePane.className = 'elements-list-scrollable';
-
-    const headerRow = document.createElement('div');
-    headerRow.className = 'elements-list-header';
-
-    // Name header placeholder (kept for alignment only in scroll pane)
-    const spacer = document.createElement('div');
-    spacer.className = 'elements-list-header-spacer';
-    headerRow.appendChild(spacer);
+    // Right scrollable properties pane (with its own header)
+    const rightCol = document.createElement('div');
+    rightCol.className = 'elements-list-right';
+    const rightHeader = document.createElement('div');
+    rightHeader.className = 'elements-list-right-header';
 
     // Extended property list: keep sensible order for readability and sorting
     const properties = ['speed', 'damage', 'piercing', 'chaining', 'aoe', 'wave', 'knockback', 'dot', 'splitting', 'homing', 'spiral'];
 
+    // Build property header buttons (these are inside the horizontally scrollable pane)
     for (const prop of properties) {
       const header = document.createElement('button');
       header.className = 'elements-list-sort-btn';
       header.innerHTML = `<span class="elements-list-sort-icon" data-property="${prop}" aria-hidden="true"></span>`;
       header.dataset.property = prop;
-
       header.addEventListener('click', () => {
         if (this.sortProperty === prop) {
           this.sortAscending = !this.sortAscending;
@@ -163,62 +175,36 @@ export class ElementsLibrary {
         }
         this.refresh(unlockedKeys);
       });
-
-      headerRow.appendChild(header);
+      rightHeader.appendChild(header);
     }
+    rightCol.appendChild(rightHeader);
 
-    scrollablePane.appendChild(headerRow);
-
-    // Build rows container inside the scrollable pane
-    const rowsDiv = document.createElement('div');
-    rowsDiv.className = 'elements-list-rows';
+    // Right rows container (scrollable horizontally)
+    const rightRows = document.createElement('div');
+    rightRows.className = 'elements-list-right-rows';
 
     for (const { key, element } of this.unlockedElements) {
-      // Fixed name cell (left column)
-      const nameCell = document.createElement('div');
-      nameCell.className = 'elements-list-fixed-row';
-      const color = element.color || { r: 120, g: 120, b: 120 };
-      nameCell.innerHTML = `
-        <span class="element-list-swatch" aria-hidden="true" style="background: rgb(${color.r}, ${color.g}, ${color.b});"></span>
-        <span class="element-list-name">${element.name}</span>
-      `;
-      nameCell.addEventListener('click', () => {
-        const dummyCard = document.createElement('div');
-        this.onClick(key, element, dummyCard);
-      });
-      fixedColumn.appendChild(nameCell);
-
-      // Property row in scrollable pane
       const row = document.createElement('div');
-      row.className = 'elements-list-row';
-
-      // Spacer cell aligns with fixed column height to keep rows lined up
-      const spacerCell = document.createElement('div');
-      spacerCell.className = 'elements-list-row-spacer';
-      row.appendChild(spacerCell);
-
+      row.className = 'elements-list-right-row';
       for (const prop of properties) {
         const cell = document.createElement('div');
+        cell.className = 'elements-list-right-cell';
         const value = element.propertyGenes?.[prop] || 0;
         cell.textContent = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
         row.appendChild(cell);
       }
-
+      // Clicking any property cell also opens details (maps to same element by index)
       row.addEventListener('click', () => {
         const dummyCard = document.createElement('div');
         this.onClick(key, element, dummyCard);
       });
-
-      rowsDiv.appendChild(row);
+      rightRows.appendChild(row);
     }
+    rightCol.appendChild(rightRows);
 
-    scrollablePane.appendChild(rowsDiv);
-
-    // Combine panes
-    tableWrapper.appendChild(fixedColumn);
-    tableWrapper.appendChild(scrollablePane);
+    tableWrapper.appendChild(leftCol);
+    tableWrapper.appendChild(rightCol);
     listContainer.appendChild(tableWrapper);
-
     this.container.appendChild(listContainer);
   }
 

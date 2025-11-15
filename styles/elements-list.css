@@ -1,162 +1,197 @@
 /* List view for Elements Library */
 
-/* Two-pane table layout: fixed left column + horizontally-scrollable right pane */
-.elements-list-table {
-  display: flex;
-  width: 100%;
+/* New two-pane list layout: fixed left name column + horizontally-scrollable right properties pane */
+.elements-list-container {
   border: 1px solid #4a2a7f;
   background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
   border-radius: 4px;
-  overflow: hidden;
+  overflow: hidden; /* let the right pane scroll internally */
 }
 
-/* Fixed left column */
-.elements-list-fixed-column {
-  min-width: 120px; /* includes swatch + truncated name */
-  max-width: 200px;
-  background: rgba(0,0,0,0.18);
-  border-right: 1px solid rgba(74, 158, 255, 0.08);
+/* Table wrapper: flex row with fixed left column */
+.elements-list-table {
+  display: flex;
+  width: 100%;
+  min-width: 100%;
+}
+
+/* Left fixed column */
+.elements-list-left {
+  flex: 0 0 140px; /* name column width (adjustable) */
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
-/* Fixed header cell in left column */
-.elements-list-fixed-header {
-  padding: 6px;
-  font-weight: 700;
-  color: #64c8ff;
-  text-transform: uppercase;
-  font-size: 11px;
-  border-bottom: 1px solid rgba(74, 158, 255, 0.08);
-  display: flex;
-  align-items: center;
-}
-
-/* Each fixed name row lines up with corresponding scrollable row; allow single-line truncation */
-.elements-list-fixed-row {
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.02);
-  cursor: pointer;
-  min-height: 36px;
+  border-right: 1px solid rgba(74, 158, 255, 0.08);
+  background: rgba(0,0,0,0.18);
+  min-width: 120px;
+  max-width: 220px;
   box-sizing: border-box;
 }
-.elements-list-fixed-row:hover {
-  background: rgba(100,200,255,0.04);
+
+/* Left header and rows */
+.elements-list-left-header {
+  padding: 8px;
+  font-weight: 600;
+  color: #64c8ff;
+  text-transform: uppercase;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(74, 158, 255, 0.06);
+  position: sticky;
+  top: 0;
+  background: rgba(10,10,15,0.95);
+  z-index: 3;
 }
 
-/* Scrollable right pane containing header and property columns */
-.elements-list-scrollable {
-  overflow: auto; /* both horizontal and vertical scrolling enabled */
-  width: 100%;
+.elements-list-left-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 360px;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Ensure header stays sticky at top of the scrollable pane */
-.elements-list-header {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min-content;
+.elements-list-left-row {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  cursor: pointer;
+  min-height: 40px;
+}
+
+.elements-list-left-row:hover {
+  background: rgba(100,200,255,0.03);
+}
+
+/* Right scrollable pane */
+.elements-list-right {
+  flex: 1 1 auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+/* The header inside the right pane stays sticky at top of the pane */
+.elements-list-right-header {
+  display: flex;
   gap: 0;
-  padding: 6px;
+  padding: 8px;
+  background: rgba(0,0,0,0.02);
+  border-bottom: 1px solid rgba(74, 158, 255, 0.06);
   position: sticky;
   top: 0;
-  z-index: 5;
-  background: rgba(10, 10, 15, 0.95); /* semi-opaque so fixed column shows separation */
-  border-bottom: 1px solid rgba(74, 158, 255, 0.08);
+  z-index: 2;
 }
 
-/* spacer in header to align with fixed column visually */
-.elements-list-header-spacer {
-  width: 24px;
-  min-width: 24px;
-}
-
-/* Header buttons flow horizontally; keep consistent sizing */
-.elements-list-header > .elements-list-sort-btn {
-  padding: 6px 8px;
-  border: none;
-  background: transparent;
-  color: #b0d4ff;
-  cursor: pointer;
-  font-size: 11px;
+/* Each header button represents a property column; kept compact so many can fit horizontally */
+.elements-list-right-header .elements-list-sort-btn {
+  padding: 6px 10px;
+  min-width: 60px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-left: 1px solid rgba(74, 158, 255, 0.03);
+  background: transparent;
+  color: #b0d4ff;
 }
 
-/* Rows area in scrollable pane */
-.elements-list-rows {
+/* Rows in the right pane align with left rows by index order */
+.elements-list-right-rows {
   display: flex;
   flex-direction: column;
-  min-width: 720px; /* ensure some horizontal room for properties, grows with content */
+  gap: 0;
 }
 
-/* Each property row is a horizontal grid of small columns */
-.elements-list-row {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min-content;
+.elements-list-right-row {
+  display: flex;
   gap: 0;
+  min-height: 40px;
   align-items: center;
-  padding: 6px;
   border-bottom: 1px solid rgba(255,255,255,0.02);
   cursor: pointer;
-  min-height: 36px;
-  box-sizing: border-box;
 }
 
-/* spacer cell to align with fixed column row height */
-.elements-list-row-spacer {
-  width: 24px;
-  min-width: 24px;
+.elements-list-right-row:hover {
+  background: rgba(100,200,255,0.02);
 }
 
-/* Property cells */
-.elements-list-row > div {
-  padding: 0 10px;
-  font-size: 12px;
-  color: #dff6ff;
-  white-space: nowrap;
+/* Individual property cell */
+.elements-list-right-cell {
+  padding: 8px 12px;
+  min-width: 60px;
   text-align: center;
+  color: #dff6ff;
+  border-left: 1px solid rgba(74, 158, 255, 0.03);
+  box-sizing: border-box;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
-/* Keep fixed column name alignment and truncation */
-.elements-list-fixed-row .element-list-name {
-  max-width: calc(100% - 22px);
+/* Make the name swatch and text consistent with previous styling */
+.element-list-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(0,0,0,0.6);
+  box-shadow: 0 0 4px rgba(0,0,0,0.45) inset;
+  flex: 0 0 auto;
+}
+
+.element-list-name {
+  display: inline-block;
+  vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: calc(100% - 22px);
 }
 
-/* Make swatch smaller inside fixed column */
-.elements-list-fixed-row .element-list-swatch {
-  width: 12px;
-  height: 12px;
-}
-
-/* Hover sync hint: when hovering a row in scrollable pane, highlight fixed column counterpart */
-.elements-list-row:hover ~ .dummy {}
-
-/* Responsive tweaks */
+/* Responsive tweaks: reduce left column width on small screens so more room for properties */
 @media (max-width: 768px) {
-  .elements-list-fixed-column { min-width: 90px; max-width: 140px; }
-  .elements-list-header-spacer, .elements-list-row-spacer { width: 18px; min-width: 18px; }
-  .elements-list-scrollable { min-width: 0; }
-  .elements-list-rows { min-width: 540px; }
-  .elements-list-row > div { padding: 0 8px; font-size: 11px; }
-  .elements-list-header > .elements-list-sort-btn { padding: 6px 6px; }
+  .elements-list-left { flex: 0 0 110px; min-width: 92px; }
+  .elements-list-left-header { font-size: 11px; padding: 6px; }
+  .elements-list-left-row { padding: 6px; min-height: 36px; }
+  .elements-list-right-header .elements-list-sort-btn,
+  .elements-list-right-cell { min-width: 56px; padding: 6px 8px; font-size: 12px; }
 }
 
-/* mobile very small */
-@media (max-width: 480px) {
-  .elements-list-fixed-column { min-width: 80px; max-width: 120px; }
-  .elements-list-rows { min-width: 480px; }
+/* Ensure that both panes scroll independently and keep left column visible while properties are scrolled horizontally */
+.elements-list-container { display: block; }
+
+/* Accessibility: focus styles for the sortable buttons */
+.elements-list-sort-btn:focus { outline: 2px solid rgba(100,200,255,0.25); outline-offset: 2px; }
+
+.elements-list-header {
+  display: grid;
+  /* narrow columns to icon-sized widths for property icons */
+  /* name column + 11 property icon columns */
+  /* Name, speed (30px), damage (25px), then 9 remaining properties at 20px each */
+  grid-template-columns: 75px 30px 25px repeat(9, 20px);
+  gap: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #4a2a7f;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-width: 100%;
+}
+
+.elements-list-header > div,
+.elements-list-header > button {
+  padding: 4px;
+  font-weight: 600;
+  color: #64c8ff;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  border-right: 1px solid #4a2a7f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Icon inside sort button */
@@ -205,6 +240,38 @@
 .elements-list-sort-btn:hover {
   background: rgba(74, 158, 255, 0.15);
   color: #dff6ff;
+}
+
+.elements-list-rows {
+  /* Allow parent (.elements-library) to control scrolling to avoid nested scrollbars */
+  max-height: none;
+  overflow: visible;
+}
+
+.elements-list-row {
+  display: grid;
+  grid-template-columns: 75px 30px 25px repeat(9, 20px);
+  gap: 0;
+  border-bottom: 1px solid rgba(74, 158, 255, 0.1);
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-width: 100%;
+}
+
+.elements-list-row:hover {
+  background: rgba(100, 200, 255, 0.08);
+}
+
+.elements-list-row > div {
+  padding: 4px;
+  border-right: 1px solid rgba(74, 158, 255, 0.1);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #dff6ff;
+  text-align: center;
 }
 
 /* Compact color swatch prepended to name cell to aid recognition without using extra column width */
