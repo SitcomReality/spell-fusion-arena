@@ -15,10 +15,12 @@
     display: none;
   }
 
+  /* On mobile place the small properties button at the bottom center of the slot */
   .spell-slot-content .slot-props-btn {
     position: absolute;
-    top: 4px;
-    left: 4px;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 28px;
     height: 28px;
     border-radius: 6px;
@@ -32,6 +34,20 @@
     cursor: pointer;
     z-index: 20;
     padding: 0;
+  }
+
+  /* Adjust tooltip placement so it doesn't overlap bottom button */
+  .slot-props-tooltip {
+    top: auto;
+    bottom: 36px; /* appear above the bottom props button */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Make sure the top corner buttons remain accessible and don't overlap content */
+  .spell-slot-content .spell-slot-swap,
+  .spell-slot-content .slot-target-selector {
+    top: 4px;
   }
 
   .slot-props-tooltip {

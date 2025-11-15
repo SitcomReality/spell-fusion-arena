@@ -38,10 +38,10 @@
   font-weight: 500;
 }
 
-/* swap/unequip button inside slot content */
+/* swap/unequip button inside slot content - moved to top corner */
 .spell-slot-content .spell-slot-swap {
   position: absolute;
-  bottom: 4px;
+  top: 4px;
   right: 4px;
   width: 24px;
   height: 24px;
@@ -66,10 +66,10 @@
   box-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
 }
 
-/* NEW: Target selector button */
+/* Target selector button moved to top-left */
 .spell-slot-content .slot-target-selector {
   position: absolute;
-  bottom: 4px;
+  top: 4px;
   left: 4px;
   width: 24px;
   height: 24px;
@@ -91,6 +91,23 @@
   color: #fff;
   border-color: #64c8ff;
   box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
+}
+
+/* Ensure tooltip and properties avoid the top buttons area */
+.spell-slot-content .slot-props-tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 36px; /* below the top controls */
+  min-width: 140px;
+  max-width: 220px;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
+  border: 1px solid #4a9eff;
+  padding: 8px;
+  box-shadow: 0 6px 16px rgba(10,10,10,0.6);
+  display: none;
+  z-index: 30;
+  font-size: 12px;
 }
 
 /* Properties & badges inside slots */

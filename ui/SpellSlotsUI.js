@@ -79,9 +79,9 @@ export class SpellSlotsUI {
           <div class="spell-slot-content">
             <button class="slot-target-selector" title="Change target preference" data-slot="${i}">🎯</button>
             <button class="slot-props-btn" aria-label="Show properties">i</button>
+            <button class="spell-slot-swap" title="Swap spell">⇄</button>
             <div class="slot-props-tooltip" aria-hidden="true"></div>
             ${propsHtml}
-            <button class="spell-slot-swap" title="Swap spell">⇄</button>
           </div>
           <div class="spell-slot-footer">
             <span class="spell-slot-name">${spell.name}</span>
