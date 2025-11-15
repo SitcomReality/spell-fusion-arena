@@ -209,6 +209,11 @@
     top: 4px; /* keep pinned to top */
   }
 
+  /* Ensure swap button is pinned to the right edge without overlapping */
+  .spell-slot-content .spell-slot-swap {
+    right: -2px;
+  }
+
   /* Place the props button at the bottom and center it */
   .spell-slot-content .slot-props-btn {
     bottom: 0;
