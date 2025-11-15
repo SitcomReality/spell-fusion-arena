@@ -9,7 +9,12 @@ export const CONFIG = {
   },
   enemy: {
     baseSpeed: 30,
-    spawnRadius: 360
+    spawnRadius: 360,
+    // Shield defaults for support enemies (seconds)
+    shieldOnDuration: 2.5,
+    shieldOffDuration: 2.5,
+    shieldRadius: 26,
+    shieldFxColor: { r: 120, g: 220, b: 220 }
   },
   wave: {
     initialDelay: 3000,

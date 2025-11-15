@@ -1,4 +1,6 @@
 // New: status-update and DoT related logic for Enemy (extracted from previous Enemy class)
+import { CONFIG } from '../config.js';
+
 export function updateStatusEffects(enemy, dt) {
   // Slowing
   if (enemy.statusEffects.slowing.active) {
@@ -44,7 +46,9 @@ export function updateShield(enemy, dt) {
   if (typeof enemy.shieldActive === 'undefined') return;
   // Initialize timer if unset
   if (typeof enemy.shieldTimer !== 'number' || enemy.shieldTimer === 0) {
-    enemy.shieldTimer = enemy.shieldOffDuration || 2.5;
+    // prefer per-enemy values, fall back to CONFIG defaults
+    const offDur = (typeof enemy.shieldOffDuration === 'number') ? enemy.shieldOffDuration : (CONFIG.enemy && CONFIG.enemy.shieldOffDuration) || 2.5;
+    enemy.shieldTimer = offDur;
     enemy.shieldActive = false;
     enemy.invulnerable = false;
   }
@@ -55,14 +59,14 @@ export function updateShield(enemy, dt) {
       // turn off
       enemy.shieldActive = false;
       enemy.invulnerable = false;
-      enemy.shieldTimer = enemy.shieldOffDuration || 2.5;
+      enemy.shieldTimer = (typeof enemy.shieldOffDuration === 'number') ? enemy.shieldOffDuration : (CONFIG.enemy && CONFIG.enemy.shieldOffDuration) || 2.5;
     }
   } else {
     if (enemy.shieldTimer <= 0) {
       // turn on
       enemy.shieldActive = true;
       enemy.invulnerable = true;
-      enemy.shieldTimer = enemy.shieldOnDuration || 2.5;
+      enemy.shieldTimer = (typeof enemy.shieldOnDuration === 'number') ? enemy.shieldOnDuration : (CONFIG.enemy && CONFIG.enemy.shieldOnDuration) || 2.5;
     }
   }
 }

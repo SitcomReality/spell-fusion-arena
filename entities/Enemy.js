@@ -50,11 +50,11 @@ export class Enemy {
 
     // NEW: Shield state for support enemies (Step 1)
     this.shieldActive = false;
-    this.shieldRadius = 26;
-    this.shieldOnDuration = 2.5;   // seconds shield stays on
-    this.shieldOffDuration = 2.5;  // seconds shield stays off
-    this.shieldTimer = 0;          // counts down and toggles shield when reaches 0
-    this.shieldFxColor = { r: 120, g: 220, b: 220 };
+    this.shieldRadius = (CONFIG.enemy && CONFIG.enemy.shieldRadius) ? CONFIG.enemy.shieldRadius : 26;
+    this.shieldOnDuration = (CONFIG.enemy && CONFIG.enemy.shieldOnDuration) ? CONFIG.enemy.shieldOnDuration : 2.5;
+    this.shieldOffDuration = (CONFIG.enemy && CONFIG.enemy.shieldOffDuration) ? CONFIG.enemy.shieldOffDuration : 2.5;
+    this.shieldTimer = 0; // counts down and toggles shield when reaches 0
+    this.shieldFxColor = (CONFIG.enemy && CONFIG.enemy.shieldFxColor) ? CONFIG.enemy.shieldFxColor : { r: 120, g: 220, b: 220 };
     this.invulnerable = false;
   }
 
