@@ -120,7 +120,23 @@ export class WaveManager {
     }
     
     this.enemiesRemaining = enemies.length;
-    return enemies;
+    // Ensure 'spiraler' type (if present) is appended last to the spawn pool so spiral enemies appear at the end.
+    try {
+      if (ENEMY_TYPES && ENEMY_TYPES.spiraler) {
+        const spiralerType = ENEMY_TYPES.spiraler;
+        // spawn it at an angle offset (use same baseAngle) so it arrives near other enemies but remains last
+        const angleS = baseAngle + (Math.random() - 0.5) * 0.4;
+        const xS = this.centerX + Math.cos(angleS) * CONFIG.enemy.spawnRadius;
+        const yS = this.centerY + Math.sin(angleS) * CONFIG.enemy.spawnRadius;
+        const s = new Enemy(xS, yS, spiralerType);
+        // give a small spawn delay so it appears slightly after the others
+        s.spawnDelay = 0.6 + this.rng.next() * 0.8;
+        enemies.push(s);
+        // update enemiesRemaining to account for appended spiraler
+        this.enemiesRemaining = enemies.length;
+      }
+    } catch (e) { /* silent fallback if ENEMY_TYPES or Enemy not available */ }
+     return enemies;
   }
   
   enemyDefeated() {
