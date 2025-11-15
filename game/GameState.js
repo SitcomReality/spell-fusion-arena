@@ -224,6 +224,17 @@ export class GameState {
     this.waveStartPending = false;
     this.waveManager.waveActive = true;
     this.updateHudVisibility();
+
+    // Remove all extant projectiles so no spells linger from the previous wave.
+    // This prevents cross-wave projectiles (homing, AoE, etc.) from affecting the new wave.
+    try {
+      if (Array.isArray(this.projectiles) && this.projectiles.length > 0) {
+        this.projectiles.length = 0;
+      }
+    } catch (e) {
+      // non-fatal - ignore if clearing fails for some reason
+      console.warn('Failed to clear projectiles at wave start', e);
+    }
   }
 
   // NEW: Prepare to show wave start button (pause wave spawning)
