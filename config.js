@@ -23,6 +23,11 @@ export const CONFIG = {
   },
   particles: {
     maxParticles: 500
+  },
+
+  // NEW: per-slot spiral projectile cap (how many spiral projectiles a single spell slot may have active)
+  limits: {
+    spiralPerSlot: 6
   }
 };
 

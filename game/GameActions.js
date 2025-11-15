@@ -41,6 +41,47 @@ export function castSpell(gameState, slotIndex) {
 
   const projectile = new Projectile(player.x, player.y, spellInstance, targetX, targetY);
 
+  // record origin slot so we can enforce per-slot spiral limits
+  projectile.originSlot = slotIndex;
+
+  // If this projectile uses spiral movement, enforce per-slot limit:
+  try {
+    const spiralLimit = (typeof CONFIG !== 'undefined' && CONFIG.limits && Number.isFinite(CONFIG.limits.spiralPerSlot))
+      ? Number(CONFIG.limits.spiralPerSlot)
+      : 6;
+
+    const isSpiral = projectile.movementType === 'spiral' || (projectile.properties && projectile.properties.spiral && projectile.properties.spiral > 0.5);
+    if (isSpiral && Array.isArray(gameState.projectiles)) {
+      // collect existing spiral projectiles that were spawned from this slot and are still alive
+      const sameSlotSpirals = gameState.projectiles.filter(p => p && p.alive && (p.movementType === 'spiral' || (p.properties && p.properties.spiral)) && p.originSlot === slotIndex);
+      if (sameSlotSpirals.length >= spiralLimit) {
+        // find the oldest extant projectile (by remaining lifetime or insertion order)
+        // choose the one with smallest lifetime remaining (closest to expiry) to self-destruct,
+        // falling back to the first element if lifetimes not meaningful.
+        let oldest = sameSlotSpirals[0];
+        let oldestKey = 0;
+        for (let i = 1; i < sameSlotSpirals.length; i++) {
+          const cand = sameSlotSpirals[i];
+          const candLife = Number.isFinite(cand.lifetime) ? cand.lifetime : Infinity;
+          const oldLife = Number.isFinite(oldest.lifetime) ? oldest.lifetime : Infinity;
+          if (candLife < oldLife) {
+            oldest = cand;
+            oldestKey = i;
+          }
+        }
+
+        try {
+          // create its impact particles (visual feedback) before removing
+          const impact = (typeof oldest.createImpactParticles === 'function') ? oldest.createImpactParticles() : [];
+          if (impact && impact.length > 0) gameState.particles.push(...impact);
+        } catch (e) { /* silent */ }
+
+        // mark it dead so it will be removed during the next update loop
+        try { oldest.alive = false; } catch (e) { /* silent */ }
+      }
+    }
+  } catch (e) { /* silent guard: do not block projectile creation on any error */ }
+
   gameState.projectiles.push(projectile);
 }
 
