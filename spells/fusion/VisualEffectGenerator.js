@@ -34,6 +34,7 @@ export const VisualEffectGenerator = {
       impactParticles: this.calculateImpactParticles(elements, properties, avgRarity),
       
       // Persistent aura
+      // fewer spells get strong, opaque auras; pick conservative defaults and let generator enforce stricter conditions
       aura: this.generateAuraConfig(elements, properties, avgRarity),
       
       // Quality indicators
@@ -302,15 +303,40 @@ export const VisualEffectGenerator = {
    */
   generateAuraConfig(elements, properties, avgRarity) {
     const auraType = this.determineAuraType(elements, properties, avgRarity);
-    
+
+    // Make aura enabled only for uncommon+ on average rarity, and reserve strong opaque auras
+    // for high average rarity combined with significant contributing properties.
+    const enabled = avgRarity >= 4; // raise threshold so fewer spells get an aura
+
+    // Base size and intensity are reduced to favor subtle glows by default.
+    const baseSize = 18 + Math.round(avgRarity * 2); // slightly smaller base
+    const baseIntensity = 0.18 + (avgRarity / 30); // overall lower base opacity
+
+    // Allow occasional stronger aura only when both avgRarity and a meaningful property are present
+    let intensity = baseIntensity;
+    const highCondition =
+      avgRarity >= 9 && // require high average rarity
+      ((properties.aoe && properties.aoe > 4) ||
+       (properties.splitting && properties.splitting > 4) ||
+       (properties.chaining && properties.chaining > 5) ||
+       (properties.spiral && properties.spiral > 6));
+
+    if (highCondition) {
+      // give a rarer boost but capped to avoid solid opaque blobs
+      intensity = Math.min(0.85, baseIntensity + 0.45 + (avgRarity - 9) * 0.02);
+    } else if (avgRarity >= 7 && (properties.homing || properties.wave || properties.dot)) {
+      // medium boost for mid/high rarity with some magic properties
+      intensity = Math.min(0.6, baseIntensity + 0.18);
+    }
+
     return {
-      enabled: avgRarity >= 3,
+      enabled,
       type: auraType,
-      size: 22 + Math.round(avgRarity * 3),
-      intensity: 0.3 + (avgRarity / 15),
+      size: Math.max(12, baseSize),
+      intensity: Math.max(0.08, Math.min(0.9, intensity)),
       color: this.calculateAuraColor(elements, avgRarity),
-      animated: avgRarity >= 6,
-      texture: this.selectAuraTexture(auraType, avgRarity)
+      animated: avgRarity >= 7, // require higher rarity for animated auras
+      texture: (avgRarity >= 6 ? this.selectAuraTexture(auraType, avgRarity) : null)
     };
   },
 
@@ -409,5 +435,3 @@ export const VisualEffectGenerator = {
 };
 
 export default VisualEffectGenerator;
-
-
