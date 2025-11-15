@@ -8,20 +8,31 @@
 }
 
 .elements-view-toggle {
-  padding: 6px 12px;
+  padding: 6px 10px;
   border: 1px solid #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
+  background: rgba(74, 158, 255, 0.06);
   color: #b0d4ff;
   cursor: pointer;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
-.elements-view-toggle:hover {
+.elements-view-toggle:hover,
+.elements-view-toggle:focus {
   border-color: #64c8ff;
-  background: rgba(100, 200, 255, 0.2);
+  background: rgba(100, 200, 255, 0.12);
+  color: #eaf8ff;
+  outline: none;
+}
+
+/* Ensure accessible sizing on small screens */
+@media (max-width: 480px) {
+  .elements-view-toggle {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
 }
 
 .elements-library-grid {
@@ -33,4 +44,3 @@
   overflow-y: auto;
   justify-content: flex-start;
 }
-

@@ -81,7 +81,7 @@ export class FusionUI {
         <div class="fusion-section">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <h2 style="margin:0;">Elements</h2>
-            <button class="elements-view-toggle" title="Toggle elements view" style="padding:6px 10px; border:1px solid #4a9eff; background:rgba(74,158,255,0.06); color:#b0d4ff; border-radius:4px; cursor:pointer;">
+            <button class="elements-view-toggle" title="Toggle elements view" aria-label="Toggle elements view">
               ${this.elementsLibrary ? (this.elementsLibrary.viewMode === 'grid' ? '📋 List' : '⊞ Grid') : '📋 List'}
             </button>
           </div>
