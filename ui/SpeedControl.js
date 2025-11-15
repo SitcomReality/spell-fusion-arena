@@ -117,7 +117,19 @@ export class SpeedControl {
   updateHudVisibility() {
     // Only hide HUD if toggle is ON and a wave is active (not waiting for start)
     const gameState = (typeof window !== 'undefined' && window.gameInstance && window.gameInstance.gameState) ? window.gameInstance.gameState : null;
-    const shouldHide = this.hudHideEnabled && gameState && gameState.waveActive && !gameState.waveStartPending;
+
+    // Determine whether a wave is actively playing. The authoritative flag lives on the WaveManager.
+    const waveActive = gameState && (
+      // prefer WaveManager flag
+      (gameState.waveManager && gameState.waveManager.waveActive) ||
+      // legacy / fallback flag (kept for compatibility)
+      Boolean(gameState.waveActive)
+    );
+
+    // waveStartPending indicates we're waiting for player to press Start Wave (do NOT hide UI then)
+    const startPending = gameState ? Boolean(gameState.waveStartPending) : false;
+
+    const shouldHide = this.hudHideEnabled && waveActive && !startPending;
     
     if (shouldHide) {
       document.documentElement.classList.add('hide-ui-during-wave');
