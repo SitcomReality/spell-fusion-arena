@@ -53,7 +53,17 @@ export class ParticleEmitter {
     if (!visuals) return [];
     
     const particles = [];
-    const count = visuals.impactParticles || 15;
+    
+    // Handle both old format (number) and new format (object with count, types, etc.)
+    let count = 15;
+    let textureList = [];
+    
+    if (typeof visuals.impactParticles === 'number') {
+      count = visuals.impactParticles;
+    } else if (visuals.impactParticles && typeof visuals.impactParticles === 'object') {
+      count = visuals.impactParticles.count || 15;
+      textureList = visuals.impactParticles.types || [];
+    }
     
     // Increase particles for certain properties
     let particleMultiplier = 1;
@@ -76,19 +86,24 @@ export class ParticleEmitter {
         particleColor = secondaryColor;
       }
       
+      // Select texture from the list if available
+      let texture = null;
+      if (textureList.length > 0) {
+        texture = textureList[i % textureList.length];
+      }
+      
       const particle = {
         x: projectile.x,
         y: projectile.y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         color: particleColor,
-        // Ensure robust lifetime and opacity defaults so renderer always has sane values
-        life: (0.4 + Math.random() * 0.4),
-        maxLife: (0.4 + Math.random() * 0.4),
-        size: Math.max(0.5, (visuals.trailSize || 3) * 1.5),
-        opacity: 1,
+        life: 0.4 + Math.random() * 0.4,
+        maxLife: 0.4 + Math.random() * 0.4,
+        size: (visuals.trailSize || 3) * 1.5,
         type: visuals.impactType || 'spark',
-        // leave texture undefined so EffectsRenderer falls back to shape renderers
+        opacity: 1,
+        texture: texture
       };
       
       particles.push(particle);
