@@ -75,11 +75,8 @@ export class WaveManager {
         }
       }
       
-      const spawnSpread = this.currentWave <= 2 ? 1.2 : 0.9;
-      const baseOffset = this.currentWave <= 2 ? 0.5 : 0.2;
-      const spawnDelay = baseOffset + this.rng.next() * spawnSpread;
       const e = new Enemy(x, y, type);
-      e.spawnDelay = spawnDelay;
+      e.spawnDelay = i * 0.1;
       enemies.push(e);
     }
     
