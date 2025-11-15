@@ -91,7 +91,7 @@
 
 .elements-list-row {
   display: grid;
-  grid-template-columns: 120px repeat(6, 44px);
+  grid-template-columns: 120px repeat(11, 44px);
   gap: 0;
   border-bottom: 1px solid rgba(74, 158, 255, 0.1);
   align-items: center;
