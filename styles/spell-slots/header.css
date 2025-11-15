@@ -108,3 +108,28 @@
   text-overflow: ellipsis;
   max-width: 100%;
 }
+
+@media (min-width: 769px) {
+  .spell-slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    align-items: start;
+    /* Ensure columns are strictly equal and don't collapse with content */
+    grid-auto-columns: 1fr;
+  }
+
+  /* Force each wrapper and slot to fill its grid cell and maintain consistent sizing */
+  .spell-slot-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+  }
+
+  .spell-slot {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; /* allow text to truncate rather than expand slot */
+    box-sizing: border-box;
+  }
+}
