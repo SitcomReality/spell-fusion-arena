@@ -265,12 +265,13 @@
 
   .elements-list-header-corner {
     width: 60px;
+    min-width: 60px; /* ensure earlier min-width doesn't override the mobile width */
     font-size: 9px;
   }
 
   .elements-list-names {
     width: 60px;
-    min-width: 60px;
+    min-width: 60px; /* keep the name column consistent with header corner on small screens */
   }
 
   .elements-list-row > div {
