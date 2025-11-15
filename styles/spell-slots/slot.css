@@ -134,6 +134,15 @@
   color: #e8f6ff;
 }
 
+/* Condense non-primary badges (keep damage & speed unchanged) */
+.spell-slot .property-badge:not([data-property="damage"]):not([data-property="speed"]) {
+  gap: 2px;
+  padding: 4px 1px 4px 0px;
+  font-size: 10px;
+  border-radius: 6px;
+  min-width: 0;
+}
+
 /* Ensure icons stay fully visible on dark badge */
 .spell-slot .property-badge .property-icon {
   filter: none;
