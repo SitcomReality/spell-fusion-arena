@@ -58,8 +58,19 @@ export const ENEMY_TYPES = {
     isBoss: true,
     bossType: 'double',
     isDoublePart: true
+  },
+
+  // New enemy type: Spiraler — orbits the player while spiraling inward
+  spiraler: {
+    name: 'Spiraler',
+    speed: 26,
+    width: 18,
+    height: 18,
+    pattern: 'blob',
+    color: { r: 200, g: 120, b: 220 },
+    // movePattern 'spiral' triggers updateSpiralEnemyMovement in EnemyMovement
+    movePattern: 'spiral'
   }
 };
 
 export default ENEMY_TYPES;
-

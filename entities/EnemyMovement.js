@@ -16,9 +16,21 @@ export function updatePosition(enemy, dt, centerX, centerY) {
   const dy = centerY - enemy.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
 
-  if (enemy.type.bossType === 'agile') {
-    updateAgileBossMovement(enemy, dt, centerX, centerY, dx, dy, dist);
-  } else {
+  // New: support custom movement pattern 'spiral' for enemies that orbit while closing in
+  try {
+    if (enemy.type && enemy.type.movePattern === 'spiral') {
+      updateSpiralEnemyMovement(enemy, dt, centerX, centerY, dx, dy, dist);
+      // after spiral movement, continue to boss wobble/clamp logic below
+    } else if (enemy.type.bossType === 'agile') {
+      updateAgileBossMovement(enemy, dt, centerX, centerY, dx, dy, dist);
+    } else {
+      if (dist > 5) {
+        enemy.x += (dx / dist) * enemy.speed * dt;
+        enemy.y += (dy / dist) * enemy.speed * dt;
+      }
+    }
+  } catch (e) {
+    // fallback to basic movement
     if (dist > 5) {
       enemy.x += (dx / dist) * enemy.speed * dt;
       enemy.y += (dy / dist) * enemy.speed * dt;
@@ -85,4 +97,42 @@ export function updateAgileBossMovement(enemy, dt, centerX, centerY, dx, dy, dis
     enemy.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
     enemy.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt * lateralMultiplier;
   }
+}
+
+// New: spiral-orbit enemy movement - enemy orbits the center while its orbit radius slowly shrinks
+export function updateSpiralEnemyMovement(enemy, dt, centerX, centerY, dx, dy, dist) {
+  // Initialize spiral state on first tick
+  if (enemy._spiralInitialized !== true) {
+    enemy._spiralInitialized = true;
+    // starting radius is current distance or spawnRadius if not set
+    enemy._spiralRadius = dist || Math.hypot(enemy.x - centerX, enemy.y - centerY) || 200;
+    // angle around center
+    enemy._spiralAngle = Math.atan2(enemy.y - centerY, enemy.x - centerX);
+    // rotation direction: clockwise or ccw
+    enemy._spiralDirection = Math.random() < 0.5 ? 1 : -1;
+    // rotation speed scales with enemy base speed
+    enemy._spiralRotationSpeed = (enemy.speed || 20) * 0.05 + 1.0;
+    // inward shrink rate: how fast radius decreases (units per second)
+    enemy._spiralInward = Math.max(6, (enemy.speed || 20) * 0.6);
+  }
+
+  // Gradually decrease radius so orbit shrinks toward player
+  enemy._spiralRadius = Math.max(6, enemy._spiralRadius - enemy._spiralInward * dt);
+
+  // Advance angle
+  enemy._spiralAngle += enemy._spiralRotationSpeed * dt * enemy._spiralDirection;
+
+  // Optional wobble to make motion more organic
+  const wobble = (Math.sin((enemy._spiralAngle || 0) * 3.1) * 6) * (0.5 + (enemy.speed || 20) / 200);
+
+  // Compute new position relative to center
+  const nextX = centerX + Math.cos(enemy._spiralAngle) * (enemy._spiralRadius + wobble);
+  const nextY = centerY + Math.sin(enemy._spiralAngle) * (enemy._spiralRadius + wobble);
+
+  // Update velocity fields for compatibility with other systems (knockback/orientation)
+  enemy.vx = (nextX - enemy.x) / Math.max(1e-6, dt);
+  enemy.vy = (nextY - enemy.y) / Math.max(1e-6, dt);
+
+  enemy.x = nextX;
+  enemy.y = nextY;
 }
