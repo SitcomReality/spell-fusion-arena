@@ -70,6 +70,16 @@ export const ENEMY_TYPES = {
     color: { r: 200, g: 120, b: 220 },
     // movePattern 'spiral' triggers updateSpiralEnemyMovement in EnemyMovement
     movePattern: 'spiral'
+  },
+
+  dasher: {
+    name: 'Dasher',
+    speed: 28,
+    width: 14,
+    height: 14,
+    pattern: 'blob',
+    color: { r: 100, g: 200, b: 150 },
+    movePattern: 'dasher'
   }
 };
 

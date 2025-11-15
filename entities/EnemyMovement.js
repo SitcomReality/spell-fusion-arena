@@ -21,6 +21,8 @@ export function updatePosition(enemy, dt, centerX, centerY) {
     if (enemy.type && enemy.type.movePattern === 'spiral') {
       updateSpiralEnemyMovement(enemy, dt, centerX, centerY, dx, dy, dist);
       // after spiral movement, continue to boss wobble/clamp logic below
+    } else if (enemy.type && enemy.type.movePattern === 'dasher') {
+      updateDasherMovement(enemy, dt, centerX, centerY, dx, dy, dist);
     } else if (enemy.type.bossType === 'agile') {
       updateAgileBossMovement(enemy, dt, centerX, centerY, dx, dy, dist);
     } else {
@@ -137,4 +139,28 @@ export function updateSpiralEnemyMovement(enemy, dt, centerX, centerY, dx, dy, d
 
   enemy.x = nextX;
   enemy.y = nextY;
+}
+
+// New: dasher movement - strafes left/right while approaching like agile boss
+export function updateDasherMovement(enemy, dt, centerX, centerY, dx, dy, dist) {
+  enemy.dasherPhaseTimer = (enemy.dasherPhaseTimer || 0) + dt;
+  if (enemy.dasherPhaseTimer >= 0.8) {
+    enemy.dasherPhase = ((enemy.dasherPhase || 0) + 1) % 2;
+    enemy.dasherPhaseTimer = 0;
+  }
+
+  // Move toward center
+  if (dist > 5) {
+    enemy.x += (dx / dist) * enemy.speed * dt;
+    enemy.y += (dy / dist) * enemy.speed * dt;
+  }
+
+  // Strafe left/right
+  if (dist > 0) {
+    const perpAngle = Math.atan2(dy, dx) + (Math.PI / 2);
+    const strafeSpeed = enemy.speed * 1.2;
+    const strafeDir = enemy.dasherPhase === 0 ? 1 : -1;
+    enemy.x += Math.cos(perpAngle) * strafeSpeed * strafeDir * dt;
+    enemy.y += Math.sin(perpAngle) * strafeSpeed * strafeDir * dt;
+  }
 }
