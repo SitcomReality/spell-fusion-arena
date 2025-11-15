@@ -195,21 +195,49 @@
   .spell-slot { border-left: 0; border-right: 0; }
 
   /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
-  .spell-slot-content .slot-props-btn {
-    top: 0;
-    left: 0;
+  /* Keep swap button at top-right, target at top-left, and move props button to bottom-center */
+  .spell-slot-content .slot-target-selector {
+    top: 4px;
+    left: 4px;
+    right: auto;
+    bottom: auto;
     width: 24px;
     height: 24px;
+    position: absolute;
     border-radius: 6px;
     padding: 0;
   }
+
   .spell-slot-content .spell-slot-swap {
-    bottom: 0;
-    right: 0;
+    top: 4px;
+    right: 4px;
+    bottom: auto;
+    left: auto;
     width: 24px;
     height: 24px;
+    position: absolute;
     font-size: 12px;
     border-radius: 6px;
+    padding: 0;
+  }
+
+  .spell-slot-content .slot-props-btn {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #4a9eff;
+    background: rgba(10,10,15,0.6);
+    color: #64c8ff;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
     padding: 0;
   }
 }
