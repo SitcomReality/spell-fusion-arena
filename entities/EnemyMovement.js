@@ -111,9 +111,11 @@ export function updateSpiralEnemyMovement(enemy, dt, centerX, centerY, dx, dy, d
     // rotation direction: clockwise or ccw
     enemy._spiralDirection = Math.random() < 0.5 ? 1 : -1;
     // rotation speed scales with enemy base speed
-    enemy._spiralRotationSpeed = (enemy.speed || 20) * 0.05 + 1.0;
+    // Lower base multiplier and smaller additive offset to slow orbital rotation for spiraler enemies
+    enemy._spiralRotationSpeed = (enemy.speed || 20) * 0.03 + 0.5;
     // inward shrink rate: how fast radius decreases (units per second)
-    enemy._spiralInward = Math.max(6, (enemy.speed || 20) * 0.6);
+    // Reduce inward shrink so the orbit decays more gently
+    enemy._spiralInward = Math.max(4, (enemy.speed || 20) * 0.4);
   }
 
   // Gradually decrease radius so orbit shrinks toward player
