@@ -61,14 +61,30 @@ export class WaveManager {
       } else {
         const rand = this.rng.next();
         // Regular enemy pool order: grunt, runner, tank, spiraler, dasher
-        // Probabilities: grunt 45%, runner 30%, tank 15%, spiraler 5%, dasher 5%
-        if (rand < 0.45) {
+        // Base probabilities but dasher chance scales up with wave number so dashers become common later.
+        const baseGrunt = 0.45;
+        const baseRunner = 0.30;
+        const baseTank = 0.15;
+        const spiralerChance = 0.05; // keep spiraler rare
+        // Increase dasher chance by 1% per wave up to 25%
+        const dasherChance = Math.min(0.25, 0.05 + (this.currentWave * 0.01));
+        // Normalize remaining probability to keep total = 1 (favoring grunt/runner/tank)
+        const remaining = 1 - spiralerChance - dasherChance;
+        const gruntShare = baseGrunt / (baseGrunt + baseRunner + baseTank);
+        const runnerShare = baseRunner / (baseGrunt + baseRunner + baseTank);
+        const tankShare = baseTank / (baseGrunt + baseRunner + baseTank);
+        
+        const gCut = remaining * gruntShare;
+        const rCut = remaining * runnerShare;
+        const tCut = remaining * tankShare;
+        
+        if (rand < gCut) {
           type = ENEMY_TYPES.grunt;
-        } else if (rand < 0.75) {
+        } else if (rand < gCut + rCut) {
           type = ENEMY_TYPES.runner;
-        } else if (rand < 0.90) {
+        } else if (rand < gCut + rCut + tCut) {
           type = ENEMY_TYPES.tank;
-        } else if (rand < 0.95) {
+        } else if (rand < gCut + rCut + tCut + spiralerChance) {
           type = ENEMY_TYPES.spiraler || ENEMY_TYPES.grunt;
         } else {
           type = ENEMY_TYPES.dasher || ENEMY_TYPES.grunt;
