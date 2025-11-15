@@ -292,7 +292,7 @@ export class IntroScreen {
       card.innerHTML = `
         <div class="loadout-card-content">
           <h3>${elem.name}</h3>
-          <p class="loadout-card-rarity">${(elem.rarity || 'common').toUpperCase()}</p>
+          <span class="rarity-pill" data-rarity="${(elem.rarity || 'common')}">${(elem.rarity || 'common')}</span>
           ${propsHtml}
         </div>
       `;
