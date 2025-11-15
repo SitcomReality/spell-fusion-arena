@@ -284,7 +284,15 @@ export class GameApp {
     for (const projectile of (this.gameState.projectiles || [])) this.renderer.renderProjectile(projectile);
     this.renderer.renderPlayer(this.gameState.player);
     this.fxRenderer.clear();
+
+    // Render projectile auras first
     for (const projectile of (this.gameState.projectiles || [])) this.fxRenderer.renderProjectileAura(projectile);
+
+    // Render enemy shields so they appear beneath AoE/particles but above projectiles
+    for (const enemy of (this.gameState.enemies || [])) {
+      try { this.fxRenderer.renderEnemyShield(enemy); } catch (e) { /* silent */ }
+    }
+
     for (const aoe of (this.gameState.aoeEffects || [])) this.fxRenderer.renderAoECircle(aoe);
     for (const particle of (this.gameState.particles || [])) this.fxRenderer.renderParticle(particle);
   }

@@ -148,4 +148,50 @@ export class EffectsRenderer {
     this.ctx.stroke();
     this.ctx.restore();
   }
+
+  /**
+   * Draw a subtle shield ring for shielded enemies on the FX canvas.
+   * Expects enemy to expose: shieldActive (bool), shieldRadius (number) and shieldFxColor {r,g,b}.
+   */
+  renderEnemyShield(enemy) {
+    if (!enemy || !enemy.shieldActive) return;
+    const cx = Number.isFinite(enemy.x) ? enemy.x : 0;
+    const cy = Number.isFinite(enemy.y) ? enemy.y : 0;
+    const radius = Number.isFinite(enemy.shieldRadius) ? enemy.shieldRadius : Math.max(20, (enemy.type ? Math.max(enemy.type.width, enemy.type.height) : 24));
+    const color = enemy.shieldFxColor || { r: 120, g: 220, b: 220 };
+
+    // Gentle pulsing alpha so shields feel alive
+    const pulse = 0.25 + 0.15 * Math.sin((Date.now() % 2000) / 2000 * Math.PI * 2);
+    try {
+      this.ctx.save();
+      this.ctx.globalCompositeOperation = 'lighter';
+      // outer glow
+      const g1 = this.ctx.createRadialGradient(cx, cy, radius * 0.6, cx, cy, radius * 1.6);
+      g1.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${0.08 * pulse})`);
+      g1.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+      this.ctx.fillStyle = g1;
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy, radius * 1.6, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // ring stroke
+      this.ctx.globalAlpha = 0.5 * pulse;
+      this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${0.9 * pulse})`;
+      this.ctx.lineWidth = 3;
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      this.ctx.stroke();
+
+      // inner faint core ring
+      this.ctx.globalAlpha = 0.18 * pulse;
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy, Math.max(6, radius * 0.45), 0, Math.PI * 2);
+      this.ctx.stroke();
+
+      this.ctx.restore();
+    } catch (e) {
+      try { this.ctx.restore(); } catch (er) { /* silent */ }
+    }
+  }
 }
