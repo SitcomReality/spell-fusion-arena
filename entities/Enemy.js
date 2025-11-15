@@ -48,23 +48,14 @@ export class Enemy {
     this.alpha = 0;
     this.fadeDuration = 0.5; // 500ms fade duration
 
-    // NEW: Shield state for support enemies only
-    if (type && typeof type.name === 'string' && type.name.toLowerCase() === 'support') {
+    // NEW: Shield state for support enemies (Step 1)
+    if (this.type.name === 'Support') {
       this.shieldActive = false;
       this.shieldRadius = (CONFIG.enemy && CONFIG.enemy.shieldRadius) ? CONFIG.enemy.shieldRadius : 26;
       this.shieldOnDuration = (CONFIG.enemy && CONFIG.enemy.shieldOnDuration) ? CONFIG.enemy.shieldOnDuration : 2.5;
       this.shieldOffDuration = (CONFIG.enemy && CONFIG.enemy.shieldOffDuration) ? CONFIG.enemy.shieldOffDuration : 2.5;
       this.shieldTimer = 0; // counts down and toggles shield when reaches 0
       this.shieldFxColor = (CONFIG.enemy && CONFIG.enemy.shieldFxColor) ? CONFIG.enemy.shieldFxColor : { r: 120, g: 220, b: 220 };
-      this.invulnerable = false;
-    } else {
-      // Ensure other enemy types do not have shield-related fields
-      this.shieldActive = false;
-      this.shieldRadius = 0;
-      this.shieldOnDuration = 0;
-      this.shieldOffDuration = 0;
-      this.shieldTimer = 0;
-      this.shieldFxColor = null;
       this.invulnerable = false;
     }
   }
@@ -76,7 +67,11 @@ export class Enemy {
     updatePosition(this, dt, centerX, centerY);
 
     // NEW: Update shield state before other status effects so invulnerability is enforced early
-    try { updateShield(this, dt); } catch (e) { /* silent */ }
+    try { 
+      if (this.type.name === 'Support') { 
+        updateShield(this, dt); 
+      }
+    } catch (e) { /* silent */ }
 
     // Status effects delegated to status module
     updateStatusEffects(this, dt);
