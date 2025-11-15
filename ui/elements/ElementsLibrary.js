@@ -12,6 +12,7 @@ export class ElementsLibrary {
     this.sortProperty = null; // null = most recently unlocked, or property name
     this.sortAscending = false; // default is descending (highest first)
     this.unlockedElements = [];
+    this.lastUnlockedKeys = []; // remember last keys passed to refresh
   }
 
   mount(container) {
@@ -19,9 +20,21 @@ export class ElementsLibrary {
     this.container.innerHTML = '';
   }
 
+  // NEW: allow external UI to toggle view mode
+  toggleView() {
+    this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
+    // reset sort state when toggling view as previously done
+    this.sortProperty = null;
+    this.sortAscending = false;
+    this.refresh(this.lastUnlockedKeys);
+  }
+
   refresh(unlockedKeys = []) {
     if (!this.container) return;
     this.cardMap.clear();
+
+    // remember the keys so external toggle can refresh with same set
+    this.lastUnlockedKeys = Array.isArray(unlockedKeys) ? unlockedKeys.slice() : [];
 
     const unlocked = getUnlockedElements(unlockedKeys);
     this.unlockedElements = Object.entries(unlocked).map(([key, element]) => ({ key, element }));
@@ -31,22 +44,8 @@ export class ElementsLibrary {
 
     this.container.innerHTML = '';
     
-    // Add view mode toggle
-    const controlsDiv = document.createElement('div');
-    controlsDiv.className = 'elements-library-controls';
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'elements-view-toggle';
-    toggleBtn.textContent = this.viewMode === 'grid' ? '📋 List' : '⊞ Grid';
-    toggleBtn.addEventListener('click', () => {
-      this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
-      this.sortProperty = null;
-      this.sortAscending = false;
-      this.refresh(unlockedKeys);
-    });
-
-    controlsDiv.appendChild(toggleBtn);
-    this.container.appendChild(controlsDiv);
+    // NOTE: view toggle moved to FusionUI header; do not add controls here anymore.
+    // (previously created an elements-library-controls div here)
 
     if (this.viewMode === 'grid') {
       this.renderGridView();

@@ -79,7 +79,12 @@ export class FusionUI {
     this.container.innerHTML = `
       <div class="fusion-container">
         <div class="fusion-section">
-          <h2>Elements</h2>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <h2 style="margin:0;">Elements</h2>
+            <button class="elements-view-toggle" title="Toggle elements view" style="padding:6px 10px; border:1px solid #4a9eff; background:rgba(74,158,255,0.06); color:#b0d4ff; border-radius:4px; cursor:pointer;">
+              ${this.elementsLibrary ? (this.elementsLibrary.viewMode === 'grid' ? '📋 List' : '⊞ Grid') : '📋 List'}
+            </button>
+          </div>
           <div class="elements-layout-wrapper">
             <div class="elements-library" id="elements-library"></div>
             <div class="element-details-panel" id="element-details-panel"></div>
@@ -109,6 +114,23 @@ export class FusionUI {
     this.fusionBuilder.mount(document.getElementById('fusion-builder'));
     this.fusionPreview.mount(document.getElementById('fusion-panel'));
     this.spellSlotsUI.mount();
+
+    // Wire the new header toggle button to the library's toggleView()
+    const viewToggleBtn = this.container.querySelector('.elements-view-toggle');
+    if (viewToggleBtn) {
+      viewToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        try {
+          if (this.elementsLibrary && typeof this.elementsLibrary.toggleView === 'function') {
+            this.elementsLibrary.toggleView();
+            // update label to reflect new state
+            viewToggleBtn.textContent = this.elementsLibrary.viewMode === 'grid' ? '📋 List' : '⊞ Grid';
+          }
+        } catch (err) {
+          // silent fallback
+        }
+      });
+    }
 
     const clearBtn = this.container.querySelector('.fusion-clear-btn');
     if (clearBtn) {
