@@ -25,6 +25,7 @@ export const MUNDANE_ELEMENTS = {
       speed: 200,
       damage: 10,
       wave: 2,
+      spiral: 2
     },
     visualEffects: {
       trail: true,
@@ -44,6 +45,7 @@ export const MUNDANE_ELEMENTS = {
       speed: 250,
       damage: 9,
       knockback: 1,
+      spiral: 3
     },
     visualEffects: {
       trail: true,
@@ -116,6 +118,7 @@ export const MUNDANE_ELEMENTS = {
       speed: 210,
       damage: 8,
       piercing: 1,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -135,6 +138,7 @@ export const MUNDANE_ELEMENTS = {
       speed: 190,
       damage: 9,
       dot: 2,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -185,4 +189,3 @@ export const MUNDANE_ELEMENTS = {
     rarity: 'mundane'
   },
 };
-

@@ -8,6 +8,7 @@ export const COMMON_ELEMENTS = {
       speed: 260,
       damage: 24,
       dot: 5,
+      spiral: 1
     },
     visualEffects: {
       trail: true,
@@ -58,6 +59,7 @@ export const COMMON_ELEMENTS = {
       damage: 18,
       piercing: 3,
       knockback: 2,
+      spiral: 3
     },
     visualEffects: {
       trail: true,
@@ -110,6 +112,7 @@ export const COMMON_ELEMENTS = {
       damage: 20,
       piercing: 5,
       chaining: 3,
+      spiral: 2
     },
     visualEffects: {
       trail: true,
@@ -193,6 +196,7 @@ export const COMMON_ELEMENTS = {
       piercing: 6,
       splitting: 3,
       wave: 2,
+      spiral: 2
     },
     visualEffects: {
       trail: true,
@@ -263,4 +267,3 @@ export const COMMON_ELEMENTS = {
 };
 
 export default COMMON_ELEMENTS;
-
