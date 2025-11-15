@@ -132,7 +132,7 @@ export const VisualEffectGenerator = {
     };
 
     // Select trail type and texture based on properties
-    const trailSelection = this.selectTrailType(properties, avgRarity);
+    const trailSelection = this.selectTrailType(elements, properties, avgRarity);
     
     return {
       ...baseConfig,
@@ -146,7 +146,7 @@ export const VisualEffectGenerator = {
   /**
    * Select appropriate trail type and texture
    */
-  selectTrailType(properties, avgRarity) {
+  selectTrailType(elements, properties, avgRarity) {
     // Spark/lightning trails
     if ((properties.chaining || 0) > 3 || (properties.dot || 0) > 5) {
       return {
@@ -158,7 +158,7 @@ export const VisualEffectGenerator = {
     }
     
     // Beam trails (piercing, light-based)
-    if ((properties.piercing || 0) > 4 || elements.some(e => e.name?.toLowerCase().includes('light'))) {
+    if ((properties.piercing || 0) > 4 || (Array.isArray(elements) && elements.some(e => e.name?.toLowerCase().includes('light')))) {
       return {
         type: 'beam',
         texture: '/img/particle/trace_06.png',
