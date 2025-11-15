@@ -216,6 +216,23 @@
   /* Handled by JavaScript */
 }
 
+/* Slight zebra-striping for columns to aid horizontal parsing:
+   apply a very subtle alternate background to every 2nd property column
+   in both header and content rows. */
+.elements-list-header .elements-list-sort-btn:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+.elements-list-header .elements-list-sort-btn:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.elements-list-row > div:nth-child(even) {
+  background: rgba(255, 255, 255, 0.01);
+}
+.elements-list-row > div:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.0);
+}
+
 .elements-list-row {
   display: flex;
   gap: 0;
