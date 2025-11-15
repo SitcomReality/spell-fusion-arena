@@ -45,6 +45,25 @@ export class CollisionHandler {
         }
 
         if (dist < hitRadius) {
+          // NEW: If enemy has an active shield, roll for a pierce chance before applying damage.
+          if (enemy.shieldActive) {
+            const pierceVal = projectile.properties.piercing || 0;
+            const basePierce = 0.08 + Math.max(0, Math.min(0.7, pierceVal * 0.10));
+            const pierceChance = Math.min(0.9, basePierce);
+            if (Math.random() > pierceChance) {
+              // Pierce failed: do not damage the enemy, but still produce impact feedback and AoE.
+              try { game.particles.push(...projectile.createImpactParticles()); } catch (e) {}
+              const aoeIntensity = projectile.properties.aoe || 0;
+              if (aoeIntensity > 0) this.aoeHandler.handleAoEDamage(projectile, enemy, aoeIntensity);
+              // Let chain/pierce handler decide whether projectile should die after hitting the shield
+              const shouldDieFromShield = this.chainAndPierceHandler.handleChainAndPierce(projectile, enemy);
+              if (shouldDieFromShield) projectile.alive = false;
+              // Skip normal damage processing
+              continue;
+            }
+            // else: pierce succeeded, fall through to normal hit handling
+          }
+          
           const hit = enemy.takeDamage(projectile);
           if (hit) {
             // Apply direct projectile properties
