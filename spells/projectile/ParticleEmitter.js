@@ -82,11 +82,13 @@ export class ParticleEmitter {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         color: particleColor,
-        life: 0.4 + Math.random() * 0.4,
-        maxLife: 0.4 + Math.random() * 0.4,
-        size: (visuals.trailSize || 3) * 1.5,
+        // Ensure robust lifetime and opacity defaults so renderer always has sane values
+        life: (0.4 + Math.random() * 0.4),
+        maxLife: (0.4 + Math.random() * 0.4),
+        size: Math.max(0.5, (visuals.trailSize || 3) * 1.5),
+        opacity: 1,
         type: visuals.impactType || 'spark',
-        opacity: 1
+        // leave texture undefined so EffectsRenderer falls back to shape renderers
       };
       
       particles.push(particle);
