@@ -42,27 +42,12 @@
     bottom: 36px; /* appear above the bottom props button */
     left: 50%;
     transform: translateX(-50%);
-    min-width: 140px;
-    max-width: 220px;
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a0f2e 100%);
-    border: 1px solid #4a9eff;
-    padding: 8px;
-    box-shadow: 0 6px 16px rgba(10,10,10,0.6);
-    display: none;
-    z-index: 30;
-    font-size: 12px;
   }
 
   /* Make sure the top corner buttons remain accessible and don't overlap content */
-  .spell-slot-content .spell-slot-swap {
-    top: 4px;
-    right: 4px;
-    bottom: auto;
-  }
+  .spell-slot-content .spell-slot-swap,
   .spell-slot-content .slot-target-selector {
     top: 4px;
-    left: 4px;
-    right: auto;
   }
 
   .slot-props-tooltip {
@@ -104,12 +89,17 @@
     opacity: 1;
   }
 
-  #equipped-spells .spell-slot {
+  .spell-slot {
     transition: opacity 160ms ease, transform 160ms ease;
     opacity: 0.95;
   }
 
-  .spell-slot {
+  .slot-target-selector {
+    left: -4px;
+    border-radius: 6px;
+  }
+
+  .aspect-ratio-1 {
     aspect-ratio: 1;
     width: 100%;
     max-width: 100%;
@@ -209,20 +199,18 @@
   .spell-slot-wrapper { height: 25%; }
   .spell-slot { border-left: 0; border-right: 0; }
 
-  /* Ensure slot-props button remains at bottom center on very small screens and swap stays top-right */
+  /* Ensure corner buttons don't overlap: make them the same size and pin to corners */
   .spell-slot-content .slot-props-btn {
-    position: absolute;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
     width: 24px;
     height: 24px;
     border-radius: 6px;
     padding: 0;
   }
   .spell-slot-content .spell-slot-swap {
-    top: 4px;
-    right: 4px;
+    bottom: 0;
+    right: 0;
     width: 24px;
     height: 24px;
     font-size: 12px;
