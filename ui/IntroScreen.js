@@ -168,6 +168,28 @@ export class IntroScreen {
       if (!el) return;
       // Build animated inner span if not present
       el.innerHTML = `<div class="marquee-inner">${marqueeText}&nbsp;&nbsp;&nbsp;</div>`;
+
+      // Dynamically adjust animation-duration so horizontal speed is approximately constant (px/sec)
+      // Desired visual speed (pixels per second)
+      const DESIRED_PX_PER_SEC = 80;
+      // Allow rendering to settle so scrollWidth is measurable
+      requestAnimationFrame(() => {
+        try {
+          const inner = el.querySelector('.marquee-inner');
+          if (!inner) return;
+          const containerWidth = el.clientWidth || el.getBoundingClientRect().width || 1;
+          const contentWidth = inner.scrollWidth || inner.getBoundingClientRect().width || containerWidth;
+
+          // If content is narrower than container, still animate a single loop with minimum duration
+          const effectiveDistance = Math.max(contentWidth, containerWidth);
+          let durationSec = effectiveDistance / DESIRED_PX_PER_SEC;
+
+          // Clamp reasonable bounds to avoid extremely short/long durations
+          durationSec = Math.max(6, Math.min(40, durationSec));
+
+          inner.style.animationDuration = `${durationSec}s`;
+        } catch (e) { /* silent fallback to CSS default */ }
+      });
     } catch (e) {
       const el = this.container?.querySelector('#highscores-marquee');
       if (el) el.textContent = 'High scores ~||~ unavailable';
