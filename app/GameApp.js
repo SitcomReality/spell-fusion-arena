@@ -158,12 +158,6 @@ export class GameApp {
       if (typeof savedState.score === 'number') {
         this.gameState.score = Math.max(0, Math.floor(savedState.score));
       }
-
-      // Restore player's HP from the savefile if present
-      if (typeof savedState.playerHp === 'number') {
-        this.gameState.player.hp = Math.max(0, Number(savedState.playerHp));
-      }
-
       try { this.fusionUI.refresh(); } catch (e) { console.warn('Failed to refresh FusionUI after loading', e); }
     }
 
@@ -241,19 +235,11 @@ export class GameApp {
     this.start();
   }
 
-  async handleGameOver() {
+  handleGameOver() {
     this.running = false;
     const waveNumber = this.gameState.waveManager.currentWave - 1;
     const finalScore = this.gameState.score;
     const finalHealth = this.gameState.player.hp;
-
-    // NEW: update local high score and attempt remote top-10 update if appropriate
-    try {
-      await this.updateHighScore(finalScore, waveNumber);
-    } catch (e) {
-      console.warn('High score update failed during game over', e);
-    }
-
     this.gameOverUI = new GameOverUI(() => {
       this.gameOverUI.hide();
       this.cleanupGame();

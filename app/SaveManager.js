@@ -82,46 +82,32 @@ export async function submitRemoteTopScore(username, score, wave) {
 export async function checkAndUpdateRemoteTopTen(username, score, wave) {
   try {
     const room = new WebsimSocket();
+    const topScores = await room.collection('highscore_v1').getList();
     
-    // Get the current list
-    const allEntries = await room.collection('highscore_v1').getList();
+    const userEntry = Array.isArray(topScores) ? topScores.find(s => s.username === username) : undefined;
     
-    // Find ALL entries for this username (not just the first one)
-    const userEntries = Array.isArray(allEntries) ? allEntries.filter(s => s.username === username) : [];
-    
-    if (userEntries.length > 0) {
-      // User already has at least one entry - find the best score
-      const bestEntry = userEntries.reduce((best, current) => 
-        (current.score || 0) > (best.score || 0) ? current : best
-      );
-      
-      if (score > (bestEntry.score || 0)) {
-        // New score is higher, update the best entry
-        await room.collection('highscore_v1').update(bestEntry.id, { score, wave });
-        
-        // Delete any duplicate entries for this username to enforce uniqueness
-        for (const entry of userEntries) {
-          if (entry.id !== bestEntry.id) {
-            await room.collection('highscore_v1').delete(entry.id);
-          }
+    if (userEntry) {
+      // Update if new score is higher
+      if (score > userEntry.score) {
+        await room.collection('highscore_v1').update(userEntry.id, { score, wave });
+      }
+    } else {
+      // Before adding a new entry, delete any stale entries with this username to prevent duplicates
+      const allEntries = Array.isArray(topScores) ? topScores : [];
+      for (const entry of allEntries) {
+        if (entry.username === username) {
+          await room.collection('highscore_v1').delete(entry.id);
         }
       }
-      // If new score is not higher, do nothing (don't create/update lower scores)
-    } else {
-      // No existing entry for this user, check if we can add one
-      const currentList = await room.collection('highscore_v1').getList();
-      const sortedList = (Array.isArray(currentList) ? currentList : []).sort((a, b) => (b.score || 0) - (a.score || 0));
       
-      if (sortedList.length < 10) {
-        // There's room in the top 10, add the entry
+      // Now add/replace the entry
+      if (allEntries.length < 10) {
         await room.collection('highscore_v1').create({ username, score, wave });
       } else {
-        // Top 10 is full, only add if this score beats the lowest
-        const lowestScore = (sortedList[9] && sortedList[9].score) || 0;
-        if (score > lowestScore) {
-          // Delete the lowest entry and add the new one
-          await room.collection('highscore_v1').delete(sortedList[9].id);
-          await room.collection('highscore_v1').create({ username, score, wave });
+        const sorted = allEntries.sort((a, b) => (b.score || 0) - (a.score || 0));
+        const lowest = sorted[9];
+        if (score > (lowest.score || 0)) {
+          await room.collection('highscore_v1').update(lowest.id, { username, score, wave });
         }
       }
     }
