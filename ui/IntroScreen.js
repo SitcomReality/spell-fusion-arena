@@ -150,6 +150,30 @@ export class IntroScreen {
     } catch (e) { /* silent */ }
   }
 
+  async populateHighScores() {
+    try {
+      const scores = await fetchRemoteTopScores();
+      if (!scores || scores.length === 0) {
+        const el = this.container?.querySelector('#highscores-marquee');
+        if (el) el.textContent = 'High scores ~||~ None yet';
+        return;
+      }
+      const parts = scores.map((s, i) => {
+        const rank = `${i+1}${i===0?'st':i===1?'nd':i===2?'rd':'th'}`;
+        return `${rank} — @${s.username}: ${s.score} points (Wave ${s.wave})`;
+      });
+      const marqueeText = `High scores ~||~ ${parts.join(' ~||~ ')}`;
+      const el = this.container?.querySelector('#highscores-marquee');
+      if (!el) return;
+      // Build animated inner span if not present
+      el.innerHTML = `<div class="marquee-inner">${marqueeText}&nbsp;&nbsp;&nbsp;</div>`;
+    } catch (e) {
+      const el = this.container?.querySelector('#highscores-marquee');
+      if (el) el.textContent = 'High scores ~||~ unavailable';
+      console.warn('Failed to populate high scores', e);
+    }
+  }
+
   async startNewGame() {
     // Generate a random seed for this game session
     const seed = Math.floor(Math.random() * 0x7FFFFFFF);
