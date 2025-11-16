@@ -8,7 +8,7 @@ import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
 import { Tutorial } from '../ui/Tutorial.js';
 import { createHUD, createSpeedControl, createFusionUI, createRewardUI, createWaveStartButton } from './UISetup.js';
-import { saveGameSnapshot, loadGameSnapshot } from './SaveManager.js';
+import { saveGameSnapshot, loadGameSnapshot, saveHighScore, loadHighScore } from './SaveManager.js';
 import { AutoManager } from './AutoManager.js';
 import TextureManager from '../rendering/TextureManager.js';
 
@@ -52,6 +52,7 @@ export class GameApp {
     this.rng = null;
     this.tutorial = null;
     this.autoEnabled = false;
+    this.highScore = loadHighScore() || { score: 0, wave: 0 }; // NEW: Initialize high score
 
     this.autoManager = new AutoManager(this);
 
@@ -69,6 +70,15 @@ export class GameApp {
 
   saveGameState() {
     saveGameSnapshot(this);
+  }
+
+  // NEW: Update high score only if current score is better
+  updateHighScore(currentScore, waveNumber) {
+    if (currentScore > this.highScore.score) {
+      this.highScore.score = currentScore;
+      this.highScore.wave = waveNumber;
+      saveHighScore(currentScore, waveNumber);
+    }
   }
 
   showIntroScreen() {
@@ -184,6 +194,9 @@ export class GameApp {
 
     this.gameState.waveManager.onWaveComplete((waveNumber) => {
       this.gameState.pause();
+      // NEW: Check and update high score before rewarding
+      this.updateHighScore(this.gameState.score, waveNumber);
+
       try { this.fusionUI.addFocusToBank(1); this.fusionUI.addEssenceToBank(1 + Math.floor(this.rng.next() * 3)); } catch (e) {}
       this.rewardUI.show(waveNumber);
       if (this.autoEnabled) setTimeout(() => this.autoManager.autoSelectRewardIfAvailable(), 200);

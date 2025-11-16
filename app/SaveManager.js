@@ -28,3 +28,39 @@ export function loadGameSnapshot() {
     return null;
   }
 }
+
+// NEW: High Score management
+const HIGH_SCORE_KEY = 'spellFusion_highScore_v2';
+
+/**
+ * Saves the highest score and wave reached to local storage.
+ * @param {number} score 
+ * @param {number} wave 
+ */
+export function saveHighScore(score, wave) {
+  try {
+    const data = { score: score, wave: wave };
+    localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('Failed to save high score', e);
+  }
+}
+
+/**
+ * Loads the saved high score data.
+ * @returns {{ score: number, wave: number } | null}
+ */
+export function loadHighScore() {
+  try {
+    const saved = localStorage.getItem(HIGH_SCORE_KEY);
+    if (!saved) return null;
+    const data = JSON.parse(saved);
+    if (typeof data.score === 'number' && typeof data.wave === 'number') {
+      return data;
+    }
+    return null;
+  } catch (e) {
+    console.warn('Failed to load high score', e);
+    return null;
+  }
+}
