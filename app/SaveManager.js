@@ -39,9 +39,10 @@ const WEBSIM_HIGHSCORE_ENDPOINT = '/api/highscores'; // configurable endpoint; p
  */
 export async function fetchRemoteTopScores() {
   try {
-    const room = new (await import('https://esm.sh/websim@latest/client')).WebsimSocket();
-    const topScores = room.collection('highscore_v1').getList();
-    const sorted = topScores.sort((a, b) => (b.score || 0) - (a.score || 0));
+    // Use the built-in WebsimSocket available in the runtime instead of attempting to import from esm.sh
+    const room = new WebsimSocket();
+    const topScores = await room.collection('highscore_v1').getList();
+    const sorted = Array.isArray(topScores) ? topScores.sort((a, b) => (b.score || 0) - (a.score || 0)) : [];
     return sorted.slice(0, 10);
   } catch (e) {
     console.warn('Failed to fetch remote top scores', e);
@@ -80,11 +81,12 @@ export async function submitRemoteTopScore(username, score, wave) {
  */
 export async function checkAndUpdateRemoteTopTen(username, score, wave) {
   try {
-    const room = new (await import('https://esm.sh/websim@latest/client')).WebsimSocket();
-    const topScores = room.collection('highscore_v1').getList();
+    // Use the runtime-provided WebsimSocket instance to access collections
+    const room = new WebsimSocket();
+    const topScores = await room.collection('highscore_v1').getList();
     
     // Check if this username exists in top 10
-    const userEntry = topScores.find(s => s.username === username);
+    const userEntry = Array.isArray(topScores) ? topScores.find(s => s.username === username) : undefined;
     
     if (userEntry) {
       // Update if new score is higher
@@ -93,13 +95,13 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
       }
     } else {
       // Add new entry if less than 10 entries or beats the lowest
-      if (topScores.length < 10) {
+      const list = Array.isArray(topScores) ? topScores : [];
+      if (list.length < 10) {
         await room.collection('highscore_v1').create({ username, score, wave });
       } else {
-        // Find lowest score
-        const sorted = topScores.sort((a, b) => (b.score || 0) - (a.score || 0));
+        const sorted = list.sort((a, b) => (b.score || 0) - (a.score || 0));
         const lowest = sorted[9];
-        if (score > lowest.score) {
+        if (score > (lowest.score || 0)) {
           await room.collection('highscore_v1').update(lowest.id, { username, score, wave });
         }
       }
