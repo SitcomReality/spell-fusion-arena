@@ -158,6 +158,12 @@ export class GameApp {
       if (typeof savedState.score === 'number') {
         this.gameState.score = Math.max(0, Math.floor(savedState.score));
       }
+
+      // Restore player's HP from the savefile if present
+      if (typeof savedState.playerHp === 'number') {
+        this.gameState.player.hp = Math.max(0, Number(savedState.playerHp));
+      }
+
       try { this.fusionUI.refresh(); } catch (e) { console.warn('Failed to refresh FusionUI after loading', e); }
     }
 
