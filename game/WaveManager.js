@@ -46,7 +46,8 @@ export class WaveManager {
       return this.spawnBossWave();
     }
     
-    const baseCount = 3 + Math.floor(this.currentWave * 1.5);
+    // Slightly gentler ramp-up: use 1.25 multiplier instead of 1.5 so enemy count increases more slowly
+    const baseCount = 3 + Math.floor(this.currentWave * 1.25);
     
     for (let i = 0; i < baseCount; i++) {
       const angle = this.rng.next() * Math.PI * 2;
