@@ -235,11 +235,19 @@ export class GameApp {
     this.start();
   }
 
-  handleGameOver() {
+  async handleGameOver() {
     this.running = false;
     const waveNumber = this.gameState.waveManager.currentWave - 1;
     const finalScore = this.gameState.score;
     const finalHealth = this.gameState.player.hp;
+
+    // NEW: update local high score and attempt remote top-10 update if appropriate
+    try {
+      await this.updateHighScore(finalScore, waveNumber);
+    } catch (e) {
+      console.warn('High score update failed during game over', e);
+    }
+
     this.gameOverUI = new GameOverUI(() => {
       this.gameOverUI.hide();
       this.cleanupGame();
