@@ -122,7 +122,8 @@ export class IntroScreen {
               equippedSpells: payload.equippedSpells || [null, null, null, null],
               spellSlotFocus: payload.spellSlotFocus || [1, 0, 0, 0],
               playerHp: payload.playerHp || 1000,
-              wave: payload.wave || 0
+              wave: payload.wave || 0,
+              score: payload.score || 0
             }
           };
 
