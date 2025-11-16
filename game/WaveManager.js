@@ -55,41 +55,44 @@ export class WaveManager {
       
       let type;
       if (this.currentWave === 1) {
+        // Wave 1: Grunt only
         type = ENEMY_TYPES.grunt;
       } else if (this.currentWave === 2) {
-        type = this.rng.next() > 0.5 ? ENEMY_TYPES.grunt : ENEMY_TYPES.runner;
-      } else {
+        // Wave 2: Grunt + Runner
+        type = this.rng.next() > 0.4 ? ENEMY_TYPES.runner : ENEMY_TYPES.grunt;
+      } else if (this.currentWave === 3) {
+        // Wave 3: Grunt + Runner + Tank
         const rand = this.rng.next();
-        // Regular enemy pool order: grunt, runner, tank, spiraler, dasher
-        // Base probabilities but dasher chance scales up with wave number so dashers become common later.
-        const baseGrunt = 0.45;
-        const baseRunner = 0.30;
-        const baseTank = 0.15;
-        const spiralerChance = 0.05; // keep spiraler rare
-        // Increase dasher chance by 1% per wave up to 25%
-        const dasherChance = Math.min(0.25, 0.05 + (this.currentWave * 0.01));
-        // Support enemy chance: starts small and grows slowly per wave up to ~14%
-        const supportChance = Math.min(0.14, 0.06 + (this.currentWave * 0.005));
-        // Normalize remaining probability to keep total = 1 (favoring grunt/runner/tank)
-        const remaining = 1 - spiralerChance - dasherChance - supportChance;
-        const gruntShare = baseGrunt / (baseGrunt + baseRunner + baseTank);
-        const runnerShare = baseRunner / (baseGrunt + baseRunner + baseTank);
-        const tankShare = baseTank / (baseGrunt + baseRunner + baseTank);
+        if (rand < 0.5) type = ENEMY_TYPES.grunt;
+        else if (rand < 0.75) type = ENEMY_TYPES.runner;
+        else type = ENEMY_TYPES.tank;
+      } else if (this.currentWave === 4) {
+        // Wave 4: Grunt + Runner + Tank + Spiraler
+        const rand = this.rng.next();
+        if (rand < 0.45) type = ENEMY_TYPES.grunt;
+        else if (rand < 0.70) type = ENEMY_TYPES.runner;
+        else if (rand < 0.85) type = ENEMY_TYPES.tank;
+        else type = ENEMY_TYPES.spiraler;
+      } else {
+        // Wave 6+: Grunt + Runner + Tank + Spiraler + Support + Dasher
+        const rand = this.rng.next();
+        const baseGrunt = 0.38;
+        const baseRunner = 0.25;
+        const baseTank = 0.12;
+        const spiralerChance = 0.08;
+        const supportChance = 0.10;
+        const dasherChance = Math.min(0.15, 0.05 + (this.currentWave - 6) * 0.01);
         
-        const gCut = remaining * gruntShare;
-        const rCut = remaining * runnerShare;
-        const tCut = remaining * tankShare;
-        
-        if (rand < gCut) {
+        if (rand < baseGrunt) {
           type = ENEMY_TYPES.grunt;
-        } else if (rand < gCut + rCut) {
+        } else if (rand < baseGrunt + baseRunner) {
           type = ENEMY_TYPES.runner;
-        } else if (rand < gCut + rCut + tCut) {
+        } else if (rand < baseGrunt + baseRunner + baseTank) {
           type = ENEMY_TYPES.tank;
-        } else if (rand < gCut + rCut + tCut + spiralerChance) {
-          type = ENEMY_TYPES.spiraler || ENEMY_TYPES.grunt;
-        } else if (rand < gCut + rCut + tCut + spiralerChance + supportChance) {
-          type = ENEMY_TYPES.support || ENEMY_TYPES.grunt;
+        } else if (rand < baseGrunt + baseRunner + baseTank + spiralerChance) {
+          type = ENEMY_TYPES.spiraler;
+        } else if (rand < baseGrunt + baseRunner + baseTank + spiralerChance + supportChance) {
+          type = ENEMY_TYPES.support;
         } else {
           type = ENEMY_TYPES.dasher || ENEMY_TYPES.grunt;
         }
