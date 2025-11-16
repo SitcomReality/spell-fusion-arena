@@ -81,11 +81,9 @@ export async function submitRemoteTopScore(username, score, wave) {
  */
 export async function checkAndUpdateRemoteTopTen(username, score, wave) {
   try {
-    // Use the runtime-provided WebsimSocket instance to access collections
     const room = new WebsimSocket();
     const topScores = await room.collection('highscore_v1').getList();
     
-    // Check if this username exists in top 10
     const userEntry = Array.isArray(topScores) ? topScores.find(s => s.username === username) : undefined;
     
     if (userEntry) {
@@ -94,12 +92,19 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
         await room.collection('highscore_v1').update(userEntry.id, { score, wave });
       }
     } else {
-      // Add new entry if less than 10 entries or beats the lowest
-      const list = Array.isArray(topScores) ? topScores : [];
-      if (list.length < 10) {
+      // Before adding a new entry, delete any stale entries with this username to prevent duplicates
+      const allEntries = Array.isArray(topScores) ? topScores : [];
+      for (const entry of allEntries) {
+        if (entry.username === username) {
+          await room.collection('highscore_v1').delete(entry.id);
+        }
+      }
+      
+      // Now add/replace the entry
+      if (allEntries.length < 10) {
         await room.collection('highscore_v1').create({ username, score, wave });
       } else {
-        const sorted = list.sort((a, b) => (b.score || 0) - (a.score || 0));
+        const sorted = allEntries.sort((a, b) => (b.score || 0) - (a.score || 0));
         const lowest = sorted[9];
         if (score > (lowest.score || 0)) {
           await room.collection('highscore_v1').update(lowest.id, { username, score, wave });
