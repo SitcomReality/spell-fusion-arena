@@ -95,22 +95,24 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
         (current.score || 0) > (best.score || 0) ? current : best
       );
       
+      let entryToKeepId = bestEntry.id;
+
       if (score > (bestEntry.score || 0)) {
         // New score is higher, update the best entry
         await room.collection('highscore_v1').update(bestEntry.id, { score, wave });
-        
-        // Delete any duplicate entries for this username to enforce uniqueness
-        for (const entry of userEntries) {
-          if (entry.id !== bestEntry.id) {
-            await room.collection('highscore_v1').delete(entry.id);
-          }
+      }
+
+      // Delete any duplicate entries for this username to enforce uniqueness.
+      // This runs regardless of whether the score was updated, ensuring cleanup.
+      for (const entry of userEntries) {
+        if (entry.id !== entryToKeepId) {
+          await room.collection('highscore_v1').delete(entry.id);
         }
       }
-      // If new score is not higher, do nothing (don't create/update lower scores)
     } else {
       // No existing entry for this user, check if we can add one
-      const currentList = await room.collection('highscore_v1').getList();
-      const sortedList = (Array.isArray(currentList) ? currentList : []).sort((a, b) => (b.score || 0) - (a.score || 0));
+      // Reuse allEntries from the start of the function, avoid duplicate fetch.
+      const sortedList = (Array.isArray(allEntries) ? allEntries : []).sort((a, b) => (b.score || 0) - (a.score || 0));
       
       if (sortedList.length < 10) {
         // There's room in the top 10, add the entry
