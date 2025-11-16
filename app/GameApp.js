@@ -8,7 +8,7 @@ import { createLayoutObserver } from './LayoutObserver.js';
 import { GameOverUI } from '../ui/GameOverUI.js';
 import { Tutorial } from '../ui/Tutorial.js';
 import { createHUD, createSpeedControl, createFusionUI, createRewardUI, createWaveStartButton } from './UISetup.js';
-import { saveGameSnapshot, loadGameSnapshot, saveHighScore, loadHighScore } from './SaveManager.js';
+import { saveGameSnapshot, loadGameSnapshot, saveHighScore, loadHighScore, checkAndUpdateRemoteTopTen } from './SaveManager.js';
 import { AutoManager } from './AutoManager.js';
 import TextureManager from '../rendering/TextureManager.js';
 
@@ -73,11 +73,21 @@ export class GameApp {
   }
 
   // NEW: Update high score only if current score is better
-  updateHighScore(currentScore, waveNumber) {
+  async updateHighScore(currentScore, waveNumber) {
     if (currentScore > this.highScore.score) {
       this.highScore.score = currentScore;
       this.highScore.wave = waveNumber;
       saveHighScore(currentScore, waveNumber);
+
+      // Attempt to update remote top-10 (one entry per username).
+      // Use stored player name from localStorage if available falling back to 'Player'.
+      try {
+        const username = (localStorage && localStorage.getItem && localStorage.getItem('playerName')) || 'Player';
+        // Fire-and-forget but await so errors are surfaced in console during development
+        await checkAndUpdateRemoteTopTen(username, currentScore, waveNumber);
+      } catch (e) {
+        console.warn('Remote top-10 update failed', e);
+      }
     }
   }
 

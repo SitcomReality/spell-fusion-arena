@@ -29,6 +29,86 @@ export function loadGameSnapshot() {
   }
 }
 
+// NEW: WebSim high-score API integration for top-10 (one entry per username)
+const WEBSIM_HIGHSCORE_ENDPOINT = '/api/highscores'; // configurable endpoint; proxy or server provides this
+
+/**
+ * Fetch the current top-10 high scores from the remote database.
+ * Returns an array of { username, score, wave } or [] on error.
+ */
+export async function fetchRemoteTopScores() {
+  try {
+    const res = await fetch(WEBSIM_HIGHSCORE_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.slice(0, 10);
+  } catch (e) {
+    console.warn('Failed to fetch remote top scores', e);
+    return [];
+  }
+}
+
+/**
+ * Submit or update a single user's entry in the remote top-10 list.
+ * The server is expected to enforce "one entry per username" and ordering.
+ * Returns true on success, false otherwise.
+ */
+export async function submitRemoteTopScore(username, score, wave) {
+  if (!username) username = 'Player';
+  try {
+    const payload = { username, score: Number(score) || 0, wave: Number(wave) || 0 };
+    const res = await fetch(WEBSIM_HIGHSCORE_ENDPOINT, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('Failed to submit remote top score', e);
+    return false;
+  }
+}
+
+/**
+ * Helper: Atomically check and update remote top-10 if this player's score qualifies.
+ * - Ensures at most one entry per username.
+ * - Replaces the lowest entry if not present and qualifies.
+ *
+ * Returns true if remote list was changed, false otherwise.
+ */
+export async function checkAndUpdateRemoteTopTen(username, score, wave) {
+  try {
+    const top = await fetchRemoteTopScores();
+    // Normalize
+    const normalized = top.map(t => ({ username: String(t.username || ''), score: Number(t.score || 0), wave: Number(t.wave || 0) }));
+    // If player already in list, update if new score is higher
+    const existingIdx = normalized.findIndex(e => e.username === username);
+    if (existingIdx >= 0) {
+      if (score > normalized[existingIdx].score) {
+        // update server with new value
+        return await submitRemoteTopScore(username, score, wave);
+      }
+      return false; // no change required
+    }
+    // Not present: if list has <10 entries, submit; else check whether beats lowest
+    if (normalized.length < 10) {
+      return await submitRemoteTopScore(username, score, wave);
+    }
+    // find lowest
+    let min = normalized[0];
+    for (const it of normalized) if (it.score < min.score) min = it;
+    if (score > min.score) {
+      return await submitRemoteTopScore(username, score, wave);
+    }
+    return false;
+  } catch (e) {
+    console.warn('Failed to check/update remote top ten', e);
+    return false;
+  }
+}
+
 // NEW: High Score management
 const HIGH_SCORE_KEY = 'spellFusion_highScore_v2';
 
