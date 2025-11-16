@@ -41,11 +41,13 @@ export class Player {
       if (focus < 1) {
         this.castIntervals[i] = Infinity;
       } else {
-        // Base interval at 1 Focus is 2500ms. Speed increases from there.
-        // Reduce how much each Focus decreases interval (slower ramp-up).
-        // Using divisor 5 makes slot firing speed increase more gradually.
-        // Reaches a faster rate much later than before.
-        this.castIntervals[i] = 2500 / (1 + (focus - 1) / 5);
+        // Base interval at 1 Focus is now slightly lower (2400ms) for a small absolute speed bump,
+        // but per-Focus gains are reduced and given slow diminishing returns so stacking Focus
+        // doesn't accelerate firing too aggressively later in the game.
+        const baseInterval = 2400;
+        const perFocusDenomBase = 6; // larger than previous 5 to reduce per-focus impact
+        const diminishing = Math.log2(1 + focus); // slow-growing diminishing factor
+        this.castIntervals[i] = baseInterval / (1 + (focus - 1) / (perFocusDenomBase + diminishing));
       }
     }
 
