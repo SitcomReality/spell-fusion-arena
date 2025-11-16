@@ -176,7 +176,8 @@ export class MovementHandler {
   static initWaveProperties(projectile) {
     const wave = projectile.properties.wave || 0;
     if (wave > 0) {
-      projectile.waveAngle = 0;
+      // Give each projectile a random phase offset so wave motion is not perfectly synchronized.
+      projectile.waveAngle = Math.random() * Math.PI * 2;
       projectile.waveAmplitude = 15 + wave * 80;
       projectile.waveFrequency = 5 + wave * 5;
     }
