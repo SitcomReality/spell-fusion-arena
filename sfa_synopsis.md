@@ -1,0 +1,2 @@
+Spell Fusion Arena (SFA) is a top-down, wave-based arcade game where players craft and equip fused spells from elemental components, manage Mana Essence and Focus to create and upgrade spell slots, then defend a central player against procedurally spawned enemy waves featuring varied movement patterns, shields and bosses, with modular systems for projectile behaviors (spiral, homing, wave), rich particle and visual effects, spatial-grid collision handling, and a guided tutorial + UI for creation, rewards, and game flow.
+
