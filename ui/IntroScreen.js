@@ -2,6 +2,7 @@ import { ELEMENTS } from '../spells/Element.js';
 import { SeededRandom } from '../game/SeededRandom.js';
 import VisualPreview from './VisualPreview.js';
 import { ELEMENTS_READY } from '../spells/Element.js';
+import { fetchRemoteTopScores } from '../app/SaveManager.js';
 
 export class IntroScreen {
   constructor(onGameStart) {
@@ -20,7 +21,7 @@ export class IntroScreen {
       <div class="intro-screen-container">
         <div class="intro-screen-content">
           <h1 class="intro-title">Spell Fusion Arena</h1>
-          <p class="intro-subtitle">Master the elements. Defeat the waves.</p>
+          <div class="intro-subtitle marquee" id="highscores-marquee">Loading high scores...</div>
           <button class="intro-button" id="new-game-btn">New Game</button>
           <div class="intro-credits">
             <span>A game by</span>
@@ -32,6 +33,39 @@ export class IntroScreen {
       </div>
     `;
     document.body.appendChild(this.container);
+
+    // Inject marquee CSS once
+    if (!document.getElementById('highscores-marquee-styles')) {
+      const style = document.createElement('style');
+      style.id = 'highscores-marquee-styles';
+      style.textContent = `
+        .marquee {
+          overflow: hidden;
+          white-space: nowrap;
+          box-sizing: border-box;
+          color: #9db4ff;
+          font-size: 14px;
+          margin: 8px 0 12px 0;
+        }
+        .marquee-inner {
+          display: inline-block;
+          padding-left: 100%;
+          animation: marquee-scroll 22s linear infinite;
+        }
+        @keyframes marquee-scroll {
+          0% { transform: translate3d(0,0,0); }
+          100% { transform: translate3d(-100%,0,0); }
+        }
+        @media (max-width: 480px) {
+          .marquee { font-size: 12px; }
+          .marquee-inner { animation-duration: 28s; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Kick off loading and rendering of remote top scores into the marquee
+    this.populateHighScores();
 
     const newGameBtn = document.getElementById('new-game-btn');
     // Ensure elements are loaded before starting the new-game flow to avoid races.
