@@ -46,8 +46,28 @@ export class WaveManager {
       return this.spawnBossWave();
     }
     
-    // Slightly gentler ramp-up: use 1.25 multiplier instead of 1.5 so enemy count increases more slowly
-    const baseCount = 3 + Math.floor(this.currentWave * 1.25);
+    // Smooth difficulty curve for first ~50 waves:
+    // - start with a gentler multiplier and ease toward the legacy multiplier by wave 50
+    // - after wave 50, fall back to the standard multiplier used historically
+    const LEGACY_MULTIPLIER = 1.25; // retains original long-term ramp
+    const MIN_MULTIPLIER = 0.45;   // much gentler initial slope
+    const TRANSITION_WAVES = 50;
+    let multiplier = LEGACY_MULTIPLIER;
+
+    if (this.currentWave > 0 && this.currentWave <= TRANSITION_WAVES) {
+      // normalized t in [0,1]
+      const t = this.currentWave / TRANSITION_WAVES;
+      // smoothstep easing for gentle start and accelerating growth toward the end
+      const eased = t * t * (3 - 2 * t); // smoothstep
+      // blend from MIN_MULTIPLIER -> LEGACY_MULTIPLIER
+      multiplier = MIN_MULTIPLIER + (LEGACY_MULTIPLIER - MIN_MULTIPLIER) * eased;
+    } else if (this.currentWave > TRANSITION_WAVES) {
+      multiplier = LEGACY_MULTIPLIER;
+    }
+
+    // Base count: keep a small fixed base but scale the per-wave addition by the computed multiplier.
+    // This preserves early-game predictability while smoothing ramp-up across the first 50 waves.
+    const baseCount = 3 + Math.floor(this.currentWave * multiplier);
     
     for (let i = 0; i < baseCount; i++) {
       const angle = this.rng.next() * Math.PI * 2;
