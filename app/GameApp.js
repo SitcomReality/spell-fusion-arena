@@ -144,18 +144,19 @@ export class GameApp {
         this.fusionUI.spellSlotFocus = [...savedState.spellSlotFocus];
       }
       if (savedState.targetPreferences && Array.isArray(savedState.targetPreferences)) {
-        this.gameState.player.targetPreferences = [...savedState.targetPreferences];
         this.fusionUI.state.targetPreferences = [...savedState.targetPreferences];
       }
       if (savedState.equippedSpells) {
         this.gameState.player.equipSpells(savedState.equippedSpells, savedState.spellSlotFocus || [1, 0, 0, 0]);
       }
-      // Restore saved score (if present) so HUD reflects loaded progress
-      if (typeof savedState.score === 'number') {
-        this.gameState.score = savedState.score;
+      if (savedState.targetPreferences && Array.isArray(savedState.targetPreferences)) {
+        this.gameState.player.targetPreferences = [...savedState.targetPreferences];
       }
       if (typeof savedState.wave === 'number') {
         this.gameState.waveManager.currentWave = Math.max(0, Math.floor(savedState.wave));
+      }
+      if (typeof savedState.score === 'number') {
+        this.gameState.score = Math.max(0, Math.floor(savedState.score));
       }
       try { this.fusionUI.refresh(); } catch (e) { console.warn('Failed to refresh FusionUI after loading', e); }
     }
