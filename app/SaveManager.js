@@ -10,7 +10,8 @@ export function saveGameSnapshot(gameApp) {
       targetPreferences: gameApp.fusionUI && gameApp.fusionUI.state ? gameApp.fusionUI.state.targetPreferences : ['nearest', 'furthest', 'strongest', 'weakest'],
       playerHp: gameApp.gameState ? gameApp.gameState.player.hp : undefined,
       wave: gameApp.gameState ? gameApp.gameState.waveManager.currentWave : undefined,
-      seed: gameApp.gameState ? gameApp.gameState.seed : undefined
+      seed: gameApp.gameState ? gameApp.gameState.seed : undefined,
+      score: gameApp.gameState ? gameApp.gameState.score : 0
     };
     localStorage.setItem('spellFusion_save_v2', JSON.stringify(payload));
   } catch (e) {
