@@ -90,10 +90,20 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
     const userEntries = Array.isArray(allEntries) ? allEntries.filter(s => s.username === username) : [];
     
     if (userEntries.length > 0) {
-      // User already has at least one entry - find the best score
-      const bestEntry = userEntries.reduce((best, current) => 
-        (current.score || 0) > (best.score || 0) ? current : best
-      );
+      // User already has at least one entry - find the single best entry to keep.
+      // Criteria: highest score, tie-break using oldest creation time for determinism.
+      const bestEntry = userEntries.reduce((best, current) => {
+        const bestScore = best.score || 0;
+        const currentScore = current.score || 0;
+        
+        if (currentScore > bestScore) {
+          return current;
+        } else if (currentScore === bestScore) {
+          // Tie-breaker: keep the older entry (smaller created_at string/timestamp)
+          return (current.created_at < best.created_at) ? current : best;
+        }
+        return best;
+      });
       
       let entryToKeepId = bestEntry.id;
 
@@ -102,7 +112,7 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
         await room.collection('highscore_v1').update(bestEntry.id, { score, wave });
       }
 
-      // Delete any duplicate entries for this username to enforce uniqueness.
+      // Delete any duplicate entries for this username to enforce strict uniqueness.
       // This runs regardless of whether the score was updated, ensuring cleanup.
       for (const entry of userEntries) {
         if (entry.id !== entryToKeepId) {
