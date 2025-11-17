@@ -34,12 +34,58 @@ export function loadGameSnapshot() {
 const WEBSIM_HIGHSCORE_ENDPOINT = '/api/highscores'; // configurable endpoint; proxy or server provides this
 
 /**
+ * Deduplicates the top 10 high scores, keeping only the highest score per username.
+ * Runs every time we access/update the top scores to enforce uniqueness.
+ */
+async function deduplicateTopScores() {
+  try {
+    const room = new WebsimSocket();
+    const allEntries = await room.collection('highscore_v1').getList();
+    
+    if (!Array.isArray(allEntries) || allEntries.length === 0) return;
+
+    // Group entries by username
+    const byUsername = {};
+    for (const entry of allEntries) {
+      const user = entry.username || 'Unknown';
+      if (!byUsername[user]) {
+        byUsername[user] = [];
+      }
+      byUsername[user].push(entry);
+    }
+
+    // Find and delete duplicates (keep highest score per username)
+    for (const username in byUsername) {
+      const entries = byUsername[username];
+      if (entries.length > 1) {
+        // Sort by score descending, keep the first (highest)
+        entries.sort((a, b) => (b.score || 0) - (a.score || 0));
+        const keepId = entries[0].id;
+        
+        // Delete all others
+        for (let i = 1; i < entries.length; i++) {
+          try {
+            await room.collection('highscore_v1').delete(entries[i].id);
+          } catch (e) {
+            console.warn(`Failed to delete duplicate entry ${entries[i].id}`, e);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to deduplicate top scores', e);
+  }
+}
+
+/**
  * Fetch the current top-10 high scores from the remote database.
  * Returns an array of { username, score, wave } or [] on error.
  */
 export async function fetchRemoteTopScores() {
   try {
-    // Use the built-in WebsimSocket available in the runtime instead of attempting to import from esm.sh
+    // Deduplicate first to ensure clean state
+    await deduplicateTopScores();
+    
     const room = new WebsimSocket();
     const topScores = await room.collection('highscore_v1').getList();
     const sorted = Array.isArray(topScores) ? topScores.sort((a, b) => (b.score || 0) - (a.score || 0)) : [];
@@ -83,6 +129,9 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
   try {
     const room = new WebsimSocket();
     
+    // Deduplicate first to ensure clean state
+    await deduplicateTopScores();
+    
     // Get the current list
     const allEntries = await room.collection('highscore_v1').getList();
     
@@ -90,20 +139,10 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
     const userEntries = Array.isArray(allEntries) ? allEntries.filter(s => s.username === username) : [];
     
     if (userEntries.length > 0) {
-      // User already has at least one entry - find the single best entry to keep.
-      // Criteria: highest score, tie-break using oldest creation time for determinism.
-      const bestEntry = userEntries.reduce((best, current) => {
-        const bestScore = best.score || 0;
-        const currentScore = current.score || 0;
-        
-        if (currentScore > bestScore) {
-          return current;
-        } else if (currentScore === bestScore) {
-          // Tie-breaker: keep the older entry (smaller created_at string/timestamp)
-          return (current.created_at < best.created_at) ? current : best;
-        }
-        return best;
-      });
+      // User already has at least one entry - find the best score
+      const bestEntry = userEntries.reduce((best, current) => 
+        (current.score || 0) > (best.score || 0) ? current : best
+      );
       
       let entryToKeepId = bestEntry.id;
 
@@ -112,7 +151,7 @@ export async function checkAndUpdateRemoteTopTen(username, score, wave) {
         await room.collection('highscore_v1').update(bestEntry.id, { score, wave });
       }
 
-      // Delete any duplicate entries for this username to enforce strict uniqueness.
+      // Delete any duplicate entries for this username to enforce uniqueness.
       // This runs regardless of whether the score was updated, ensuring cleanup.
       for (const entry of userEntries) {
         if (entry.id !== entryToKeepId) {
