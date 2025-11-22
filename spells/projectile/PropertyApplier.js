@@ -43,37 +43,45 @@ export class PropertyApplier {
       const dy = enemy.y - projectile.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist > 0) {
-        // Base knockback force
-        let knockbackForce = 150 * props.knockback;
-
-        // If target is a boss, reduce knockback power based on distance from center (player)
-        try {
-          if (enemy.type && enemy.type.isBoss && gameState && gameState.centerX !== undefined) {
-            const toCenterX = enemy.x - gameState.centerX;
-            const toCenterY = enemy.y - gameState.centerY;
-            const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
-            const spawnR = (gameState && gameState.width && gameState.height) ? (gameState.waveManager ? (gameState.waveManager.rng ? (gameState.waveManager.rng, (gameState.waveManager && gameState.waveManager.rng) && undefined) : undefined) : undefined) : undefined;
-            // Fallback to CONFIG spawnRadius if waveManager data unavailable
-          }
-        } catch (e) { /* silent */ }
+        // Base knockback force (slightly stronger than before to compensate for new falloff)
+        let knockbackForce = 180 * props.knockback;
 
         // Compute reduction multiplier (default no reduction)
         let reduction = 0;
         try {
           // Prefer CONFIG value if available
           const spawnRadius = (typeof CONFIG !== 'undefined' && CONFIG.enemy && CONFIG.enemy.spawnRadius) ? CONFIG.enemy.spawnRadius : 360;
-          if (enemy.type && enemy.type.isBoss && gameState && gameState.centerX !== undefined) {
+
+          if (gameState && gameState.centerX !== undefined && gameState.centerY !== undefined) {
             const toCenterX = enemy.x - gameState.centerX;
             const toCenterY = enemy.y - gameState.centerY;
             const curDist = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+
+            // Normalized distance from player (0 at center, 1 at spawn edge)
             const distFrac = Math.max(0, Math.min(1, curDist / spawnRadius));
-            if (enemy.type.bossType === 'agile' || enemy.type.bossType === 'double') {
-              reduction = 0.5; // 50% reduction at spawn edge
-            } else if (enemy.type.bossType === 'mammoth') {
-              reduction = 1.0; // 100% reduction at spawn edge (no knockback at edge)
+
+            // Global falloff for ALL enemies:
+            // - Enemies near the player get full knockback
+            // - Enemies at the edge of spawn radius get strongly reduced knockback
+            const edgeFalloffMultiplier = 1 - 0.6 * distFrac; // 1.0 -> 0.4 across radius
+
+            // Additional boss-specific resistance on top of global falloff
+            let bossMultiplier = 1;
+            if (enemy.type && enemy.type.isBoss) {
+              let bossReductionAtEdge = 0.4; // default extra 40% reduction at edge
+
+              if (enemy.type.bossType === 'agile' || enemy.type.bossType === 'double') {
+                bossReductionAtEdge = 0.3; // a bit less extra resistance
+              } else if (enemy.type.bossType === 'mammoth') {
+                bossReductionAtEdge = 0.6; // very resistant at edge
+              }
+
+              // Linearly scale extra resistance with distance
+              bossMultiplier = 1 - bossReductionAtEdge * distFrac;
             }
-            const multiplier = 1 - (reduction * distFrac); // linear from center (1) -> edge (1-reduction)
-            knockbackForce *= multiplier;
+
+            const totalMultiplier = Math.max(0, edgeFalloffMultiplier * bossMultiplier);
+            knockbackForce *= totalMultiplier;
           }
         } catch (e) { /* silent fallback - no reduction */ }
 

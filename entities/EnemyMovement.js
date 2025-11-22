@@ -63,7 +63,8 @@ export function updatePosition(enemy, dt, centerX, centerY) {
 
   // Clamp boss positions and damp knockback if outside spawn radius
   try {
-    if (enemy.type && enemy.type.isBoss) {
+    // Apply spawn-radius clamping to all enemies so knockback can't push them beyond the ring.
+    if (enemy.type) {
       const maxR = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.enemy && window.CONFIG.enemy.spawnRadius) ? window.CONFIG.enemy.spawnRadius : 360;
       const toCenterX = enemy.x - centerX;
       const toCenterY = enemy.y - centerY;
