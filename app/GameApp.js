@@ -64,46 +64,13 @@ export class GameApp {
     // Expose save helper for UI modules to call when they mutate state
     window.saveGame = this.saveGameState?.bind(this) || (() => {});
 
+    // NEW: handlers for global HUD hide toggles
+    this._escHandler = null;
+    this._canvasDoubleTapHandler = null;
+    this._lastCanvasTapTime = 0;
+
     // Show intro screen
     this.showIntroScreen();
-
-    // --- NEW: global input handlers for HUD toggle ---
-    // Escape key toggles HUD hide (desktop)
-    this._escapeKeyHandler = (ev) => {
-      try {
-        if (ev.key === 'Escape' || ev.key === 'Esc') {
-          if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
-            this.speedControl.toggleHudHide();
-          }
-        }
-      } catch (e) { /* silent */ }
-    };
-    document.addEventListener('keydown', this._escapeKeyHandler);
-
-    // Double-tap detection for canvas (mobile) -> toggles HUD hide
-    this._lastTap = 0;
-    this._doubleTapTimeout = 300; // ms window for double-tap
-    this._canvasTouchHandler = (ev) => {
-      try {
-        const now = Date.now();
-        const tapLength = now - (this._lastTap || 0);
-        this._lastTap = now;
-
-        if (tapLength > 0 && tapLength <= this._doubleTapTimeout) {
-          // Double-tap detected
-          if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
-            this.speedControl.toggleHudHide();
-          }
-          // Prevent synthetic mouse events following touch
-          ev.preventDefault();
-        }
-      } catch (e) { /* silent */ }
-    };
-    // Use passive: false so we can call preventDefault when double-tap detected
-    this.canvas.addEventListener('touchend', this._canvasTouchHandler, { passive: false });
-    // Also listen on fxCanvas to cover taps that hit the overlay layer
-    this.fxCanvas.addEventListener('touchend', this._canvasTouchHandler, { passive: false });
-    // ---------------------------------------------------
   }
 
   saveGameState() {
@@ -230,6 +197,9 @@ export class GameApp {
       document.getElementById('canvas-wrapper')
     );
 
+    // NEW: wire Escape key and canvas double-tap to toggle HUD visibility
+    this.setupHudHideShortcuts();
+
     if (this.tutorial) this.speedControl.setAutoVisible(false); else this.speedControl.setAutoVisible(true);
 
     this.rewardUI = createRewardUI((reward) => {
@@ -309,21 +279,20 @@ export class GameApp {
       try { if (this.speedControl.element && this.speedControl.element.parentNode) this.speedControl.element.remove(); } catch (e) {}
       this.speedControl = null;
     }
+    // NEW: remove HUD hide shortcut listeners
+    try {
+      if (this._escHandler) {
+        document.removeEventListener('keydown', this._escHandler);
+        this._escHandler = null;
+      }
+      if (this._canvasDoubleTapHandler && this.canvas) {
+        this.canvas.removeEventListener('touchend', this._canvasDoubleTapHandler);
+        this._canvasDoubleTapHandler = null;
+      }
+    } catch (e) { /* silent cleanup */ }
+
     if (this.renderer) this.renderer.clear(COLORS.background);
     if (this.fxRenderer) this.fxRenderer.clear();
-
-    // Remove input listeners added in ctor to avoid leaks when restarting app
-    try {
-      if (this._escapeKeyHandler) {
-        document.removeEventListener('keydown', this._escapeKeyHandler);
-        this._escapeKeyHandler = null;
-      }
-      if (this._canvasTouchHandler) {
-        this.canvas.removeEventListener('touchend', this._canvasTouchHandler, { passive: false });
-        this.fxCanvas.removeEventListener('touchend', this._canvasTouchHandler, { passive: false });
-        this._canvasTouchHandler = null;
-      }
-    } catch (e) { /* silent */ }
   }
 
   autoStartWave() { this.autoManager.autoStartWaveIfPending(); }
@@ -386,5 +355,46 @@ export class GameApp {
 
     for (const aoe of (this.gameState.aoeEffects || [])) this.fxRenderer.renderAoECircle(aoe);
     for (const particle of (this.gameState.particles || [])) this.fxRenderer.renderParticle(particle);
+  }
+
+  // NEW: Set up Escape key and canvas double-tap to toggle HUD hide
+  setupHudHideShortcuts() {
+    // Clear any existing handlers to avoid duplicates when restarting a game
+    if (this._escHandler) {
+      document.removeEventListener('keydown', this._escHandler);
+      this._escHandler = null;
+    }
+    if (this._canvasDoubleTapHandler && this.canvas) {
+      this.canvas.removeEventListener('touchend', this._canvasDoubleTapHandler);
+      this._canvasDoubleTapHandler = null;
+    }
+
+    // Escape key toggles HUD hide
+    this._escHandler = (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
+          this.speedControl.toggleHudHide();
+        }
+      }
+    };
+    document.addEventListener('keydown', this._escHandler);
+
+    // Double-tap on canvas (touch) toggles HUD hide on mobile
+    this._canvasDoubleTapHandler = (e) => {
+      const now = Date.now();
+      const tapGap = now - (this._lastCanvasTapTime || 0);
+      // Treat taps within 400ms as a double-tap
+      if (tapGap > 0 && tapGap < 400) {
+        this._lastCanvasTapTime = 0;
+        if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
+          this.speedControl.toggleHudHide();
+        }
+      } else {
+        this._lastCanvasTapTime = now;
+      }
+    };
+    if (this.canvas) {
+      this.canvas.addEventListener('touchend', this._canvasDoubleTapHandler, { passive: true });
+    }
   }
 }
