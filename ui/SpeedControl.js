@@ -1,7 +1,8 @@
 export class SpeedControl {
-  constructor(onSpeedChange, onAutoToggle) {
+  constructor(onSpeedChange, onAutoToggle, onSkipWave) {
     this.onSpeedChange = onSpeedChange;
     this.onAutoToggle = onAutoToggle;
+    this.onSkipWave = onSkipWave;
     this.container = null;
     this.element = null;
     this.currentSpeed = 1;
@@ -47,6 +48,11 @@ export class SpeedControl {
             <span class="hud-hide-toggle-status">OFF</span>
           </button>
         </div>
+        <div class="skip-wave-control">
+          <button class="skip-wave-btn" title="Skip the current wave (no rewards)">
+            Skip
+          </button>
+        </div>
       </div>
     `;
 
@@ -69,6 +75,13 @@ export class SpeedControl {
     if (hudHideBtn) {
       hudHideBtn.addEventListener('click', () => {
         this.toggleHudHide();
+      });
+    }
+
+    const skipWaveBtn = this.element.querySelector('.skip-wave-btn');
+    if (skipWaveBtn) {
+      skipWaveBtn.addEventListener('click', () => {
+        this.skipWave();
       });
     }
   }
@@ -112,6 +125,12 @@ export class SpeedControl {
       hudHideBtn.classList.toggle('active', this.hudHideEnabled);
     }
     this.updateHudVisibility();
+  }
+
+  skipWave() {
+    if (this.onSkipWave) {
+      this.onSkipWave();
+    }
   }
 
   updateHudVisibility() {

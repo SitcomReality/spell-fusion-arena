@@ -8,8 +8,8 @@ export function createHUD() {
   return new HUD();
 }
 
-export function createSpeedControl(onSpeedChange, onAutoToggle, mountContainer) {
-  const sc = new SpeedControl(onSpeedChange, onAutoToggle);
+export function createSpeedControl(onSpeedChange, onAutoToggle, mountContainer, onSkipWave) {
+  const sc = new SpeedControl(onSpeedChange, onAutoToggle, onSkipWave);
   sc.mount(mountContainer);
   return sc;
 }

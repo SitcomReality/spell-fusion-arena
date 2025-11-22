@@ -194,7 +194,8 @@ export class GameApp {
           }
         }
       },
-      document.getElementById('canvas-wrapper')
+      document.getElementById('canvas-wrapper'),
+      () => this.skipCurrentWave()
     );
 
     // NEW: wire Escape key and canvas double-tap to toggle HUD visibility
@@ -298,6 +299,66 @@ export class GameApp {
   autoStartWave() { this.autoManager.autoStartWaveIfPending(); }
   autoSelectReward() { this.autoManager.autoSelectRewardIfAvailable(); }
   autoAllocateFocus() { this.autoManager.autoAllocateFocusOnce(); }
+
+  // NEW: Skip the current wave without rewards (for glitched waves)
+  skipCurrentWave() {
+    const gs = this.gameState;
+    if (!gs || !gs.waveManager) return;
+
+    // If reward UI is open, hide it and do NOT grant any rewards
+    try {
+      if (this.rewardUI && this.rewardUI.container) {
+        this.rewardUI.hide();
+      }
+    } catch (e) { /* silent */ }
+
+    // Clear enemies and projectiles
+    try {
+      if (Array.isArray(gs.enemies)) {
+        for (const enemy of gs.enemies) {
+          enemy.alive = false;
+        }
+        gs.enemies.length = 0;
+      }
+      if (Array.isArray(gs.projectiles)) {
+        gs.projectiles.length = 0;
+      }
+      if (Array.isArray(gs.aoeEffects)) {
+        gs.aoeEffects.length = 0;
+      }
+      if (Array.isArray(gs.particles)) {
+        gs.particles.length = 0;
+      }
+    } catch (e) { /* non-fatal cleanup */ }
+
+    // Mark wave as completed without triggering rewards
+    try {
+      gs.waveManager.enemiesRemaining = 0;
+      gs.waveManager.waveActive = false;
+    } catch (e) { /* silent */ }
+
+    // Ensure game is not paused
+    try { gs.resume(); } catch (e) { /* silent */ }
+
+    // Immediately start the next wave with no reward in between
+    try {
+      gs.showWaveStart();
+      // Start next wave as if the player pressed the Start Wave button,
+      // but we skip any reward logic that would normally have run.
+      const nextWaveNumber = gs.waveManager.currentWave + 1;
+      gs.waveManager.startNextWave();
+      gs.startWave();
+      if (this.waveStartButton) {
+        this.waveStartButton.hide();
+      }
+      if (this.hud) {
+        this.hud.setWave(gs.waveManager.currentWave);
+        this.hud.setEnemies(0);
+      }
+    } catch (e) {
+      console.warn('Failed to skip current wave cleanly', e);
+    }
+  }
 
   setupMobileLayoutObserver() {
     this.headerContainer = document.getElementById('canvas-and-spells');
