@@ -66,6 +66,44 @@ export class GameApp {
 
     // Show intro screen
     this.showIntroScreen();
+
+    // --- NEW: global input handlers for HUD toggle ---
+    // Escape key toggles HUD hide (desktop)
+    this._escapeKeyHandler = (ev) => {
+      try {
+        if (ev.key === 'Escape' || ev.key === 'Esc') {
+          if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
+            this.speedControl.toggleHudHide();
+          }
+        }
+      } catch (e) { /* silent */ }
+    };
+    document.addEventListener('keydown', this._escapeKeyHandler);
+
+    // Double-tap detection for canvas (mobile) -> toggles HUD hide
+    this._lastTap = 0;
+    this._doubleTapTimeout = 300; // ms window for double-tap
+    this._canvasTouchHandler = (ev) => {
+      try {
+        const now = Date.now();
+        const tapLength = now - (this._lastTap || 0);
+        this._lastTap = now;
+
+        if (tapLength > 0 && tapLength <= this._doubleTapTimeout) {
+          // Double-tap detected
+          if (this.speedControl && typeof this.speedControl.toggleHudHide === 'function') {
+            this.speedControl.toggleHudHide();
+          }
+          // Prevent synthetic mouse events following touch
+          ev.preventDefault();
+        }
+      } catch (e) { /* silent */ }
+    };
+    // Use passive: false so we can call preventDefault when double-tap detected
+    this.canvas.addEventListener('touchend', this._canvasTouchHandler, { passive: false });
+    // Also listen on fxCanvas to cover taps that hit the overlay layer
+    this.fxCanvas.addEventListener('touchend', this._canvasTouchHandler, { passive: false });
+    // ---------------------------------------------------
   }
 
   saveGameState() {
@@ -273,6 +311,19 @@ export class GameApp {
     }
     if (this.renderer) this.renderer.clear(COLORS.background);
     if (this.fxRenderer) this.fxRenderer.clear();
+
+    // Remove input listeners added in ctor to avoid leaks when restarting app
+    try {
+      if (this._escapeKeyHandler) {
+        document.removeEventListener('keydown', this._escapeKeyHandler);
+        this._escapeKeyHandler = null;
+      }
+      if (this._canvasTouchHandler) {
+        this.canvas.removeEventListener('touchend', this._canvasTouchHandler, { passive: false });
+        this.fxCanvas.removeEventListener('touchend', this._canvasTouchHandler, { passive: false });
+        this._canvasTouchHandler = null;
+      }
+    } catch (e) { /* silent */ }
   }
 
   autoStartWave() { this.autoManager.autoStartWaveIfPending(); }
