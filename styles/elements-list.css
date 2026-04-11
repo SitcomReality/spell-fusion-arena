@@ -95,20 +95,20 @@
 }
 
 /* Map property -> icon using same assets as property-badge */
-.elements-list-sort-icon[data-property="damage"] { background-image: url('/img/damage.png'); }
-.elements-list-sort-icon[data-property="speed"] { background-image: url('/img/speed.png'); }
-.elements-list-sort-icon[data-property="knockback"] { background-image: url('/img/knockback.png'); }
-.elements-list-sort-icon[data-property="aoe"] { background-image: url('/img/aoe.png'); }
-.elements-list-sort-icon[data-property="dot"] { background-image: url('/img/dot.png'); }
-.elements-list-sort-icon[data-property="piercing"] { background-image: url('/img/piercing.png'); }
-.elements-list-sort-icon[data-property="chaining"] { background-image: url('/img/chaining.png'); }
-.elements-list-sort-icon[data-property="homing"] { background-image: url('/img/homing.png'); }
-.elements-list-sort-icon[data-property="slowing"] { background-image: url('/img/slowing.png'); }
+.elements-list-sort-icon[data-property="damage"] { background-image: url('../img/damage.png'); }
+.elements-list-sort-icon[data-property="speed"] { background-image: url('../img/speed.png'); }
+.elements-list-sort-icon[data-property="knockback"] { background-image: url('../img/knockback.png'); }
+.elements-list-sort-icon[data-property="aoe"] { background-image: url('../img/aoe.png'); }
+.elements-list-sort-icon[data-property="dot"] { background-image: url('../img/dot.png'); }
+.elements-list-sort-icon[data-property="piercing"] { background-image: url('../img/piercing.png'); }
+.elements-list-sort-icon[data-property="chaining"] { background-image: url('../img/chaining.png'); }
+.elements-list-sort-icon[data-property="homing"] { background-image: url('../img/homing.png'); }
+.elements-list-sort-icon[data-property="slowing"] { background-image: url('../img/slowing.png'); }
 /* Added lifesteal column icon */
-.elements-list-sort-icon[data-property="lifesteal"] { background-image: url('/img/lifesteal.png'); }
-.elements-list-sort-icon[data-property="wave"] { background-image: url('/img/wave.png'); }
-.elements-list-sort-icon[data-property="splitting"] { background-image: url('/img/splitting.png'); }
-.elements-list-sort-icon[data-property="spiral"] { background-image: url('/img/spiral.png'); }
+.elements-list-sort-icon[data-property="lifesteal"] { background-image: url('../img/lifesteal.png'); }
+.elements-list-sort-icon[data-property="wave"] { background-image: url('../img/wave.png'); }
+.elements-list-sort-icon[data-property="splitting"] { background-image: url('../img/splitting.png'); }
+.elements-list-sort-icon[data-property="spiral"] { background-image: url('../img/spiral.png'); }
 
 /* Content area: scrollable both directions */
 .elements-list-content-wrapper {
